@@ -45,7 +45,7 @@ const Header = () => {
 						</a>
 					))}
 				</div>
-				<nav className={`outer-menu ${menuVisible ? "menu-visible" : ""}`}>
+				<nav className={`outer-menu md:hidden ${menuVisible ? "menu-visible" : ""}`}>
 					<button
 						className="hamburger w-6 h-6 flex items-center justify-center link relative"
 						onClick={() => setmenuVisible((prev) => !prev)}
@@ -54,6 +54,7 @@ const Header = () => {
 					</button>
 					<Menu setmenuVisible={setmenuVisible} />
 				</nav>
+				<div className="hidden md:block w-[22px]" />
 			</div>
 		</header>
 	);
