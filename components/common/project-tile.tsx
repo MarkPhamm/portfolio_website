@@ -164,7 +164,7 @@ const ProjectTile = ({
 									className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800/80 border border-gray-700/50 transition-colors duration-[10ms] hover:border-[#9146FF]/30 hover:bg-gray-700/80"
 								>
 									<Image
-										src={`/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI"].includes(techItem) ? "png" : "svg"}`}
+										src={`/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"].includes(techItem) ? "png" : "svg"}`}
 										alt={techItem}
 										height={18}
 										width={18}

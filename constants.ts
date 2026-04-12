@@ -240,6 +240,26 @@ export const PROJECTS: IProject[] = [
 		url: "https://github.com/MarkPhamm/airflow_mwaa_CICD",
 		tech: ["MWAA", "Github", "S3", "Terraform", "Apache Airflow"],
 	},
+	{
+		name: "Docker",
+		category: ProjectTypes.CLOUDINFRA,
+		image: "/projects/docker.png",
+		blurImage: "/projects/docker.png",
+		description: "Hands-on Docker learning — from container basics and image building to multi-container orchestration with docker-compose.",
+		gradient: ["#0db7ed", "#384d54"],
+		url: "https://github.com/MarkPhamm/Docker",
+		tech: ["Docker", "python", "Docker Compose", "Shell"],
+	},
+	{
+		name: "Networking 101",
+		category: ProjectTypes.CLOUDINFRA,
+		image: "/projects/networking.png",
+		blurImage: "/projects/networking.png",
+		description: "Networking for data engineering — VPC/subnets, SSH, LAN/WAN, TCP/IP, DNS, and cloud infrastructure connectivity.",
+		gradient: ["#1a1a2e", "#4a90d9"],
+		url: "https://github.com/MarkPhamm/Networking-101",
+		tech: ["VPC", "SSH", "TCP/IP", "DNS"],
+	},
 	// ML & Statistics projects
 	{
 		name: "Streamlit Statistics App",
