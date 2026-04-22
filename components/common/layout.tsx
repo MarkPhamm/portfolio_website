@@ -20,11 +20,13 @@ const jsonLd = {
   ],
 };
 
+const PREVIEW_IMAGE = `${METADATA.siteUrl}/preview.jpg?v=2`;
+const PREVIEW_ALT = "Mark Pham — Analytics Engineer bridging data and actionable insights";
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Head>
-        <meta name="twitter:card" content="summary_large_image" />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         <meta
           name="viewport"
@@ -38,13 +40,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta property="og:description" content={METADATA.description} />
         <meta property="og:url" content={METADATA.siteUrl} />
         <meta property="og:site_name" content={METADATA.title} />
-        <meta
-          property="og:image"
-          content={`${METADATA.siteUrl}/preview.jpg`}
-        />
-        <meta property="og:image:secure_url" content={`${METADATA.siteUrl}/preview.jpg`} />
-        <meta property="og:image:width" content="1440" />
-        <meta property="og:image:height" content="800" />
+        <meta property="og:image" content={PREVIEW_IMAGE} />
+        <meta property="og:image:secure_url" content={PREVIEW_IMAGE} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={PREVIEW_ALT} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={METADATA.title} />
+        <meta name="twitter:description" content={METADATA.description} />
+        <meta name="twitter:image" content={PREVIEW_IMAGE} />
+        <meta name="twitter:image:alt" content={PREVIEW_ALT} />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <script
           type="application/ld+json"
