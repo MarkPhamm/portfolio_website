@@ -72,13 +72,10 @@ const WakatimeStats = memo(() => {
 							className="block"
 						>
 							<img
-								src="/api/wakatime/cc271ab9-a8ef-4c9b-ab6c-cd6d722a47e4"
+								src="https://wakatime.com/share/@MarkPham/cc271ab9-a8ef-4c9b-ab6c-cd6d722a47e4.svg"
 								alt="Languages Chart"
 								className="w-full h-auto"
 								loading="lazy"
-								decoding="async"
-								width={575}
-								height={180}
 							/>
 						</a>
 					</div>
@@ -94,13 +91,10 @@ const WakatimeStats = memo(() => {
 							className="block"
 						>
 							<img
-								src="/api/wakatime/40277f04-b1e2-42ad-a86a-8e30e14d076a"
+								src="https://wakatime.com/share/@MarkPham/40277f04-b1e2-42ad-a86a-8e30e14d076a.svg"
 								alt="Categories Chart"
 								className="w-full h-auto"
 								loading="lazy"
-								decoding="async"
-								width={575}
-								height={180}
 							/>
 						</a>
 					</div>
@@ -117,13 +111,10 @@ const WakatimeStats = memo(() => {
 						className="block overflow-x-auto"
 					>
 						<img
-							src="/api/wakatime/50a82451-30d4-4552-a78e-2b7ed8f7083b"
+							src="https://wakatime.com/share/@MarkPham/50a82451-30d4-4552-a78e-2b7ed8f7083b.svg"
 							alt="Daily Activity Heatmap"
 							className="w-full h-auto min-w-[600px]"
 							loading="lazy"
-							decoding="async"
-							width={800}
-							height={150}
 						/>
 					</a>
 				</div>
