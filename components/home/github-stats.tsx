@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { FaGithub, FaStar, FaCodeBranch, FaUsers, FaBook } from "react-icons/fa";
 import CountUp from "react-countup";
+import { trackEvent } from "../../utils/clarity";
 
 interface GitHubUser {
 	public_repos: number;
@@ -130,6 +131,7 @@ const GitHubStats = memo(() => {
 			href={`https://github.com/${GITHUB_USERNAME}`}
 			target="_blank"
 			rel="noopener noreferrer"
+			onClick={() => trackEvent("github_stats_click", { location: `stat_card_${label.toLowerCase().replace(/\s+/g, "_")}` })}
 			className={`flex flex-col items-center justify-center p-4 rounded-lg hover:scale-105 transition-all duration-[10ms] cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
 				}`}
 			style={{
@@ -178,6 +180,7 @@ const GitHubStats = memo(() => {
 				href={`https://github.com/${GITHUB_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => trackEvent("github_stats_click", { location: "header" })}
 				className="flex items-center gap-2 mb-6 group"
 			>
 				<FaGithub className="text-2xl text-gray-300 group-hover:text-white transition-colors" />
@@ -200,6 +203,7 @@ const GitHubStats = memo(() => {
 				href={`https://github.com/${GITHUB_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => trackEvent("github_stats_click", { location: "languages" })}
 				className={`block mt-4 transition-all duration-[10ms] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
 					}`}
 				style={{ transitionDelay: '500ms' }}
@@ -243,6 +247,7 @@ const GitHubStats = memo(() => {
 				href={`https://github.com/${GITHUB_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => trackEvent("github_stats_click", { location: "contributions" })}
 				className="block mt-6 pt-6 border-t border-gray-800"
 			>
 				<h4 className="text-sm font-medium text-gray-400 mb-4">Contribution Activity</h4>

@@ -37,15 +37,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 			{/* GA4 */}
 			<Script
-				src="https://www.googletagmanager.com/gtag/js?id=G-6T2HTBS4WQ"
+				src="https://www.googletagmanager.com/gtag/js?id=G-FH792RMCK7"
 				strategy="afterInteractive"
 			/>
 			<Script id="ga4-init" strategy="afterInteractive">
 				{`
 					window.dataLayer = window.dataLayer || [];
 					function gtag(){dataLayer.push(arguments);}
+					window.gtag = gtag;
 					gtag('js', new Date());
-					gtag('config', 'G-6T2HTBS4WQ', { page_path: window.location.pathname });
+					gtag('config', 'G-FH792RMCK7', { send_page_view: false });
 				`}
 			</Script>
 		</>

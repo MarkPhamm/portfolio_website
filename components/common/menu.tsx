@@ -7,6 +7,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { NAVBARITEMS } from "../../constants";
 import Link from "next/link";
+import { trackEvent } from "../../utils/clarity";
 
 const Menu = ({
 	setmenuVisible,
@@ -33,7 +34,10 @@ const Menu = ({
 								<a
 									className="link relative inline font-bold text-5xl duration-[10ms] hover:no-underline text-white"
 									href={el.ref.startsWith('http') ? el.ref : (el.ref.startsWith('/') ? el.ref : `/#${el.ref}`)}
-									onClick={setmenuVisible.bind(null, false)}
+									onClick={() => {
+										trackEvent("nav_link_click", { target: el.name, location: "mobile_menu" });
+										setmenuVisible(false);
+									}}
 									{...(el.ref.startsWith('http') && { target: "_blank", rel: "noreferrer" })}
 								>
 									{el.name}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MENULINKS, PROJECTS, ProjectTypes } from "../../constants";
 import ProjectTile from "../common/project-tile";
 import { IDesktop } from "pages";
+import { trackEvent } from "../../utils/clarity";
 
 const CATEGORIES = [
 { value: ProjectTypes.ENDTOEND, label: "Data Pipeline" },
@@ -18,6 +19,7 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 
 	const handleCategoryChange = (category: string) => {
 		if (category === activeCategory) return;
+		trackEvent("project_category_filter", { category });
 		setIsAnimating(true);
 		setTimeout(() => {
 			setActiveCategory(category);

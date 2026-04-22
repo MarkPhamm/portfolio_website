@@ -10,6 +10,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { gsap, Linear } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Link from "next/link";
+import { trackEvent } from "../../utils/clarity";
+
+const trackArticleClick = (slug: string, target: "title" | "image") =>
+	trackEvent("internal_article_click", { slug, target });
 
 const SKILL_STYLES = {
 	SECTION:
@@ -81,7 +85,7 @@ const ArticleSection = () => {
 								<div className="col-span-3 seq">
 									<div>
 										<Link href="/myarticle/retention" passHref>
-											<a>
+											<a onClick={() => trackArticleClick("retention", "title")}>
 												<h3 className="article-title-sm mb-4 seq">
 													First Day Retention Rate
 												</h3>
@@ -98,7 +102,7 @@ const ArticleSection = () => {
 								</div>
 								<div className="col-start-4 col-span-2 hidden lg:grid m-auto seq">
 									<Link href="/myarticle/retention" passHref>
-										<a>
+										<a onClick={() => trackArticleClick("retention", "image")}>
 											<Image
 												src="/article/firstday.jpg"
 												alt="React"
@@ -118,7 +122,7 @@ const ArticleSection = () => {
 								<div className="col-start-2 col-span-3 seq">
 									<div>
 										<Link href="/myarticle/marketcamp" passHref>
-											<a>
+											<a onClick={() => trackArticleClick("marketcamp", "title")}>
 												<h3 className="article-title-sm mb-4 seq">
 													Marketing Campaign Success
 												</h3>
@@ -136,7 +140,7 @@ const ArticleSection = () => {
 								</div>
 								<div className="col-start-5 col-span-2 hidden lg:grid m-auto seq">
 									<Link href="/myarticle/marketcamp" passHref>
-										<a>
+										<a onClick={() => trackArticleClick("marketcamp", "image")}>
 											<Image
 												src="/article/marketing.jpg"
 												alt="React"
@@ -156,7 +160,7 @@ const ArticleSection = () => {
 								<div className="col-span-3 seq">
 									<div>
 										<Link href="/myarticle/userstreak" passHref>
-											<a>
+											<a onClick={() => trackArticleClick("userstreak", "title")}>
 												<h3 className="article-title-sm mb-4 seq">
 													User Streaks (Classis Gaps and Islands)
 												</h3>
@@ -173,7 +177,7 @@ const ArticleSection = () => {
 								</div>
 								<div className="col-start-4 col-span-2 hidden lg:grid m-auto seq">
 									<Link href="/myarticle/userstreak" passHref>
-										<a>
+										<a onClick={() => trackArticleClick("userstreak", "image")}>
 											<Image
 												src="/article/streak.jpg"
 												alt="React"
@@ -193,7 +197,7 @@ const ArticleSection = () => {
 								<div className="col-start-2 col-span-3 seq">
 									<div>
 										<Link href="/myarticle/time" passHref>
-											<a>
+											<a onClick={() => trackArticleClick("time", "title")}>
 												<h3 className="article-title-sm mb-4 seq">
 													Time Between Two Events
 												</h3>
@@ -210,7 +214,7 @@ const ArticleSection = () => {
 								</div>
 								<div className="col-start-5 col-span-2 hidden lg:grid m-auto seq">
 									<Link href="/myarticle/time" passHref>
-										<a>
+										<a onClick={() => trackArticleClick("time", "image")}>
 											<Image
 												src="/article/time.jpg"
 												alt="React"

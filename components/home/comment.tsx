@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { IDesktop } from "pages";
 import { FaChevronLeft, FaChevronRight, FaQuoteLeft } from "react-icons/fa";
 import Image from "next/image";
+import { trackEvent } from "../../utils/clarity";
 
 const getTextSize = (length: number): string => {
 	if (length < 200) return "text-xl md:text-2xl";
@@ -78,6 +79,10 @@ const CommentSection = ({ }: IDesktop) => {
 		setCurrentIndex(index);
 	}, []);
 
+	const handleNav = (direction: "prev" | "next" | "dot", slide?: number) => {
+		trackEvent("testimonial_nav", { direction, ...(slide !== undefined && { slide }) });
+	};
+
 	// Auto-play functionality
 	useEffect(() => {
 		if (isPaused) return;
@@ -115,7 +120,7 @@ const CommentSection = ({ }: IDesktop) => {
 				>
 					{/* Navigation Arrows */}
 					<button
-						onClick={goToPrev}
+						onClick={() => { handleNav("prev"); goToPrev(); }}
 						className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 p-3 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-all duration-[10ms] shadow-lg"
 						aria-label="Previous testimonial"
 					>
@@ -123,7 +128,7 @@ const CommentSection = ({ }: IDesktop) => {
 					</button>
 
 					<button
-						onClick={goToNext}
+						onClick={() => { handleNav("next"); goToNext(); }}
 						className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 p-3 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-all duration-[10ms] shadow-lg"
 						aria-label="Next testimonial"
 					>
@@ -152,14 +157,14 @@ const CommentSection = ({ }: IDesktop) => {
 				{/* Mobile Navigation Arrows */}
 				<div className="flex md:hidden justify-center gap-4 mt-4">
 					<button
-						onClick={goToPrev}
+						onClick={() => { handleNav("prev"); goToPrev(); }}
 						className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-all duration-[10ms] shadow-lg"
 						aria-label="Previous testimonial"
 					>
 						<FaChevronLeft className="text-lg" />
 					</button>
 					<button
-						onClick={goToNext}
+						onClick={() => { handleNav("next"); goToNext(); }}
 						className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-all duration-[10ms] shadow-lg"
 						aria-label="Next testimonial"
 					>
@@ -177,7 +182,7 @@ const CommentSection = ({ }: IDesktop) => {
 					{COMMENTS.map((_, index) => (
 						<button
 							key={index}
-							onClick={() => goToSlide(index)}
+							onClick={() => { handleNav("dot", index); goToSlide(index); }}
 							className={`w-3.5 h-3.5 rounded-full transition-all duration-[10ms] ${index === currentIndex
 									? "bg-[#9146FF] w-10"
 									: "bg-gray-600 hover:bg-gray-500"
@@ -203,6 +208,7 @@ const CommentSection = ({ }: IDesktop) => {
 						className="text-[#9146FF] text-md underline hover:text-white transition-colors"
 						target="_blank"
 						rel="noreferrer"
+						onClick={() => trackEvent("recommendations_click")}
 					>
 						View all recommendations &rarr;
 					</a>

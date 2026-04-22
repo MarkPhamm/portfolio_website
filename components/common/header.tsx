@@ -10,6 +10,7 @@ import Menu from "@/components/common/menu";
 import { NAVBARITEMS } from "../../constants";
 import Link from "next/link";
 import { gsap } from "gsap";
+import { trackEvent } from "../../utils/clarity";
 
 const Header = () => {
 	const [menuVisible, setmenuVisible] = useState(false);
@@ -29,7 +30,7 @@ const Header = () => {
 		<header ref={headerRef} className={`w-full fixed top-0 py-4 md:py-8 select-none z-50 border-b border-white/5 ${menuVisible ? "bg-transparent" : "bg-gray-900/80 backdrop-blur-md"}`} style={{ opacity: 0 }}>
 			<div className="flex justify-between section-container">
 				<Link href="/#home">
-					<a className="link">
+					<a className="link" onClick={() => trackEvent("logo_click")}>
 						<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 					</a>
 				</Link>
@@ -39,6 +40,7 @@ const Header = () => {
 							key={item.name}
 							href={item.ref.startsWith('http') ? item.ref : (item.ref.startsWith('/') ? item.ref : `/#${item.ref}`)}
 							className="link px-3 nav-link-hover"
+							onClick={() => trackEvent("nav_link_click", { target: item.name, location: "header" })}
 							{...(item.ref.startsWith('http') && { target: "_blank", rel: "noreferrer" })}
 						>
 							{item.name}
@@ -48,7 +50,12 @@ const Header = () => {
 				<nav className={`outer-menu md:hidden ${menuVisible ? "menu-visible" : ""}`}>
 					<button
 						className="hamburger w-6 h-6 flex items-center justify-center link relative"
-						onClick={() => setmenuVisible((prev) => !prev)}
+						onClick={() => {
+							setmenuVisible((prev) => {
+								trackEvent("mobile_menu_toggle", { state: prev ? "close" : "open" });
+								return !prev;
+							});
+						}}
 					>
 						<div className="relative flex-none w-full bg-white duration-[10ms] flex items-center justify-center"></div>
 					</button>

@@ -1,8 +1,12 @@
 import React, { memo } from "react";
 import { FaClock, FaCode, FaChartBar, FaLaptopCode } from "react-icons/fa";
 import { SiWakatime } from "react-icons/si";
+import { trackEvent } from "../../utils/clarity";
 
 const WAKATIME_USERNAME = "MarkPham";
+
+const trackWakatimeClick = (location: string) =>
+	trackEvent("wakatime_click", { location });
 
 const WakatimeStats = memo(() => {
 	return (
@@ -11,6 +15,7 @@ const WakatimeStats = memo(() => {
 				href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => trackWakatimeClick("header")}
 				className="flex items-center gap-2 mb-6 group"
 			>
 				<SiWakatime className="text-2xl text-gray-300 group-hover:text-white transition-colors" />
@@ -24,28 +29,28 @@ const WakatimeStats = memo(() => {
 			<div className="space-y-6">
 				{/* Stats Cards */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_coding_activity")} className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
 						<FaClock className="text-3xl text-blue-400" />
 						<div>
 							<p className="text-sm text-gray-400">Coding Activity</p>
 							<p className="text-lg font-semibold text-white">Since Sep 2024</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_tracking")} className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
 						<FaCode className="text-3xl text-green-400" />
 						<div>
 							<p className="text-sm text-gray-400">Tracking</p>
 							<p className="text-lg font-semibold text-white">All Projects</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_daily_goal")} className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
 						<FaChartBar className="text-3xl text-purple-400" />
 						<div>
 							<p className="text-sm text-gray-400">Daily Goal</p>
 							<p className="text-lg font-semibold text-white">2+ Hours</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_editor")} className="flex items-center gap-4 p-4 rounded-lg border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105" style={{ background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))' }}>
 						<FaLaptopCode className="text-3xl text-orange-400" />
 						<div>
 							<p className="text-sm text-gray-400">Main Editor</p>
@@ -63,6 +68,7 @@ const WakatimeStats = memo(() => {
 							href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 							target="_blank"
 							rel="noopener noreferrer"
+							onClick={() => trackWakatimeClick("chart_languages")}
 							className="block"
 						>
 							<img
@@ -81,6 +87,7 @@ const WakatimeStats = memo(() => {
 							href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 							target="_blank"
 							rel="noopener noreferrer"
+							onClick={() => trackWakatimeClick("chart_categories")}
 							className="block"
 						>
 							<img
@@ -100,6 +107,7 @@ const WakatimeStats = memo(() => {
 						href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 						target="_blank"
 						rel="noopener noreferrer"
+						onClick={() => trackWakatimeClick("activity_heatmap")}
 						className="block overflow-x-auto"
 					>
 						<img

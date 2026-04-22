@@ -16,6 +16,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { IDesktop } from "pages";
+import { trackEvent } from "../../utils/clarity";
 
 interface ExperienceItem {
 	date: string;
@@ -192,6 +193,7 @@ const TimelineSection = (_props: IDesktop) => {
 								href={experience.companyUrl}
 								target="_blank"
 								rel="noopener noreferrer"
+								onClick={() => trackEvent("timeline_company_click", { company: experience.title.replace(/<[^>]*>/g, "") })}
 								className="block relative group cursor-pointer"
 							>
 								<div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-2xl bg-gray-800 transform transition-all duration-[10ms] group-hover:scale-[1.02] group-hover:shadow-[0_20px_40px_-12px_rgba(145,70,255,0.15)]">
