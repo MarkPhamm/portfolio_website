@@ -63,6 +63,8 @@ const Footer = () => {
 				alt="Footer"
 				className="w-full"
 				loading="lazy"
+				decoding="async"
+				{...({ fetchpriority: "low" } as { fetchpriority: "low" })}
 				height={290}
 				role="presentation"
 				width={1440}
