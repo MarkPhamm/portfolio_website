@@ -104,7 +104,7 @@ const ArticleSection = () => {
 									<Link href="/myarticle/retention" passHref>
 										<a onClick={() => trackArticleClick("retention", "image")}>
 											<Image
-												src="/article/firstday.jpg"
+												src="/article/firstday.webp"
 												alt="React"
 												width={300}
 												height={170}
@@ -142,7 +142,7 @@ const ArticleSection = () => {
 									<Link href="/myarticle/marketcamp" passHref>
 										<a onClick={() => trackArticleClick("marketcamp", "image")}>
 											<Image
-												src="/article/marketing.jpg"
+												src="/article/marketing.webp"
 												alt="React"
 												width={300}
 												height={170}
@@ -179,7 +179,7 @@ const ArticleSection = () => {
 									<Link href="/myarticle/userstreak" passHref>
 										<a onClick={() => trackArticleClick("userstreak", "image")}>
 											<Image
-												src="/article/streak.jpg"
+												src="/article/streak.webp"
 												alt="React"
 												width={300}
 												height={170}
@@ -216,7 +216,7 @@ const ArticleSection = () => {
 									<Link href="/myarticle/time" passHref>
 										<a onClick={() => trackArticleClick("time", "image")}>
 											<Image
-												src="/article/time.jpg"
+												src="/article/time.webp"
 												alt="React"
 												width={300}
 												height={170}

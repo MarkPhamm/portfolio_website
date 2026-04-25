@@ -175,7 +175,7 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 	);
 
 	const getSkillImagePath = useCallback((skill: string): string => {
-		return `/skills/1st/${skill}.${PNG_SKILLS.includes(skill) ? "png" : "svg"}`;
+		return `/skills/1st/${skill}.${PNG_SKILLS.includes(skill) ? "webp" : "svg"}`;
 	}, []);
 
 	const renderSkillColumn = useCallback(

@@ -152,7 +152,7 @@ const PassionHero = () => {
 			<div className="absolute inset-0 bg-gradient-to-b from-gray-900/40 via-gray-900/60 to-gray-900 z-10" />
 			<div ref={bgRef} className="absolute inset-0 will-change-transform">
 				<Image
-					src="/about/passion/steak3.jpg"
+					src="/about/passion/steak3.webp"
 					layout="fill"
 					objectFit="cover"
 					alt="Culinary background"
@@ -254,7 +254,7 @@ export default function PassionComponent() {
 					<section className="mb-20">
 						<SectionDivider title="Family Dish" subtitle="Heritage Recipe" />
 						<DishCard
-							image="/about/passion/xaxiu.jpg"
+							image="/about/passion/xaxiu.webp"
 							title="Xa Xiu Noodles"
 							subtitle="A Special Dish for Family Celebrations"
 							caption="Xa Xiu Noodles with Char Siu Pork, Dumplings, Shrimp and Quail Eggs"
@@ -285,7 +285,7 @@ export default function PassionComponent() {
 						<SectionDivider title="Steak & Lamb" subtitle="Signature Dishes" />
 
 						<DishCard
-							image="/about/passion/steak2.jpeg"
+							image="/about/passion/steak2.webp"
 							title="Dry-Aged Ribeye"
 							subtitle="Rosemary, Thyme & Garlic Butter"
 							caption="Dry-Aged Ribeye with Rosemary, Thyme and Garlic Butter"
@@ -311,7 +311,7 @@ export default function PassionComponent() {
 
 						<div className="mt-16">
 							<DishCard
-								image="/about/passion/steak3.jpg"
+								image="/about/passion/steak3.webp"
 								title="Seared Lamb Rack"
 								subtitle="The Next Challenge"
 								caption="Seared Lamb Rack with Rosemary, Thyme and Garlic Butter"
@@ -346,17 +346,17 @@ export default function PassionComponent() {
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 							{[
 								{
-									image: "/about/passion/seafood1.jpg",
+									image: "/about/passion/seafood1.webp",
 									title: "Pan-Seared Salmon",
 									caption: "With mushrooms and asparagus spears"
 								},
 								{
-									image: "/about/passion/seafood2.jpg",
+									image: "/about/passion/seafood2.webp",
 									title: "Herb-Crusted Salmon",
 									caption: "With rice, sunny egg, and sautéed veggies"
 								},
 								{
-									image: "/about/passion/seafood3.jpg",
+									image: "/about/passion/seafood3.webp",
 									title: "Crispy Skin Salmon",
 									caption: "With asparagus and garlic chips"
 								}
@@ -426,7 +426,7 @@ export default function PassionComponent() {
 
 						<div className="space-y-16">
 							<DishCard
-								image="/about/passion/sphagheti1.jpg"
+								image="/about/passion/sphagheti1.webp"
 								title="Spaghetti Bolognese"
 								subtitle="The Classic"
 								caption="Spaghetti Bolognese with a sprinkle of fresh parsley"
@@ -445,7 +445,7 @@ export default function PassionComponent() {
 							/>
 
 							<DishCard
-								image="/about/passion/sphagheti2.jpg"
+								image="/about/passion/sphagheti2.webp"
 								title="Spaghetti con il Tonno"
 								subtitle="Simple Elegance"
 								caption="Spaghetti con il Tonno - Tuna Pasta"
@@ -463,7 +463,7 @@ export default function PassionComponent() {
 							/>
 
 							<DishCard
-								image="/about/passion/carbo.png"
+								image="/about/passion/carbo.webp"
 								title="Seafood Carbonara"
 								subtitle="Ocean-Inspired Fusion"
 								caption="Seafood Carbonara with pan-seared asparagus"

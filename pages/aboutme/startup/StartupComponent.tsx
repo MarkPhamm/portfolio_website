@@ -211,7 +211,7 @@ export default function StartupComponent() {
 			<ScrollReveal>
 				<div className="w-full mb-20 relative z-10">
 					<Image
-						src="/about/startup/1.png"
+						src="/about/startup/1.webp"
 						width={1920}
 						height={600}
 						loading="lazy"
@@ -260,7 +260,7 @@ export default function StartupComponent() {
 						<div className="relative">
 							<div className="absolute -inset-4 bg-gradient-to-br from-[#f27d0d]/20 to-transparent rounded-3xl blur-2xl opacity-50"></div>
 							<Image
-								src="/about/startup/2.png"
+								src="/about/startup/2.webp"
 								width={800}
 								height={800}
 								loading="lazy"
@@ -333,7 +333,7 @@ export default function StartupComponent() {
 							<div className="relative">
 								<div className="absolute -inset-4 bg-gradient-to-bl from-[#f27d0d]/20 to-transparent rounded-3xl blur-2xl opacity-50"></div>
 								<Image
-									src="/about/startup/4.png"
+									src="/about/startup/4.webp"
 									width={800}
 									height={800}
 									loading="lazy"
@@ -362,7 +362,7 @@ export default function StartupComponent() {
 						<div className="relative">
 							<div className="absolute -inset-4 bg-gradient-to-br from-[#f27d0d]/20 to-transparent rounded-3xl blur-2xl opacity-50"></div>
 							<Image
-								src="/about/startup/5.png"
+								src="/about/startup/5.webp"
 								width={800}
 								height={800}
 								loading="lazy"

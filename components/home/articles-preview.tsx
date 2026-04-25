@@ -21,8 +21,9 @@ const ArticleCard = ({
 				src={article.thumbnail}
 				alt={article.title}
 				className="w-full h-full object-cover object-top transition-transform duration-[10ms] group-hover:scale-105"
-				loading="lazy"
-				decoding="async"
+				loading={featured ? "eager" : "lazy"}
+				decoding={featured ? "sync" : "async"}
+				{...(featured ? { fetchPriority: "high" } as any : {})}
 			/>
 			<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-gray-900/10" />
 			<span className="absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-gray-300 border border-white/10">
