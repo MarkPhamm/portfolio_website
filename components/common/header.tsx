@@ -29,11 +29,14 @@ const Header = () => {
 	return (
 		<header ref={headerRef} className={`w-full fixed top-0 py-4 md:py-8 select-none z-50 border-b border-white/5 ${menuVisible ? "bg-transparent" : "bg-gray-900/80 backdrop-blur-md"}`} style={{ opacity: 0 }}>
 			<div className="flex justify-between section-container">
-				<Link href="/#home">
-					<a className="link" onClick={() => trackEvent("logo_click")}>
-						<Image src="/logo.svg" alt="Logo" width={22} height={22} />
-					</a>
-				</Link>
+				<div className="flex items-center gap-2">
+					<Link href="/#home">
+						<a className="link" onClick={() => trackEvent("logo_click")}>
+							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
+						</a>
+					</Link>
+					<span className="text-[10px] text-white/30 font-mono">v3.2.2</span>
+				</div>
 				<div className="hidden md:flex items-center justify-center">
 					{NAVBARITEMS.map((item: any) => (
 						<a

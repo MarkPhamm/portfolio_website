@@ -266,17 +266,13 @@ const HeroSection = React.memo(() => {
 	const renderHeroContent = (): React.ReactNode => (
 		<div ref={contentRef} className={HERO_STYLES.CONTENT}>
 			<div className="md:mb-4 mb-2">
-				<div className="flex items-center gap-4 seq">
-					<h2 className="text-4xl">Hello 👋🏻</h2>
-					{viewCount !== null && (
-						<span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
-							<span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-							{viewCount.toLocaleString()} visitors
-						</span>
-					)}
-				</div>
-				<h1 className="text-3xl md:text-4xl lg:text-5xl seq font-bold">
-					I'm{" "}
+				{viewCount !== null && (
+					<span className="inline-flex items-center gap-1.5 text-sm text-gray-400 seq mb-3">
+						<span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+						{viewCount.toLocaleString()} visitors
+					</span>
+				)}
+				<h1 className="text-4xl md:text-5xl lg:text-6xl seq font-bold">
 					<span className="bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] bg-clip-text text-transparent">
 						Minh (Mark) Pham
 					</span>
@@ -297,9 +293,9 @@ const HeroSection = React.memo(() => {
 					className="inline-flex items-center gap-3 px-5 py-3 bg-[#9146FF] hover:bg-[#7B3FD9] text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-[#9146FF]/25 hover:-translate-y-0.5"
 				>
 					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-						<polyline points="7 10 12 15 17 10"/>
-						<line x1="12" y1="15" x2="12" y2="3"/>
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="7 10 12 15 17 10" />
+						<line x1="12" y1="15" x2="12" y2="3" />
 					</svg>
 					<span>Download Resume</span>
 				</a>
@@ -312,11 +308,11 @@ const HeroSection = React.memo(() => {
 					className="inline-flex items-center gap-3 px-5 py-3 border-2 border-white/80 hover:border-white bg-white/5 hover:bg-white/10 text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5"
 				>
 					<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-						<path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
-						<path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
-						<line x1="6" y1="2" x2="6" y2="4"/>
-						<line x1="10" y1="2" x2="10" y2="4"/>
-						<line x1="14" y1="2" x2="14" y2="4"/>
+						<path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+						<path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+						<line x1="6" y1="2" x2="6" y2="4" />
+						<line x1="10" y1="2" x2="10" y2="4" />
+						<line x1="14" y1="2" x2="14" y2="4" />
 					</svg>
 					<span>Book a coffee chat</span>
 				</a>
