@@ -9,23 +9,14 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import Typed from "typed.js";
 import Image from "next/image";
 import { gsap, Linear } from "gsap";
-import Button, { ButtonTypes } from "../common/button";
-import HeroImage from "./hero-image";
-import HeroAurora from "./hero-aurora";
+import dynamic from "next/dynamic";
 import Link from "next/link";
+import Button, { ButtonTypes } from "../common/button";
+import HeroAurora from "./hero-aurora";
 import { isSmallScreen } from "pages";
 import { trackEvent, setTag, upgradeSession } from "../../utils/clarity";
 
-import { initializeApp, getApps } from "firebase/app";
-
-import {
-	getFirestore,
-	doc,
-	getDoc,
-	setDoc,
-	collection,
-	getDocs,
-} from "firebase/firestore";
+const HeroImage = dynamic(() => import("./hero-image"), { ssr: false });
 
 const firebaseConfig = {
 	apiKey: "AIzaSyC7Bd9cOnlhZFTrxMZVbVzaRa9opnSnc4k",
@@ -36,9 +27,6 @@ const firebaseConfig = {
 	appId: "1:352556857178:web:e0671a9649fa0cbd4c6563",
 	measurementId: "G-6T2HTBS4WQ",
 };
-
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
 const VIEW_COUNT_CACHE_KEY = "portfolio_view_count";
 
@@ -63,6 +51,14 @@ const countview = async (
 	setViewCount: React.Dispatch<React.SetStateAction<number | null>>
 ): Promise<void> => {
 	try {
+		const [{ initializeApp, getApps }, firestore] = await Promise.all([
+			import("firebase/app"),
+			import("firebase/firestore"),
+		]);
+		const { getFirestore, doc, getDoc, setDoc, collection, getDocs } = firestore;
+		const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+
 		const ipinfo: IpInfo = await fetch("https://api.ipify.org?format=json", {
 			method: "GET",
 		}).then((response) => {
@@ -77,9 +73,7 @@ const countview = async (
 		const viewsDocRef = doc(db, "views", userIpString);
 		const docSnap = await getDoc(viewsDocRef);
 
-		if (docSnap.exists()) {
-			// Returning visitor — don't count again
-		} else {
+		if (!docSnap.exists()) {
 			await setDoc(viewsDocRef, { ip: userIp });
 		}
 
@@ -192,10 +186,7 @@ const HeroSection = React.memo(() => {
 		if (!targetSection.current) return gsap.timeline();
 		const revealTl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-		// 1. Fade in the whole section
-		revealTl.to(targetSection.current, { opacity: 1, duration: 0.5 });
-
-		// 2. Aurora blooms from center (scale from 0.6 to 1)
+		// 1. Aurora blooms from center (scale from 0.6 to 1)
 		if (auroraRef.current) {
 			revealTl.fromTo(
 				auroraRef.current,
@@ -205,14 +196,14 @@ const HeroSection = React.memo(() => {
 			);
 		}
 
-		// 3. Hero content sequences in with stagger
+		// 2. Hero content sequences in with stagger
 		revealTl.from(
 			targetSection.current.querySelectorAll(".seq"),
 			{ opacity: 0, y: 30, duration: 0.6, stagger: 0.15 },
 			0.4
 		);
 
-		// 4. Background image slides in from right
+		// 3. Background image slides in from right
 		if (bgWrapperRef.current) {
 			revealTl.fromTo(
 				bgWrapperRef.current,
@@ -272,7 +263,7 @@ const HeroSection = React.memo(() => {
 						{viewCount.toLocaleString()} visitors
 					</span>
 				)}
-				<h1 className="text-4xl md:text-5xl lg:text-6xl seq font-bold">
+				<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
 					<span className="bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] bg-clip-text text-transparent">
 						Minh (Mark) Pham
 					</span>
@@ -327,7 +318,6 @@ const HeroSection = React.memo(() => {
 			className={HERO_STYLES.SECTION}
 			id={heroSectionRef}
 			ref={targetSection}
-			style={{ opacity: 0.05 }}
 		>
 			<HeroAurora ref={auroraRef} />
 			{renderHeroContent()}

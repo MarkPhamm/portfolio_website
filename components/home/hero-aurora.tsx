@@ -2,40 +2,31 @@ import React, { forwardRef } from "react";
 
 const AURORA_BLOBS = [
 	{
-		color: "rgba(145, 70, 255, 0.15)",
+		color: "rgba(145, 70, 255, 0.18)",
 		width: "45%",
 		height: "50%",
 		top: "5%",
 		left: "-5%",
-		blur: 100,
+		blur: 60,
 		animationClass: "aurora-drift-1",
 	},
 	{
-		color: "rgba(191, 148, 255, 0.12)",
+		color: "rgba(191, 148, 255, 0.14)",
 		width: "40%",
 		height: "45%",
 		top: "30%",
 		left: "55%",
-		blur: 120,
+		blur: 70,
 		animationClass: "aurora-drift-2",
 	},
 	{
-		color: "rgba(6, 182, 212, 0.08)",
+		color: "rgba(6, 182, 212, 0.10)",
 		width: "35%",
 		height: "40%",
 		top: "55%",
 		left: "20%",
-		blur: 90,
+		blur: 55,
 		animationClass: "aurora-drift-3",
-	},
-	{
-		color: "rgba(145, 70, 255, 0.08)",
-		width: "30%",
-		height: "35%",
-		top: "10%",
-		left: "70%",
-		blur: 110,
-		animationClass: "aurora-drift-4",
 	},
 ];
 
