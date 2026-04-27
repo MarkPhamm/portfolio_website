@@ -105,7 +105,7 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 					stagger: {
 						amount: 0.6,
 						grid: [4, 2],
-						from: "center",
+						from: "start",
 					},
 				});
 			},
