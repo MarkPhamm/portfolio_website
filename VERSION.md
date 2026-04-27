@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.2.4 | 2026-04-26 | Add `public/robots.txt` and `public/sitemap.xml` so Googlebot and other crawlers stop hitting 500s on these paths; sitemap covers `/`, `/aboutme/passion`, `/aboutme/startup` |
 | v3.2.3 | 2026-04-26 | Harden .gitignore by adding bare `.env` alongside existing `.env.*.local` entries, preventing accidental commit of local secrets |
 | v3.2.2 | 2026-04-25 | Simplify hero: remove "Hello/I'm", name-only headline at larger size, keep visitor count inline |
 | v3.2.1 | 2026-04-25 | Convert ~60 images to WebP (20MB → 5.6MB), fix LCP loading priority, add version label to header |
