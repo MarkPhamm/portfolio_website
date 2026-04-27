@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.2.3 | 2026-04-26 | Harden .gitignore by adding bare `.env` alongside existing `.env.*.local` entries, preventing accidental commit of local secrets |
 | v3.2.2 | 2026-04-25 | Simplify hero: remove "Hello/I'm", name-only headline at larger size, keep visitor count inline |
 | v3.2.1 | 2026-04-25 | Convert ~60 images to WebP (20MB → 5.6MB), fix LCP loading priority, add version label to header |
 | v3.2.0 | 2026-04-20 | Redesign OG preview card as editorial magazine cover, set minhbpham.com as canonical URL, update resume |
