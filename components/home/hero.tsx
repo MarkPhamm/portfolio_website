@@ -115,47 +115,41 @@ const HeroSection = React.memo(() => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const bgWrapperRef = useRef<HTMLDivElement>(null);
 
-	// Mouse-reactive parallax for hero layers
+	// Mouse-reactive parallax for hero layers — rAF-throttled so we do at most
+	// one batch of GSAP updates per frame regardless of pointer rate.
 	useEffect(() => {
 		if (isSmallScreen()) return;
 		const section = targetSection.current;
 		if (!section) return;
 
-		const handleMouseMove = (e: MouseEvent) => {
-			const rect = section.getBoundingClientRect();
-			const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1 to 1
-			const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+		let nx = 0;
+		let ny = 0;
+		let rafScheduled = false;
 
-			// Aurora moves most (background layer)
+		const tick = () => {
+			rafScheduled = false;
 			if (auroraRef.current) {
-				gsap.to(auroraRef.current, {
-					x: x * 20,
-					y: y * 20,
-					duration: 1.2,
-					ease: "power2.out",
-				});
+				gsap.to(auroraRef.current, { x: nx * 20, y: ny * 20, duration: 1.2, ease: "power2.out", overwrite: true });
 			}
-			// Content moves slightly opposite (foreground depth)
 			if (contentRef.current) {
-				gsap.to(contentRef.current, {
-					x: x * -4,
-					y: y * -4,
-					duration: 1,
-					ease: "power2.out",
-				});
+				gsap.to(contentRef.current, { x: nx * -4, y: ny * -4, duration: 1, ease: "power2.out", overwrite: true });
 			}
-			// Background image moves opposite
 			if (bgWrapperRef.current) {
-				gsap.to(bgWrapperRef.current, {
-					x: x * -8,
-					y: y * -6,
-					duration: 1,
-					ease: "power2.out",
-				});
+				gsap.to(bgWrapperRef.current, { x: nx * -8, y: ny * -6, duration: 1, ease: "power2.out", overwrite: true });
 			}
 		};
 
-		section.addEventListener("mousemove", handleMouseMove);
+		const handleMouseMove = (e: MouseEvent) => {
+			const rect = section.getBoundingClientRect();
+			nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+			ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+			if (!rafScheduled) {
+				rafScheduled = true;
+				requestAnimationFrame(tick);
+			}
+		};
+
+		section.addEventListener("mousemove", handleMouseMove, { passive: true });
 		return () => section.removeEventListener("mousemove", handleMouseMove);
 	}, []);
 

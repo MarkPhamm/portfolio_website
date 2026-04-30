@@ -21,12 +21,15 @@ const ProgressIndicator = () => {
   };
 
   useEffect(() => {
+    // Empty deps: the handler reads scroll state from the DOM, not from
+    // closed-over `progress`. Including `progress` here caused the listener
+    // to be removed and re-attached on every scroll event, which thrashed
+    // the main thread on long pages.
     const { matches } = window.matchMedia(NO_MOTION_PREFERENCE_QUERY);
-
-    matches && window.addEventListener("scroll", calculateProgress);
-
+    if (!matches) return;
+    window.addEventListener("scroll", calculateProgress, { passive: true });
     return () => window.removeEventListener("scroll", calculateProgress);
-  }, [progress]);
+  }, []);
 
   return (
     <div className="progress w-full fixed top-0 z-50">

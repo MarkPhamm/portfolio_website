@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.2.9 | 2026-04-29 | Fix progressive runtime lag: stop scroll-listener thrashing in `progress-indicator` (deps `[progress]` → `[]`), rAF-throttle hero parallax mousemove (3 GSAP tweens batched per frame), and fix resize-timer leak across 7 pages (`let timer` → `useRef`, plus unmount cleanup) |
 | v3.2.8 | 2026-04-29 | Silence React DOM warning: lowercase `fetchpriority` on `<img>` in articles preview to match the HTML attribute spec |
 | v3.2.7 | 2026-04-29 | Fix INP on tracked clicks (Resume/Coffee Chat ~784ms → fast): defer Clarity + GA calls via `requestIdleCallback` so analytics no longer block the next paint. Also throttle cursor `mousemove` to `requestAnimationFrame`, skip redundant magnet-reset tweens via WeakSet, use squared-distance comparison, mark listener passive, and add unmount cleanup |
 | v3.2.6 | 2026-04-27 | Fix skills section animation: change stagger origin from `center` to `start` so card rows reveal top-to-bottom (line 1 first) instead of middle-out |

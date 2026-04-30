@@ -6,7 +6,7 @@
 
 import { METADATA } from "../../constants";
 import Head from "next/head";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -36,10 +36,15 @@ export default function Home() {
 
 	const [isDesktop, setisDesktop] = useState(true);
 
+	// Debounce timer lives in a ref so it persists across resize events.
+	// The previous `let timer` inside the callback was always undefined on
+	// each call, so clearTimeout was dead code and every resize leaked a
+	// pending setTimeout.
+	const resizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	const debouncedDimensionCalculator = useCallback(() => {
-		let timer: ReturnType<typeof setTimeout> | undefined;
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
+		if (resizeTimer.current) clearTimeout(resizeTimer.current);
+		resizeTimer.current = setTimeout(() => {
 			const isDesktopResult =
 				typeof window.orientation === "undefined" &&
 				navigator.userAgent.indexOf("IEMobile") === -1;
@@ -54,8 +59,10 @@ export default function Home() {
 		debouncedDimensionCalculator();
 
 		window.addEventListener("resize", debouncedDimensionCalculator);
-		return () =>
+		return () => {
 			window.removeEventListener("resize", debouncedDimensionCalculator);
+			if (resizeTimer.current) clearTimeout(resizeTimer.current);
+		};
 	}, [debouncedDimensionCalculator]);
 
 	const renderBackdrop = (): React.ReactNode => (
