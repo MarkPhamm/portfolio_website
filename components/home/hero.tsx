@@ -114,6 +114,10 @@ const HeroSection = React.memo(() => {
 	const auroraRef = useRef<HTMLDivElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const bgWrapperRef = useRef<HTMLDivElement>(null);
+	// Parallax must wait until the reveal timeline finishes — otherwise
+	// `overwrite: true` on the mousemove tween kills the reveal mid-flight
+	// and bg/aurora stay stuck at opacity:0.
+	const revealDone = useRef(false);
 
 	// Mouse-reactive parallax for hero layers — rAF-throttled so we do at most
 	// one batch of GSAP updates per frame regardless of pointer rate.
@@ -140,6 +144,7 @@ const HeroSection = React.memo(() => {
 		};
 
 		const handleMouseMove = (e: MouseEvent) => {
+			if (!revealDone.current) return;
 			const rect = section.getBoundingClientRect();
 			nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
 			ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
@@ -178,7 +183,10 @@ const HeroSection = React.memo(() => {
 		targetSection: React.RefObject<HTMLDivElement | null>
 	): GSAPTimeline => {
 		if (!targetSection.current) return gsap.timeline();
-		const revealTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+		const revealTl = gsap.timeline({
+			defaults: { ease: "power2.out" },
+			onComplete: () => { revealDone.current = true; },
+		});
 
 		// 1. Aurora blooms from center (scale from 0.6 to 1)
 		if (auroraRef.current) {
