@@ -75,42 +75,51 @@ const Cursor = ({ isDesktop }: IDesktop) => {
     }
   };
 
-  const moveCircle = (e: MouseEvent) => {
-    gsap.to(cursor.current, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.1,
-      ease: Linear.easeNone,
-    });
-    gsap.to(follower.current, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.3,
-      ease: Linear.easeNone,
-    });
-    gsap.to(glow.current, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.6,
-      ease: "power2.out",
-    });
+  // Track which magnets are currently "pulled" so we only emit a reset
+  // tween once when leaving the zone, not on every mousemove.
+  const activeMagnets = useRef<WeakSet<Element>>(new WeakSet());
+  // Latest pointer position; the rAF tick reads from here so mousemove
+  // never does layout work directly.
+  const pointer = useRef({ x: 0, y: 0 });
+  const rafScheduled = useRef(false);
 
-    // Magnetic effect on nearby buttons
+  const tick = () => {
+    rafScheduled.current = false;
+    const { x, y } = pointer.current;
+
+    gsap.to(cursor.current, { x, y, duration: 0.1, ease: Linear.easeNone, overwrite: true });
+    gsap.to(follower.current, { x, y, duration: 0.3, ease: Linear.easeNone, overwrite: true });
+    gsap.to(glow.current, { x, y, duration: 0.6, ease: "power2.out", overwrite: true });
+
     const magnetTargets = document.querySelectorAll("[data-magnetic]");
     magnetTargets.forEach((el) => {
       const rect = (el as HTMLElement).getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+      const dx = x - centerX;
+      const dy = y - centerY;
+      // Skip Math.hypot's sqrt by comparing squared distance against 80^2.
+      const distSq = dx * dx + dy * dy;
 
-      if (dist < 80) {
-        const pullX = (e.clientX - centerX) * 0.15;
-        const pullY = (e.clientY - centerY) * 0.15;
-        gsap.to(el, { x: pullX, y: pullY, duration: 0.3, ease: "power2.out" });
-      } else {
-        gsap.to(el, { x: 0, y: 0, duration: 0.4, ease: "power2.out" });
+      if (distSq < 6400) {
+        gsap.to(el, { x: dx * 0.15, y: dy * 0.15, duration: 0.3, ease: "power2.out", overwrite: true });
+        activeMagnets.current.add(el);
+      } else if (activeMagnets.current.has(el)) {
+        // Only emit the reset tween once, when the pointer first leaves
+        // the magnetic radius. Avoids a fresh Tween every frame.
+        gsap.to(el, { x: 0, y: 0, duration: 0.4, ease: "power2.out", overwrite: true });
+        activeMagnets.current.delete(el);
       }
     });
+  };
+
+  const moveCircle = (e: MouseEvent) => {
+    pointer.current.x = e.clientX;
+    pointer.current.y = e.clientY;
+    if (!rafScheduled.current) {
+      rafScheduled.current = true;
+      requestAnimationFrame(tick);
+    }
   };
 
   const initCursorAnimation = useCallback(() => {
@@ -119,23 +128,29 @@ const Cursor = ({ isDesktop }: IDesktop) => {
     cursor.current.classList.remove("hidden");
     glow.current.classList.remove("hidden");
 
-    document.addEventListener("mousemove", moveCircle);
+    // Passive listener so the browser doesn't have to wait for us before
+    // scrolling — and we never call preventDefault here anyway.
+    document.addEventListener("mousemove", moveCircle, { passive: true });
 
-    document.querySelectorAll(".link").forEach((el) => {
+    const hoverEls: Element[] = [];
+    document.querySelectorAll(".link, [data-cursor]").forEach((el) => {
       el.addEventListener("mouseenter", onHover);
       el.addEventListener("mouseleave", onUnhover);
+      hoverEls.push(el);
     });
 
-    // Also listen for data-cursor elements (project cards etc.)
-    document.querySelectorAll("[data-cursor]").forEach((el) => {
-      el.addEventListener("mouseenter", onHover);
-      el.addEventListener("mouseleave", onUnhover);
-    });
+    return () => {
+      document.removeEventListener("mousemove", moveCircle);
+      hoverEls.forEach((el) => {
+        el.removeEventListener("mouseenter", onHover);
+        el.removeEventListener("mouseleave", onUnhover);
+      });
+    };
   }, []);
 
   useEffect(() => {
     if (isDesktop && !isSmallScreen()) {
-      initCursorAnimation();
+      return initCursorAnimation();
     }
   }, [cursor, follower, isDesktop, initCursorAnimation]);
 

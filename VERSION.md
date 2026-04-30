@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.2.7 | 2026-04-29 | Fix INP on tracked clicks (Resume/Coffee Chat ~784ms → fast): defer Clarity + GA calls via `requestIdleCallback` so analytics no longer block the next paint. Also throttle cursor `mousemove` to `requestAnimationFrame`, skip redundant magnet-reset tweens via WeakSet, use squared-distance comparison, mark listener passive, and add unmount cleanup |
 | v3.2.6 | 2026-04-27 | Fix skills section animation: change stagger origin from `center` to `start` so card rows reveal top-to-bottom (line 1 first) instead of middle-out |
 | v3.2.5 | 2026-04-26 | Fix hero LCP: drop `opacity:0.05` gate so headline paints in HTML, code-split decorative hero SVG via `next/dynamic({ssr:false})`, dynamic-import Firebase view counter, reduce aurora blob count (4→3) and blur radii (~40%) for cheaper GPU paint |
 | v3.2.4 | 2026-04-26 | Add `public/robots.txt` and `public/sitemap.xml` so Googlebot and other crawlers stop hitting 500s on these paths; sitemap covers `/`, `/aboutme/passion`, `/aboutme/startup` |
