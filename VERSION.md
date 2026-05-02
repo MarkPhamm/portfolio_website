@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.2.11 | 2026-05-02 | Tighten timeline subtitles to `descriptor · scale` format across all 9 experiences (Insurify "$600M Series B insurance aggregator", Lazard "Elite investment bank · $240B AUM", TechSmith "Snagit & Camtasia · 30M+ users", etc.) for at-a-glance company prestige |
 | v3.2.10 | 2026-04-29 | Hotfix: hero image was invisible on first load — v3.2.9 added `overwrite: true` on parallax mousemove tweens, which killed the reveal timeline mid-flight whenever the mouse entered the hero before reveal finished. Gate parallax behind a `revealDone` flag set in the reveal timeline's `onComplete` |
 | v3.2.9 | 2026-04-29 | Fix progressive runtime lag: stop scroll-listener thrashing in `progress-indicator` (deps `[progress]` → `[]`), rAF-throttle hero parallax mousemove (3 GSAP tweens batched per frame), and fix resize-timer leak across 7 pages (`let timer` → `useRef`, plus unmount cleanup) |
 | v3.2.8 | 2026-04-29 | Silence React DOM warning: lowercase `fetchpriority` on `<img>` in articles preview to match the HTML attribute spec |

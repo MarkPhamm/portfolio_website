@@ -511,7 +511,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 		title: "Analytics Engineer - <a class='underline underline-offset-2' href='https://insurify.com' target='_blank' rel='noopener noreferrer'><u>Insurify</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Marketing & Growth Tech and Core Analytics",
+			"$600M Series B insurance aggregator",
 		location: "Boston",
 		image: "/timeline/insurify.webp",
 		slideImage: "/timeline/insurify.webp",
@@ -532,7 +532,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 		title: "Data Mentor - <a class='underline underline-offset-2' href='https://acementorship.com/' target='_blank' rel='noopener noreferrer'><u>Ace Mentorships</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Data Engineering, ML, and Stats Mentorship",
+			"Data career mentorship platform",
 		location: "Remote",
 		image: "/timeline/Ace.webp",
 		slideImage: "/timeline/Ace.webp",
@@ -553,7 +553,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 		title: "Data Engineering Intern - <a class='underline underline-offset-2' href='https://www.lazard.com/' target='_blank' rel='noopener noreferrer'><u>Lazard</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Financial Advisory Business Technology Team",
+			"Elite investment bank · $240B AUM",
 		location: "New York City",
 		image: "/timeline/lazard.webp",
 		slideImage: "/timeline/lazard.webp",
@@ -575,7 +575,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 			"BI Engineering Intern - <a class='underline underline-offset-2' href='https://www.techsmith.com/' target='_blank' rel='noopener noreferrer'><u>Techsmith</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Marketing/Sales and GTM Teams",
+			"Snagit & Camtasia · 30M+ users",
 		location: "Remote",
 		image: "/timeline/techsmith.webp",
 		slideImage: "/timeline/techsmith.webp",
@@ -597,7 +597,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 			"Data Analyst Intern - <a class='' href='https://www.corning.com/worldwide/en.html' target='_blank' rel='noopener noreferrer'><u>Corning Inc</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Global Supply Chain Team",
+			"Fortune 500 · Gorilla Glass maker",
 		location: "Keller",
 		image: "/timeline/Corning.png",
 		slideImage: "/timeline/Corning.jpg",
@@ -618,7 +618,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 		title: "Product Management Intern - Stealth",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Payment Team",
+			"Stealth fintech startup · Payments",
 		location: "Remote",
 		image: "/timeline/Stealth1.webp",
 		slideImage: "/timeline/Stealth.webp",
@@ -639,7 +639,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 			"Data Analyst intern - <a class='' href='https://en.napas.com.vn/' target='_blank' rel='noopener noreferrer'><u>NAPAS Vietnam</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Information Technology Team",
+			"Vietnam's national payment switch",
 		location: "Remote",
 		image: "/timeline/NAPAS1.webp",
 		slideImage: "/timeline/NAPAS.webp",
@@ -662,7 +662,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 			"Data Analyst intern - <a class='' href='https://kpim.vn/' target='_blank' rel='noopener noreferrer'><u>KPIM Consulting</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Business Intelligence Team",
+			"Vietnam BI consulting firm",
 		location: "Remote",
 		image: "/timeline/KPIM1.webp",
 		slideImage: "/timeline/KPIM.webp",
@@ -684,7 +684,7 @@ export const TIMELINE: Array<TimelineNodeV2> = [
 		title: "CEO, Founder - <a class='underline underline-offset-2' href='https://www.facebook.com/thecoconut.vn/' target='_blank' rel='noopener noreferrer'><u>The Coconut Consulting Academy</u></a>",
 		size: ItemSize.SMALL,
 		subtitle:
-			"Helping students achieve their US college dream",
+			"US college admissions consulting",
 		location: "Remote",
 		image: "/timeline/Coconut.webp",
 		slideImage: "/timeline/Coconut.webp",
