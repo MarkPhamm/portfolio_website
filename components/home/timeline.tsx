@@ -126,10 +126,10 @@ const TimelineSection = (_props: IDesktop) => {
 
 	const renderSectionTitle = (): React.ReactNode => (
 		<div className="flex flex-col mb-16">
-			<h1 className="section-heading seq">Timeline</h1>
-			<h2 className="text-2xl md:max-w-2xl w-full seq mt-2">
+			<h2 className="section-heading seq">Timeline</h2>
+			<h3 className="text-2xl md:max-w-2xl w-full seq mt-2">
 				A quick recap of proud moments
-			</h2>
+			</h3>
 		</div>
 	);
 
@@ -161,10 +161,10 @@ const TimelineSection = (_props: IDesktop) => {
 						className={`w-full md:w-1/2 pl-10 overflow-hidden ${isEven ? "md:pr-12 md:pl-0 md:text-right" : "md:pl-12 md:text-left"
 							}`}
 					>
-						<span className="inline-block text-[#9146FF] text-lg font-semibold mb-2">
+						<span className="inline-block text-[#BF94FF] text-lg font-semibold mb-2">
 							{experience.date}
 						</span>
-						<h3
+						<h4
 							className="text-xl md:text-2xl font-bold text-white mb-3"
 							dangerouslySetInnerHTML={{ __html: experience.title }}
 						/>

@@ -33,10 +33,10 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 
 	const renderSectionTitle = (): React.ReactNode => (
 		<div className="flex flex-col inner-container">
-			<h1 className="section-heading seq">My Works</h1>
-			<h2 className="text-xl md:text-2xl md:max-w-3xl w-full seq mt-2 text-gray-200">
+			<h2 className="section-heading seq">My Works</h2>
+			<h3 className="text-xl md:text-2xl md:max-w-3xl w-full seq mt-2 text-gray-200">
 				What I do at 2 AM on a Saturday
-			</h2>
+			</h3>
 		</div>
 	);
 

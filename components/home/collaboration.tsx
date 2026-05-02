@@ -95,7 +95,7 @@ const CollaborationSection = () => {
 	);
 
 	const renderTitle = () => (
-		<h1
+		<h2
 			ref={quoteRef}
 			className={`${COLLABORATION_STYLE.TITLE} ${willChange ? "will-change-opacity" : ""
 				}`}
@@ -105,7 +105,7 @@ const CollaborationSection = () => {
 				Analytics Engineering
 			</span>
 			?
-		</h1>
+		</h2>
 	);
 
 	return (

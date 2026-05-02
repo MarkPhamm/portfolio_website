@@ -41,13 +41,13 @@ const ArticleCard = ({
 				</span>
 				<span className="text-xs text-gray-500">{article.readingTime}</span>
 			</div>
-			<h3
+			<h4
 				className={`font-semibold text-white group-hover:text-[#BF94FF] transition-colors duration-[10ms] leading-snug ${
 					featured ? "text-lg md:text-xl mb-3" : "text-base mb-3"
 				}`}
 			>
 				{article.title}
-			</h3>
+			</h4>
 			<p
 				className={`text-sm text-gray-500 leading-relaxed ${
 					featured ? "line-clamp-4" : "line-clamp-3"
@@ -123,11 +123,11 @@ const ArticlesPreview = () => {
 			id="articles"
 		>
 			<div className="flex flex-col mb-10">
-				<h1 className="section-heading seq">Articles</h1>
-				<h2 className="text-2xl md:max-w-2xl w-full seq mt-2 text-gray-200">
+				<h2 className="section-heading seq">Articles</h2>
+				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2 text-gray-200">
 					Analytics, data engineering, and the unglamorous truths from
 					working in data
-				</h2>
+				</h3>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

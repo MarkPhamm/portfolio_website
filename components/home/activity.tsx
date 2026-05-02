@@ -9,10 +9,10 @@ const ActivitySection = () => {
 			id="activity"
 		>
 			<div className="flex flex-col mb-10">
-				<h1 className="section-heading seq">My Activity</h1>
-				<h2 className="text-2xl md:max-w-2xl w-full seq mt-2">
+				<h2 className="section-heading seq">My Activity</h2>
+				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2">
 					Coding stats & contributions
-				</h2>
+				</h3>
 			</div>
 
 			<div className="flex flex-col gap-8">

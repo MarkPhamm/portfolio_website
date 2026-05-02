@@ -63,10 +63,10 @@ const CertificateSection = ({ isDesktop }: IDesktop) => {
 
 	const renderSectionTitle = (): React.ReactNode => (
 		<div className="flex flex-col">
-			<h1 className="section-heading seq">My certifications</h1>
-			<h2 className="text-2xl md:max-w-2xl w-full seq mt-2">
+			<h2 className="section-heading seq">My certifications</h2>
+			<h3 className="text-2xl md:max-w-2xl w-full seq mt-2">
 				Professional certifications that validate my expertise
-			</h2>
+			</h3>
 		</div>
 	);
 

@@ -139,10 +139,10 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 	const renderSectionTitle = useCallback(
 		(): React.ReactNode => (
 			<div className="flex flex-col">
-				<h1 className="section-heading">My Skills</h1>
-				<h2 className="text-2xl md:max-w-2xl w-full mt-2">
+				<h2 className="section-heading">My Skills</h2>
+				<h3 className="text-2xl md:max-w-2xl w-full mt-2">
 					Technical skills & tools I use to deliver data-driven solutions
-				</h2>
+				</h3>
 			</div>
 		),
 		[]
@@ -196,7 +196,7 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 								<Icon className="w-3 h-3 text-[#BF94FF]" />
 							</div>
 						)}
-						<h3 className={SKILL_STYLES.SKILL_TITLE}>{title}</h3>
+						<h4 className={SKILL_STYLES.SKILL_TITLE}>{title}</h4>
 					</div>
 
 					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3 lg:gap-3 xl:gap-4 2xl:gap-5 place-items-center">

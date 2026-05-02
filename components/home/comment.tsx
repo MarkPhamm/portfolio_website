@@ -100,10 +100,10 @@ const CommentSection = ({ }: IDesktop) => {
 			id="comments"
 		>
 			<div className="flex flex-col inner-container">
-				<h1 className="section-heading seq">What Others Say</h1>
-				<h2 className="text-2xl md:max-w-2xl w-full seq mt-2 mb-8">
+				<h2 className="section-heading seq">What Others Say</h2>
+				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2 mb-8">
 					Proof I'm not just making this up
-				</h2>
+				</h3>
 
 				{/* Carousel Container with Navigation */}
 				<div
@@ -205,7 +205,7 @@ const CommentSection = ({ }: IDesktop) => {
 				<div className="mt-6 flex justify-center">
 					<a
 						href="https://drive.google.com/file/d/1EyMtIZU1_ohN9i2lJ7sGvAiPnxX7vVAv/view?usp=sharing"
-						className="text-[#9146FF] text-md underline hover:text-white transition-colors"
+						className="text-[#BF94FF] text-md underline hover:text-white transition-colors"
 						target="_blank"
 						rel="noreferrer"
 						onClick={() => trackEvent("recommendations_click")}
