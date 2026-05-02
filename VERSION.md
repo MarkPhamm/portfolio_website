@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.4.5 | 2026-05-02 | Fix Discord icon to match the rest of the social row: add the 40-radius white circle background and switch the logo fill to `#1a1a1a` (matching leetcode's pattern). The previous version was a tiny white-on-dark shape that didn't fill the 40×40 footprint |
 | v3.4.4 | 2026-05-02 | Plug in real Discord user ID (`756173543431209071`) into `SOCIAL_LINKS` |
 | v3.4.3 | 2026-05-02 | Add Discord to `SOCIAL_LINKS` (constants.ts) and ship `public/social/discord.svg` (40×40, white fill matching the linkedin/substack treatment) so the social row stays at 6 icons after dropping `gmail`. URL placeholder `https://discord.com/users/REPLACE_WITH_YOUR_DISCORD_USER_ID` — replace with your actual Discord user ID (User Settings → My Account → toggle Developer Mode → right-click your profile → Copy User ID) |
 | v3.4.2 | 2026-05-02 | Drop the `mailto:minh.pham@insurify.com` link from `SOCIAL_LINKS` and rely on the existing LinkedIn CTA for contact. Removes the only email exposed in rendered HTML, which (a) eliminates the perf cost of Cloudflare's Email Obfuscation script — `email-decode.min.js` was the *entire* critical path on every page load (~1 s) — and (b) closes the harvest vector without needing a CDN band-aid. Also delete the dead `EMAIL` constant from `constants.ts` and its dead imports in `hero.tsx`/`footer.tsx`, plus the unused `public/social/gmail.svg`. After this deploy lands, toggle off Cloudflare Scrape Shield → Email Address Obfuscation |
