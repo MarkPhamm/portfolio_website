@@ -126,6 +126,7 @@ export const SOCIAL_LINKS = {
 	substack: "https://substack.com/@markphammm/posts",
 	wakatime: "https://wakatime.com/@MarkPham",
 	leetcode: "https://leetcode.com/u/markphammm/",
+	discord: "https://discord.com/users/REPLACE_WITH_YOUR_DISCORD_USER_ID",
 };
 
 export interface IProject {
