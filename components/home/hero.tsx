@@ -4,7 +4,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import { EMAIL, MENULINKS, SOCIAL_LINKS, TYPED_STRINGS } from "../../constants";
+import { MENULINKS, SOCIAL_LINKS, TYPED_STRINGS } from "../../constants";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Typed from "typed.js";
 import Image from "next/image";

@@ -120,15 +120,12 @@ export const QUOTE_STRINGS = [
 	'Turning <span style="color:#9146FF">raw data</span> into <span style="color:#9146FF">actionable insights</span>',
 ];
 
-export const EMAIL = "minhbpham2003@gmail.com";
-
 export const SOCIAL_LINKS = {
 	linkedin: "https://www.linkedin.com/in/minhbphamm/",
 	github: "https://github.com/MarkPhamm",
 	substack: "https://substack.com/@markphammm/posts",
 	wakatime: "https://wakatime.com/@MarkPham",
 	leetcode: "https://leetcode.com/u/markphammm/",
-	gmail: "mailto:minh.pham@insurify.com",
 };
 
 export interface IProject {
