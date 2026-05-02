@@ -53,7 +53,7 @@ const countview = async (
 	try {
 		const [{ initializeApp, getApps }, firestore] = await Promise.all([
 			import("firebase/app"),
-			import("firebase/firestore"),
+			import("firebase/firestore/lite"),
 		]);
 		const { getFirestore, doc, getDoc, setDoc, collection, getDocs } = firestore;
 		const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
