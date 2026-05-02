@@ -105,8 +105,29 @@ const HeroSection = React.memo(() => {
 		if (cached !== null) {
 			setViewCount(cached);
 		}
-		// Then fetch the real count
-		countview(setViewCount);
+		// Defer the network refresh (ipify -> Firestore) until after first interactive
+		// so it doesn't compete with hydration / hero LCP.
+		const ric = (window as Window & {
+			requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+			cancelIdleCallback?: (id: number) => void;
+		}).requestIdleCallback;
+		let idleHandle: number | undefined;
+		let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+		const run = () => countview(setViewCount);
+		if (typeof ric === "function") {
+			idleHandle = ric(run, { timeout: 4000 });
+		} else {
+			timeoutHandle = setTimeout(run, 2500);
+		}
+		return () => {
+			if (idleHandle !== undefined) {
+				const cancel = (window as Window & {
+					cancelIdleCallback?: (id: number) => void;
+				}).cancelIdleCallback;
+				cancel?.(idleHandle);
+			}
+			if (timeoutHandle) clearTimeout(timeoutHandle);
+		};
 	}, []);
 
 	const typedSpanElement = useRef<HTMLSpanElement>(null);

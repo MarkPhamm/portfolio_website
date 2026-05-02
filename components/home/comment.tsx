@@ -43,7 +43,7 @@ const CommentTile = (props: {
 							width={128}
 							height={128}
 							className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[#9146FF]/30 shadow-lg shadow-[#9146FF]/10 object-cover"
-							loading="eager"
+							loading="lazy"
 						/>
 					</div>
 

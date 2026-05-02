@@ -35,12 +35,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<>
 			<Component {...pageProps} />
 
-			{/* GA4 */}
+			{/* GA4 — lazyOnload defers loading until after the main thread is idle, keeping it off the critical path */}
 			<Script
 				src="https://www.googletagmanager.com/gtag/js?id=G-FH792RMCK7"
-				strategy="afterInteractive"
+				strategy="lazyOnload"
 			/>
-			<Script id="ga4-init" strategy="afterInteractive">
+			<Script id="ga4-init" strategy="lazyOnload">
 				{`
 					window.dataLayer = window.dataLayer || [];
 					function gtag(){dataLayer.push(arguments);}

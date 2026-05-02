@@ -35,7 +35,7 @@ const Header = () => {
 							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 						</a>
 					</Link>
-					<span className="text-[10px] text-white/30 font-mono">v3.2.11</span>
+					<span className="text-[10px] text-white/30 font-mono">v3.3.0</span>
 				</div>
 				<div className="hidden md:flex items-center justify-center">
 					{NAVBARITEMS.map((item: any) => (
@@ -53,6 +53,8 @@ const Header = () => {
 				<nav className={`outer-menu md:hidden ${menuVisible ? "menu-visible" : ""}`}>
 					<button
 						className="hamburger w-6 h-6 flex items-center justify-center link relative"
+						aria-label={menuVisible ? "Close menu" : "Open menu"}
+						aria-expanded={menuVisible}
 						onClick={() => {
 							setmenuVisible((prev) => {
 								trackEvent("mobile_menu_toggle", { state: prev ? "close" : "open" });

@@ -39,14 +39,16 @@ function getVisitorId(): string {
 }
 
 export function initClarity(): void {
-  Clarity.init(CLARITY_PROJECT_ID);
-  const visitorId = getVisitorId();
-  if (visitorId) {
-    Clarity.identify(visitorId);
-  }
-  if (typeof document !== "undefined" && document.referrer) {
-    Clarity.setTag("referrer", document.referrer);
-  }
+  defer(() => {
+    Clarity.init(CLARITY_PROJECT_ID);
+    const visitorId = getVisitorId();
+    if (visitorId) {
+      Clarity.identify(visitorId);
+    }
+    if (typeof document !== "undefined" && document.referrer) {
+      Clarity.setTag("referrer", document.referrer);
+    }
+  });
 }
 
 export function trackPageView(pageName: string): void {

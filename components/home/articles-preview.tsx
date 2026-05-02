@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { ARTICLES, IArticle, SOCIAL_LINKS } from "../../constants";
@@ -14,16 +15,19 @@ const ArticleCard = ({
 	<>
 		<div
 			className={`relative overflow-hidden bg-gray-800 ${
-				featured ? "md:h-full" : "aspect-video"
+				featured ? "md:h-full aspect-[5/4] md:aspect-auto" : "aspect-video"
 			}`}
 		>
-			<img
+			<Image
 				src={article.thumbnail}
 				alt={article.title}
-				className="w-full h-full object-cover object-top transition-transform duration-[10ms] group-hover:scale-105"
+				layout="fill"
+				objectFit="cover"
+				objectPosition="top"
+				className="transition-transform duration-[10ms] group-hover:scale-105"
+				sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
+				priority={featured}
 				loading={featured ? "eager" : "lazy"}
-				decoding={featured ? "sync" : "async"}
-				{...(featured ? { fetchpriority: "high" } as any : {})}
 			/>
 			<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-gray-900/10" />
 			<span className="absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-gray-300 border border-white/10">

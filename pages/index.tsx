@@ -7,6 +7,7 @@
 import { METADATA } from "../constants";
 import Head from "next/head";
 import React, { useEffect, useState, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -16,20 +17,27 @@ import Header from "@/components/common/header";
 import ProgressIndicator from "@/components/common/progress-indicator";
 import Cursor from "@/components/common/cursor";
 import HeroSection from "@/components/home/hero";
-import ProjectsSection from "@/components/home/projects";
-import QuoteSection from "@/components/home/quote";
 import QuoteSection2 from "@/components/home/quote2";
 import SkillsSection from "@/components/home/skills";
-import CollaborationSection from "@/components/home/collaboration";
 import Footer from "@/components/common/footer";
-import TimelineSection from "@/components/home/timeline";
 import Scripts from "@/components/common/scripts";
-import AboutSection from "@/components/home/about";
-import CommentSection from "@/components/home/comment";
-import CertificateSection from "@/components/home/certificate";
-import ArticlesPreview from "@/components/home/articles-preview";
-import ActivitySection from "@/components/home/activity";
 import WaveDivider from "@/components/common/wave-divider";
+
+// Below-the-fold sections — SSR for SEO, but the client JS chunks load lazily so
+// they don't compete with hero hydration on the main thread.
+const CommentSection = dynamic(() => import("@/components/home/comment"));
+const ArticlesPreview = dynamic(() => import("@/components/home/articles-preview"));
+const ProjectsSection = dynamic(() => import("@/components/home/projects"));
+const ActivitySection = dynamic(() => import("@/components/home/activity"));
+const TimelineSection = dynamic(() => import("@/components/home/timeline"));
+const CertificateSection = dynamic(() => import("@/components/home/certificate"));
+const CollaborationSection = dynamic(() => import("@/components/home/collaboration"));
+
+// Register GSAP plugins once at module scope, not on every render.
+if (typeof window !== "undefined") {
+	gsap.registerPlugin(ScrollTrigger);
+	gsap.config({ nullTargetWarn: false });
+}
 
 const DEBOUNCE_TIME = 100;
 
@@ -42,9 +50,6 @@ export interface IDesktop {
 }
 
 export default function Home() {
-	gsap.registerPlugin(ScrollTrigger);
-	gsap.config({ nullTargetWarn: false });
-
 	const [isDesktop, setisDesktop] = useState(true);
 
 	const resizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

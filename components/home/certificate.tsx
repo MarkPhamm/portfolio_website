@@ -82,6 +82,10 @@ const CertificateSection = ({ isDesktop }: IDesktop) => {
 				<img
 					src={`/skills/3rd/${skill}.webp`}
 					alt={skill}
+					width="400"
+					height="280"
+					loading="lazy"
+					decoding="async"
 					className="object-contain max-w-full max-h-full rounded-lg shadow-lg group-hover:shadow-xl transition-shadow duration-[10ms]"
 				/>
 			</div>

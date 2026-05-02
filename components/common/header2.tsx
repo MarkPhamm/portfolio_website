@@ -43,6 +43,8 @@ const Header = () => {
 				<nav className={`outer-menu md:hidden ${menuVisible ? "menu-visible" : ""}`}>
 					<button
 						className="hamburger w-6 h-6 flex items-center justify-center link relative"
+						aria-label={menuVisible ? "Close menu" : "Open menu"}
+						aria-expanded={menuVisible}
 						onClick={setmenuVisible.bind(null, !menuVisible)}
 					>
 						<div className="relative flex-none w-full bg-white duration-[10ms] flex items-center justify-center"></div>

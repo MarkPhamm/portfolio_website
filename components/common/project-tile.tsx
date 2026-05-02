@@ -111,8 +111,9 @@ const ProjectTile = ({
 							alt={name}
 							layout="fill"
 							objectFit="cover"
+							sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 							className="transition-transform duration-[10ms] group-hover:scale-110"
-							loading="eager"
+							loading="lazy"
 						/>
 						{/* Category Badge */}
 						<div className="absolute top-4 left-4 z-20">
