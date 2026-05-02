@@ -28,8 +28,7 @@
 		"chrome >= 88",
 		"firefox >= 78",
 		"safari >= 14",
-		"edge >= 88",
-		"not dead"
+		"edge >= 88"
 	],
 	"devDependencies": {
 		"@types/node": "^17.0.21",

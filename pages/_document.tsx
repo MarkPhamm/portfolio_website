@@ -26,6 +26,7 @@ class MyDocument extends Document {
 					<link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
 					<link rel="preconnect" href="https://scripts.clarity.ms" crossOrigin="anonymous" />
 					<link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="anonymous" />
+					<link rel="preconnect" href="https://api.github.com" crossOrigin="anonymous" />
 					<link rel="dns-prefetch" href="https://api.ipify.org" />
 					<link rel="dns-prefetch" href="https://firestore.googleapis.com" />
 				</Head>
