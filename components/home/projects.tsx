@@ -42,7 +42,7 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 
 
 	const renderCategoryFilters = (): React.ReactNode => (
-		<div className="flex flex-wrap gap-3 mt-8 mb-10">
+		<div className="grid grid-cols-2 gap-3 mt-8 mb-10 sm:flex sm:flex-wrap">
 			{CATEGORIES.map((category) => {
 				const count = PROJECTS.filter((p) => p.category === category.value).length;
 				return (
@@ -50,7 +50,7 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 						key={category.value}
 						onClick={() => handleCategoryChange(category.value)}
 						className={`
-							px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-[10ms]
+							inline-flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-[10ms]
 							${
 								activeCategory === category.value
 									? "bg-[#9146FF] text-white shadow-lg shadow-[#9146FF]/20"
