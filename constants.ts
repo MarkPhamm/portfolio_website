@@ -189,7 +189,6 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#0a4c6a", "#1b7fa1"],
 		url: "https://github.com/MarkPhamm/consumer_complaint_pipeline",
 		tech: ["python", "Apache Airflow", "Dbt", "Snowflake", "Docker"],
-		featured: true,
 	},
 	{
 		name: "Local Warehouse",
@@ -200,6 +199,7 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#1e3a8a", "#3b82f6"],
 		url: "https://github.com/MarkPhamm/local_warehouse",
 		tech: ["Dbt", "prefect", "duckdb", "dlt", "Github"],
+		featured: true,
 	},
 	{
 		name: "Local Streaming Pipeline",
