@@ -140,9 +140,11 @@ export interface IProject {
 	tech: string[];
 	fullDescription?: string;
 	impact?: string[];
+	featured?: boolean;
 }
 
 export const ProjectTypes = {
+	FEATURED: "Featured",
 	ENDTOEND: "End-to-End Data Analytics",
 	BIDASHBOARDVIZ: "BI - Dashboard - Visualization",
 	STATISTICSML: "Statistics - ML - AI Project",
@@ -163,6 +165,7 @@ export const PROJECTS: IProject[] = [
 		tech: ["Apache Airflow", "python", "S3", "Snowflake", "Terraform"],
 		fullDescription: "Scrapes 160K+ airline reviews using 26 parallel Airflow tasks, stages in S3, and loads into Snowflake. Infra managed with Terraform and GitHub Actions CI/CD.",
 		impact: ["160K+ reviews", "26 parallel Airflow tasks", "Fully automated CI/CD"],
+		featured: true,
 	},
 	{
 		name: "Skytrax Reviews Transformation",
@@ -175,6 +178,7 @@ export const PROJECTS: IProject[] = [
 		tech: ["Dbt", "Snowflake", "Terraform", "Github", "Apache Airflow"],
 		fullDescription: "Kimball star-schema transformations with dbt on Snowflake. Slim CI/CD via GitHub Actions with OIDC auth and auto-deployed dbt docs on CloudFront.",
 		impact: ["Kimball star-schema", "Slim CI/CD pipeline", "Deployed dbt docs"],
+		featured: true,
 	},
 	{
 		name: "Consumer Complaint Pipeline",
@@ -185,6 +189,7 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#0a4c6a", "#1b7fa1"],
 		url: "https://github.com/MarkPhamm/consumer_complaint_pipeline",
 		tech: ["python", "Apache Airflow", "Dbt", "Snowflake", "Docker"],
+		featured: true,
 	},
 	{
 		name: "Local Warehouse",
@@ -268,6 +273,7 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#191414", "#f5f5f5"],
 		url: "https://github.com/MarkPhamm/Stats-Calculator",
 		tech: ["python", "streamlit", "normalDis", "Pandas", "Matplotlib"],
+		featured: true,
 	},
 	{
 		name: "Housing Purchase Predictor",
@@ -289,6 +295,7 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#f2ece4", "#09091a"],
 		url: "https://mavenshowcase.com/project/19447",
 		tech: ["PowerBI", "alteryx", "excel", "powerquery", "Microsoft SQL Server"],
+		featured: true,
 	},
 	{
 		name: "EaseMyTrip Airline Dashboard",
@@ -310,6 +317,7 @@ export const PROJECTS: IProject[] = [
 		gradient: ["#1a1a2e", "#ffa116"],
 		url: "https://github.com/MarkPhamm/Leetcode",
 		tech: ["python", "PostgreSQL"],
+		featured: true,
 	},
 	{
 		name: "TensorTonic Solutions",

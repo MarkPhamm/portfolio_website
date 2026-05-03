@@ -5,16 +5,20 @@ import { IDesktop } from "pages";
 import { trackEvent } from "../../utils/clarity";
 
 const CATEGORIES = [
-{ value: ProjectTypes.ENDTOEND, label: "Data Pipeline" },
+	{ value: ProjectTypes.FEATURED, label: "Featured" },
+	{ value: ProjectTypes.ENDTOEND, label: "Data Pipeline" },
 	{ value: ProjectTypes.STATISTICSML, label: "ML & Statistics" },
 	{ value: ProjectTypes.BIDASHBOARDVIZ, label: "BI & Dashboards" },
 	{ value: ProjectTypes.CLOUDINFRA, label: "Cloud & Infra" },
 	{ value: ProjectTypes.LEARNING, label: "Learning" },
 ];
 
+const matchesCategory = (project: typeof PROJECTS[number], category: string) =>
+	category === ProjectTypes.FEATURED ? !!project.featured : project.category === category;
+
 const ProjectsSection = ({ isDesktop }: IDesktop) => {
 	const targetSectionRef = useRef<HTMLDivElement>(null);
-	const [activeCategory, setActiveCategory] = useState(ProjectTypes.ENDTOEND);
+	const [activeCategory, setActiveCategory] = useState(ProjectTypes.FEATURED);
 	const [isAnimating, setIsAnimating] = useState(false);
 
 	const handleCategoryChange = (category: string) => {
@@ -27,8 +31,8 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 		}, 300);
 	};
 
-	const filteredProjects = PROJECTS.filter(
-		(project) => project.category === activeCategory
+	const filteredProjects = PROJECTS.filter((project) =>
+		matchesCategory(project, activeCategory)
 	);
 
 	const renderSectionTitle = (): React.ReactNode => (
@@ -44,7 +48,7 @@ const ProjectsSection = ({ isDesktop }: IDesktop) => {
 	const renderCategoryFilters = (): React.ReactNode => (
 		<div className="grid grid-cols-2 gap-3 mt-8 mb-10 sm:flex sm:flex-wrap">
 			{CATEGORIES.map((category) => {
-				const count = PROJECTS.filter((p) => p.category === category.value).length;
+				const count = PROJECTS.filter((p) => matchesCategory(p, category.value)).length;
 				return (
 					<button
 						key={category.value}
