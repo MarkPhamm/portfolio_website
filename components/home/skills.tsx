@@ -199,13 +199,24 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 						<h4 className={SKILL_STYLES.SKILL_TITLE}>{title}</h4>
 					</div>
 
-					<div className="flex flex-wrap justify-center gap-y-3 sm:gap-y-4 md:grid md:grid-cols-5 md:gap-3 md:place-items-center lg:gap-3 xl:gap-4 2xl:gap-5">
-						{skills.map((skill) => (
-							<div key={skill} className="basis-1/3 flex justify-center md:basis-auto">
-								<SkillIcon skill={skill} src={getSkillImagePath(skill)} />
+					{(() => {
+						const needsGrid = skills.length >= 5;
+						const wrapperCls = needsGrid
+							? "flex flex-wrap justify-center gap-y-3 sm:gap-y-4 md:grid md:grid-cols-5 md:gap-3 md:place-items-center lg:gap-3 xl:gap-4 2xl:gap-5"
+							: "flex flex-wrap justify-center gap-x-3 gap-y-3 sm:gap-x-4 sm:gap-y-4 md:grid md:grid-cols-5 md:gap-3 md:place-items-center lg:gap-3 xl:gap-4 2xl:gap-5";
+						const itemCls = needsGrid
+							? "basis-1/3 flex justify-center md:basis-auto"
+							: "flex justify-center md:basis-auto";
+						return (
+							<div className={wrapperCls}>
+								{skills.map((skill) => (
+									<div key={skill} className={itemCls}>
+										<SkillIcon skill={skill} src={getSkillImagePath(skill)} />
+									</div>
+								))}
 							</div>
-						))}
-					</div>
+						);
+					})()}
 				</div>
 			);
 		},
