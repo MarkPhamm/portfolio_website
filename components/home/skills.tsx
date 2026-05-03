@@ -199,9 +199,11 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 						<h4 className={SKILL_STYLES.SKILL_TITLE}>{title}</h4>
 					</div>
 
-					<div className="flex flex-wrap justify-center gap-x-4 gap-y-3 sm:gap-x-5 sm:gap-y-4 md:grid md:grid-cols-5 md:gap-3 md:place-items-center lg:gap-3 xl:gap-4 2xl:gap-5">
+					<div className="flex flex-wrap justify-center gap-y-3 sm:gap-y-4 md:grid md:grid-cols-5 md:gap-3 md:place-items-center lg:gap-3 xl:gap-4 2xl:gap-5">
 						{skills.map((skill) => (
-							<SkillIcon key={skill} skill={skill} src={getSkillImagePath(skill)} />
+							<div key={skill} className="basis-1/3 flex justify-center md:basis-auto">
+								<SkillIcon skill={skill} src={getSkillImagePath(skill)} />
+							</div>
 						))}
 					</div>
 				</div>

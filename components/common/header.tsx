@@ -35,7 +35,7 @@ const Header = () => {
 							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 						</a>
 					</Link>
-					<span className="text-[10px] text-white/60 font-mono">v3.6.3</span>
+					<span className="text-[10px] text-white/60 font-mono">v3.6.4</span>
 				</div>
 				<div className="hidden md:flex items-center justify-center">
 					{NAVBARITEMS.map((item: any) => (
