@@ -319,7 +319,7 @@ const HeroSection = React.memo(() => {
 					rel="noreferrer"
 					data-magnetic
 					onClick={() => { trackEvent("coffee_chat_click"); upgradeSession("coffee_chat_click"); }}
-					className="inline-flex items-center gap-3 px-5 py-3 border-2 border-white/80 hover:border-white bg-white/5 hover:bg-white/10 text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-white/10 hover:-translate-y-0.5"
+					className="inline-flex items-center gap-3 px-5 py-3 bg-white hover:bg-gray-100 text-black text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-white/20 hover:-translate-y-0.5"
 				>
 					<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
 						<path d="M17 8h1a4 4 0 1 1 0 8h-1" />
