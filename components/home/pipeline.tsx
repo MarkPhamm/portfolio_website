@@ -2,16 +2,15 @@ import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/dist/MotionPathPlugin";
-import { isSmallScreen, NO_MOTION_PREFERENCE_QUERY } from "pages";
+import { isSmallScreen } from "pages";
+import { NO_MOTION_PREFERENCE_QUERY } from "../../utils/motion";
 
 if (typeof window !== "undefined") {
 	gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 }
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-
-// Row centers and column geometry for the DAG.
-const ROW = { top: 170, mid: 315, bottom: 460 };
+const LABEL_HIDDEN_MOBILE = "pl-label hidden md:block";
 
 interface NodeProps {
 	x: number;
@@ -19,11 +18,12 @@ interface NodeProps {
 	w: number;
 	h: number;
 	label: string;
+	sub?: string;
 	name: string;
-	led?: boolean;
+	stroke?: string;
 }
 
-const Node = ({ x, y, w, h, label, name, led = true }: NodeProps) => (
+const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF" }: NodeProps) => (
 	<g className="pl-node" data-name={name}>
 		<rect
 			x={x - 3}
@@ -32,7 +32,7 @@ const Node = ({ x, y, w, h, label, name, led = true }: NodeProps) => (
 			height={h + 6}
 			rx={13}
 			fill="none"
-			stroke="#9146FF"
+			stroke={stroke}
 			strokeOpacity={0.12}
 			strokeWidth={1.5}
 		/>
@@ -43,54 +43,76 @@ const Node = ({ x, y, w, h, label, name, led = true }: NodeProps) => (
 			height={h}
 			rx={10}
 			fill="rgba(17, 24, 39, 0.65)"
-			stroke="#9146FF"
+			stroke={stroke}
 			strokeOpacity={0.55}
 			strokeWidth={1.5}
 		/>
-		{led && <circle cx={x + 14} cy={y + h / 2} r={2.5} fill="#34D399" opacity={0.85} />}
 		<text
-			x={x + w / 2 + (led ? 5 : 0)}
-			y={y + h / 2 + 4.5}
+			x={x + w / 2}
+			y={sub ? y + h / 2 - 3 : y + h / 2 + 4.5}
 			textAnchor="middle"
 			fill="#D1D5DB"
 			fontSize={14}
 			fontFamily={MONO_FONT}
-			className="pl-label hidden md:block"
+			className={LABEL_HIDDEN_MOBILE}
 		>
 			{label}
 		</text>
+		{sub && (
+			<text
+				x={x + w / 2}
+				y={y + h / 2 + 15}
+				textAnchor="middle"
+				fill="#6B7280"
+				fontSize={11}
+				fontFamily={MONO_FONT}
+				className={LABEL_HIDDEN_MOBILE}
+			>
+				{sub}
+			</text>
+		)}
 	</g>
 );
 
 const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
 	<text
 		x={x}
-		y={84}
+		y={56}
 		textAnchor="middle"
 		fill="#6B7280"
-		fontSize={11}
-		letterSpacing={2}
+		fontSize={12}
+		letterSpacing={2.5}
 		fontFamily={MONO_FONT}
-		className="pl-label hidden md:block"
+		className={LABEL_HIDDEN_MOBILE}
 	>
 		{label.toUpperCase()}
 	</text>
 );
 
-// Edge paths in flow order. Packet index i rides edge index i.
-const EDGES = [
-	`M154,${ROW.top} C186,${ROW.top} 202,${ROW.top} 234,${ROW.top}`,
-	`M154,${ROW.mid} C186,${ROW.mid} 202,${ROW.mid} 234,${ROW.mid}`,
-	`M154,${ROW.bottom} C186,${ROW.bottom} 202,${ROW.bottom} 234,${ROW.bottom}`,
-	`M346,${ROW.top} C374,${ROW.top} 370,${ROW.mid} 396,${ROW.mid}`,
-	`M346,${ROW.mid} C366,${ROW.mid} 376,${ROW.mid} 396,${ROW.mid}`,
-	`M346,${ROW.bottom} C374,${ROW.bottom} 370,${ROW.mid} 396,${ROW.mid}`,
-	`M504,${ROW.mid} C524,${ROW.mid} 532,${ROW.mid} 552,${ROW.mid}`,
-	`M668,${ROW.mid} C692,${ROW.mid} 700,${ROW.mid} 724,${ROW.mid}`,
-	`M852,${ROW.mid} C866,${ROW.mid} 874,${ROW.mid} 888,${ROW.mid}`,
+// Edge paths in flow order — packet i rides edge i.
+// 0-11 solid (primary flow), 12-13 dashed (direct paths skipping S3),
+// 14 is the Airflow orchestration bar.
+const SOLID_EDGES = [
+	"M220,215 C244,215 256,215 280,215", // operational APIs -> custom python
+	"M450,215 C478,215 484,270 510,270", // custom python -> S3
+	"M220,310 C330,310 400,300 510,300", // partner files -> S3
+	"M220,405 C244,405 256,405 280,405", // partner email -> email processor
+	"M450,405 C478,405 484,330 510,330", // email processor -> S3
+	"M640,255 C664,255 676,255 700,255", // S3 -> Airbyte
+	"M640,345 C664,345 676,345 700,345", // S3 -> COPY
+	"M840,255 C864,255 876,255 900,255", // Airbyte -> Redshift
+	"M840,345 C864,345 876,345 900,345", // COPY -> Redshift
+	"M1110,200 C1134,200 1146,200 1170,200", // Redshift -> RTB ML
+	"M1110,300 C1134,300 1146,300 1170,300", // Redshift -> Mode
+	"M1110,400 C1134,400 1146,400 1170,400", // Redshift -> Hex
 ];
 
-const BAR_HEIGHTS = [34, 62, 48, 84];
+const DASHED_EDGES = [
+	"M220,120 C420,96 600,150 700,240", // marketing APIs -> Airbyte (skip S3)
+	"M220,510 C480,530 720,500 900,440", // RDS -> Redshift (skip S3 + Airbyte)
+];
+
+const ORCH_PATH = "M300,580 L1180,580";
 
 const PipelineDag = () => {
 	const svgRef = useRef<SVGSVGElement>(null);
@@ -104,25 +126,28 @@ const PipelineDag = () => {
 
 		const motionOk = window.matchMedia(NO_MOTION_PREFERENCE_QUERY).matches;
 		if (!motionOk) {
-			// Reduced motion: show the fully-drawn static DAG, no packets, no loop.
+			// Reduced motion: show the fully-drawn static diagram, no packets.
 			gsap.set(root, { opacity: 1 });
 			return;
 		}
 
 		const small = isSmallScreen();
-		const edges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-edge"));
+		const solidEdges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-edge"));
+		const dashedEdges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-dashed"));
+		const orchLine = svg.querySelector<SVGPathElement>(".pl-orch-line");
 		const packets = Array.from(svg.querySelectorAll<SVGCircleElement>(".pl-packet"));
 		const nodes = Array.from(svg.querySelectorAll<SVGGElement>(".pl-node"));
-		const labels = svg.querySelectorAll(".pl-label, .pl-ico");
-		const boundary = svg.querySelector(".pl-boundary");
-		const bars = svg.querySelectorAll(".pl-bar");
+		const labels = svg.querySelectorAll(".pl-label");
 		const status = svg.querySelector(".pl-status");
+		// Packet path lookup: 0-11 solid, 12-13 dashed, 14 orchestration.
+		const packetPaths: (SVGPathElement | null)[] = [...solidEdges, ...dashedEdges, orchLine];
 
 		const nodeByName = (name: string): SVGGElement | undefined =>
 			nodes.find((n) => n.dataset.name === name);
 
 		// Prepare the draw-on state before revealing the root (no flash).
-		edges.forEach((edge) => {
+		const drawTargets = orchLine ? [...solidEdges, orchLine] : solidEdges;
+		drawTargets.forEach((edge) => {
 			const len = edge.getTotalLength();
 			gsap.set(edge, { strokeDasharray: len, strokeDashoffset: len });
 		});
@@ -131,35 +156,35 @@ const PipelineDag = () => {
 		// --- Entrance: edges draw themselves, nodes pop in along the flow.
 		// Plays when the section scrolls into view (it sits below the hero). ---
 		const entrance = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
-		if (boundary) {
-			entrance.fromTo(boundary, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0);
-		}
 		entrance.to(
-			edges,
-			{ strokeDashoffset: 0, duration: 0.7, stagger: 0.07, ease: "power1.inOut" },
+			drawTargets,
+			{ strokeDashoffset: 0, duration: 0.7, stagger: 0.06, ease: "power1.inOut" },
 			0.1
 		);
 		entrance.fromTo(
 			nodes,
 			{ scale: 0.6, opacity: 0, transformOrigin: "50% 50%" },
-			{ scale: 1, opacity: 1, duration: 0.55, ease: "back.out(1.4)", stagger: 0.06 },
+			{ scale: 1, opacity: 1, duration: 0.55, ease: "back.out(1.4)", stagger: 0.05 },
 			0.15
 		);
-		entrance.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.7);
+		if (dashedEdges.length) {
+			entrance.fromTo(dashedEdges, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.9);
+		}
+		entrance.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.8);
 		if (status) entrance.set(status, { opacity: 0.6 });
 
 		// --- Perpetual loop: one full "pipeline run" per cycle ---
 		const loop = gsap.timeline({ repeat: -1, paused: true });
 
-		const runPacket = (edgeIdx: number, at: number, duration: number) => {
-			const packet = packets[edgeIdx];
-			const edge = edges[edgeIdx];
-			if (!packet || !edge) return;
+		const runPacket = (pathIdx: number, at: number, duration: number) => {
+			const packet = packets[pathIdx];
+			const path = packetPaths[pathIdx];
+			if (!packet || !path) return;
 			loop.set(packet, { opacity: 1 }, at);
 			loop.to(
 				packet,
 				{
-					motionPath: { path: edge, align: edge, alignOrigin: [0.5, 0.5] },
+					motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
 					duration,
 					ease: "none",
 				},
@@ -175,7 +200,7 @@ const PipelineDag = () => {
 			loop.to(
 				node,
 				{
-					scale: 1.06,
+					scale: 1.04,
 					duration: 0.18,
 					yoyo: true,
 					repeat: 1,
@@ -186,49 +211,56 @@ const PipelineDag = () => {
 			);
 		};
 
-		// Extraction: sources feed the staging models.
 		if (small) {
-			runPacket(1, 0, 1.2);
+			// Single lane on phones: one packet walks the primary path.
+			runPacket(0, 0, 0.9);
+			runPacket(1, 1.0, 0.9);
+			runPacket(5, 2.0, 0.8);
+			runPacket(7, 2.9, 0.8);
+			runPacket(9, 3.8, 0.9);
+			loop.to({}, { duration: 1.2 }, 5.2);
 		} else {
-			runPacket(0, 0, 1.2);
-			runPacket(1, 0.15, 1.2);
-			runPacket(2, 0.3, 1.2);
-		}
-		pulse("stg-orders", 1.2);
-		pulse("stg-events", 1.35);
-		pulse("stg-users", 1.5);
+			// Extract: sources feed ingestion + the lake (plus direct paths).
+			runPacket(0, 0, 0.9);
+			runPacket(2, 0, 1.4);
+			runPacket(3, 0.15, 0.9);
+			runPacket(12, 0.2, 2.0);
+			pulse("ing-python", 0.95);
+			pulse("ing-email", 1.1);
+			runPacket(1, 1.15, 0.9);
+			runPacket(4, 1.3, 0.9);
+			pulse("s3", 2.25);
 
-		// Transformation: staging → intermediate → mart.
-		if (small) {
-			runPacket(4, 1.7, 1.1);
-		} else {
-			runPacket(3, 1.7, 1.1);
-			runPacket(4, 1.85, 1.1);
-			runPacket(5, 2.0, 1.1);
-		}
-		pulse("int-core", 3.0);
-		runPacket(6, 3.2, 0.8);
-		pulse("mart-kpis", 4.0);
-		if (status) {
-			loop.to(status, { opacity: 1, duration: 0.15 }, 4.05);
-			loop.to(status, { opacity: 0.6, duration: 0.4 }, 4.5);
-		}
+			// Load: S3 fans out to Airbyte + COPY, direct RDS path joins.
+			runPacket(5, 2.45, 0.8);
+			runPacket(6, 2.6, 0.8);
+			pulse("airbyte", 3.3);
+			pulse("copy", 3.45);
+			runPacket(7, 3.55, 0.8);
+			runPacket(8, 3.7, 0.8);
+			runPacket(13, 1.5, 2.4);
 
-		// Load & serve: mart → warehouse → dashboard.
-		runPacket(7, 4.3, 0.9);
-		pulse("snowflake", 5.2);
-		runPacket(8, 5.4, 0.7);
-		pulse("dashboard", 6.1);
-		if (bars.length) {
-			loop.fromTo(
-				bars,
-				{ scaleY: 0.25, transformOrigin: "50% 100%" },
-				{ scaleY: 1, duration: 0.5, stagger: 0.08, ease: "power2.out" },
-				6.15
-			);
+			// Transform: dbt runs inside Redshift.
+			pulse("warehouse", 4.5);
+			if (status) {
+				loop.to(status, { opacity: 1, duration: 0.15 }, 4.6);
+				loop.to(status, { opacity: 0.6, duration: 0.4 }, 5.05);
+			}
+
+			// Serve: marts feed the consumers.
+			runPacket(9, 5.2, 0.9);
+			runPacket(10, 5.35, 0.9);
+			runPacket(11, 5.5, 0.9);
+			pulse("con-rtb", 6.15);
+			pulse("con-mode", 6.3);
+			pulse("con-hex", 6.45);
+
+			// Orchestration heartbeat across the whole cycle.
+			runPacket(14, 0, 6.5);
+
+			// Settle before the next run.
+			loop.to({}, { duration: 1.4 }, 7.0);
 		}
-		// Settle before the next run.
-		loop.to({}, { duration: 1.0 }, 6.9);
 
 		let started = false;
 		let inView = false;
@@ -273,72 +305,34 @@ const PipelineDag = () => {
 		};
 	}, []);
 
+	const packetCount = SOLID_EDGES.length + DASHED_EDGES.length + 1;
+
 	return (
 		<svg
 			ref={svgRef}
-			viewBox="0 0 1021 650"
+			viewBox="0 0 1400 680"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 			className="w-full h-auto pointer-events-none select-none"
 			aria-hidden="true"
 		>
+			<defs>
+				<linearGradient id="pl-orch-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="#9146FF" />
+					<stop offset="100%" stopColor="#BF94FF" />
+				</linearGradient>
+			</defs>
 			<g className="pl-root" opacity={0}>
 				{/* Column headings */}
-				<ColumnHeading x={94} label="sources" />
-				<ColumnHeading x={445} label="transform" />
-				<ColumnHeading x={788} label="warehouse" />
-				<ColumnHeading x={947} label="serve" />
+				<ColumnHeading x={125} label="sources" />
+				<ColumnHeading x={365} label="ingestion" />
+				<ColumnHeading x={575} label="lake" />
+				<ColumnHeading x={770} label="load" />
+				<ColumnHeading x={1005} label="warehouse + transform" />
+				<ColumnHeading x={1265} label="consumers" />
 
-				{/* Airflow orchestration boundary around the dbt cluster */}
-				<g className="pl-boundary">
-					<rect
-						x={200}
-						y={104}
-						width={490}
-						height={430}
-						rx={20}
-						fill="none"
-						stroke="#BF94FF"
-						strokeOpacity={0.3}
-						strokeWidth={1.5}
-						strokeDasharray="6 8"
-					/>
-					<text
-						x={224}
-						y={134}
-						fill="#9CA3AF"
-						fontSize={13}
-						fontFamily={MONO_FONT}
-						className="pl-label hidden md:block"
-					>
-						airflow · daily @ 06:00
-					</text>
-					<rect
-						x={596}
-						y={116}
-						width={52}
-						height={24}
-						rx={12}
-						fill="rgba(145, 70, 255, 0.12)"
-						stroke="#BF94FF"
-						strokeOpacity={0.5}
-						strokeWidth={1.2}
-					/>
-					<text
-						x={622}
-						y={132.5}
-						textAnchor="middle"
-						fill="#BF94FF"
-						fontSize={13}
-						fontFamily={MONO_FONT}
-						className="pl-label hidden md:block"
-					>
-						dbt
-					</text>
-				</g>
-
-				{/* Edges (flow order — packet i rides edge i) */}
-				{EDGES.map((d, i) => (
+				{/* Solid edges (primary flow) */}
+				{SOLID_EDGES.map((d, i) => (
 					<path
 						key={i}
 						d={d}
@@ -350,125 +344,127 @@ const PipelineDag = () => {
 					/>
 				))}
 
-				{/* Source systems */}
-				<Node x={28} y={ROW.top - 23} w={126} h={46} label="postgres" name="src-postgres" />
-				<Node x={28} y={ROW.mid - 23} w={126} h={46} label="events" name="src-events" />
-				<Node x={28} y={ROW.bottom - 23} w={126} h={46} label="s3" name="src-s3" />
-
-				{/* dbt models */}
-				<Node x={234} y={ROW.top - 22} w={112} h={44} label="stg_orders" name="stg-orders" />
-				<Node x={234} y={ROW.mid - 22} w={112} h={44} label="stg_events" name="stg-events" />
-				<Node x={234} y={ROW.bottom - 22} w={112} h={44} label="stg_users" name="stg-users" />
-				<Node x={396} y={ROW.mid - 23} w={108} h={46} label="int_core" name="int-core" />
-				<Node x={552} y={ROW.mid - 23} w={116} h={46} label="mart_kpis" name="mart-kpis" />
+				{/* Dashed edges (direct paths skipping S3) */}
+				{DASHED_EDGES.map((d, i) => (
+					<path
+						key={i}
+						d={d}
+						className="pl-dashed"
+						stroke="#9146FF"
+						strokeOpacity={0.28}
+						strokeWidth={1.5}
+						strokeDasharray="5 7"
+						fill="none"
+					/>
+				))}
 				<text
-					x={610}
-					y={364}
+					x={455}
+					y={104}
 					textAnchor="middle"
-					fill="#34D399"
-					fontSize={12}
+					fill="#6B7280"
+					fontSize={11}
+					fontStyle="italic"
 					fontFamily={MONO_FONT}
-					opacity={0.6}
-					className="pl-status pl-label hidden md:block"
+					className={LABEL_HIDDEN_MOBILE}
 				>
-					dbt run ✓ 42 models
+					direct → Airbyte (skip S3)
+				</text>
+				<text
+					x={560}
+					y={540}
+					textAnchor="middle"
+					fill="#6B7280"
+					fontSize={11}
+					fontStyle="italic"
+					fontFamily={MONO_FONT}
+					className={LABEL_HIDDEN_MOBILE}
+				>
+					direct → Redshift (skip S3 + Airbyte)
 				</text>
 
-				{/* Warehouse */}
-				<g className="pl-node" data-name="snowflake">
-					<rect
-						x={721}
-						y={ROW.mid - 28}
-						width={134}
-						height={56}
-						rx={13}
-						fill="none"
-						stroke="#9146FF"
-						strokeOpacity={0.12}
-						strokeWidth={1.5}
-					/>
-					<rect
-						x={724}
-						y={ROW.mid - 25}
-						width={128}
-						height={50}
-						rx={10}
-						fill="rgba(17, 24, 39, 0.65)"
-						stroke="#9146FF"
-						strokeOpacity={0.55}
-						strokeWidth={1.5}
-					/>
-					<g className="pl-ico" stroke="#BF94FF" strokeWidth={1.6} strokeLinecap="round">
-						<line x1={738} y1={ROW.mid} x2={754} y2={ROW.mid} />
-						<line x1={738} y1={ROW.mid} x2={754} y2={ROW.mid} transform={`rotate(60 746 ${ROW.mid})`} />
-						<line x1={738} y1={ROW.mid} x2={754} y2={ROW.mid} transform={`rotate(120 746 ${ROW.mid})`} />
-					</g>
-					<text
-						x={800}
-						y={ROW.mid + 4.5}
-						textAnchor="middle"
-						fill="#D1D5DB"
-						fontSize={14}
-						fontFamily={MONO_FONT}
-						className="pl-label hidden md:block"
-					>
-						Snowflake
+				{/* Sources */}
+				<Node x={30} y={92} w={190} h={56} label="marketing APIs" sub="Google Ads · FB · MS" name="src-marketing" />
+				<Node x={30} y={187} w={190} h={56} label="operational APIs" sub="leads · quotes · policies" name="src-operational" />
+				<Node x={30} y={282} w={190} h={56} label="partner files" sub="drop into S3" name="src-files" />
+				<Node x={30} y={377} w={190} h={56} label="partner email" sub="files as attachments" name="src-email" />
+				<Node x={30} y={482} w={190} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" />
+
+				{/* Ingestion */}
+				<Node x={280} y={187} w={170} h={56} label="custom python" sub="DE team — extract" name="ing-python" />
+				<Node x={280} y={377} w={170} h={56} label="email processor" sub="inbox → S3" name="ing-email" />
+
+				{/* Lake */}
+				<g className="pl-node" data-name="s3">
+					<rect x={507} y={207} width={136} height={186} rx={15} fill="none" stroke="#34D399" strokeOpacity={0.1} strokeWidth={1.5} />
+					<rect x={510} y={210} width={130} height={180} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
+					<text x={575} y={295} textAnchor="middle" fill="#34D399" fontSize={26} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						S3
+					</text>
+					<text x={575} y={327} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						raw archive
+					</text>
+					<text x={575} y={345} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						daily partitions
 					</text>
 				</g>
 
-				{/* Dashboard */}
-				<g className="pl-node" data-name="dashboard">
-					<rect
-						x={885}
-						y={232}
-						width={124}
-						height={166}
-						rx={13}
-						fill="none"
-						stroke="#9146FF"
-						strokeOpacity={0.12}
-						strokeWidth={1.5}
-					/>
-					<rect
-						x={888}
-						y={235}
-						width={118}
-						height={160}
-						rx={10}
-						fill="rgba(17, 24, 39, 0.65)"
-						stroke="#9146FF"
-						strokeOpacity={0.55}
-						strokeWidth={1.5}
-					/>
-					<text
-						x={947}
-						y={262}
-						textAnchor="middle"
-						fill="#D1D5DB"
-						fontSize={13}
-						fontFamily={MONO_FONT}
-						className="pl-label hidden md:block"
-					>
-						dashboard
+				{/* Load */}
+				<Node x={700} y={227} w={140} h={56} label="Airbyte" sub="S3 → Redshift" name="airbyte" />
+				<Node x={700} y={317} w={140} h={56} label="COPY" sub="bulk file loads" name="copy" />
+
+				{/* Warehouse + transform */}
+				<g className="pl-node" data-name="warehouse">
+					<rect x={897} y={137} width={216} height={336} rx={19} fill="none" stroke="#BF94FF" strokeOpacity={0.12} strokeWidth={1.5} />
+					<rect x={900} y={140} width={210} height={330} rx={16} fill="rgba(145, 70, 255, 0.06)" stroke="#BF94FF" strokeOpacity={0.5} strokeWidth={1.5} />
+					<text x={1005} y={177} textAnchor="middle" fill="#BF94FF" fontSize={16} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						Redshift + dbt
 					</text>
-					{BAR_HEIGHTS.map((h, i) => (
-						<rect
-							key={i}
-							className="pl-bar"
-							x={902 + i * 28}
-							y={372 - h}
-							width={16}
-							height={h}
-							rx={3}
-							fill={i % 2 === 0 ? "#9146FF" : "#BF94FF"}
-							fillOpacity={0.75}
-						/>
-					))}
-					<line x1={900} y1={372.5} x2={996} y2={372.5} stroke="#374151" strokeWidth={1.5} />
+					<line x1={925} y1={196} x2={1085} y2={196} stroke="#9146FF" strokeOpacity={0.3} strokeWidth={1} />
+					<text x={1005} y={228} textAnchor="middle" fill="#D1D5DB" fontSize={13.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						Redshift
+					</text>
+					<text x={1005} y={246} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						raw schemas + curated marts
+					</text>
+					<line x1={925} y1={268} x2={1085} y2={268} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
+					<text x={1005} y={298} textAnchor="middle" fill="#D1D5DB" fontSize={13.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						dbt models
+					</text>
+					<text x={1005} y={316} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						stg → int → marts
+					</text>
+					<line x1={925} y1={338} x2={1085} y2={338} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
+					<text x={1005} y={368} textAnchor="middle" fill="#D1D5DB" fontSize={13.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						dbt CI/CD
+					</text>
+					<text x={1005} y={386} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						PR checks · deploy
+					</text>
+					<text x={1005} y={432} textAnchor="middle" fill="#34D399" fontSize={12.5} fontFamily={MONO_FONT} opacity={0.6} className={`pl-status ${LABEL_HIDDEN_MOBILE}`}>
+						dbt run ✓
+					</text>
 				</g>
 
-				{/* Data packets (one per edge, driven by the loop timeline) */}
-				{EDGES.map((_, i) => (
+				{/* Consumers */}
+				<Node x={1170} y={172} w={200} h={56} label="RTB ML model" sub="real-time bidding" name="con-rtb" stroke="#BF94FF" />
+				<Node x={1170} y={272} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" />
+				<Node x={1170} y={372} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" />
+
+				{/* Orchestration bar */}
+				<path d={ORCH_PATH} className="pl-orch-line" stroke="url(#pl-orch-grad)" strokeWidth={4} strokeLinecap="round" fill="none" />
+				<polygon points="1180,570 1206,580 1180,590" fill="#BF94FF" className="pl-label" />
+				<text x={740} y={556} textAnchor="middle" fill="#BF94FF" fontSize={15} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					Airflow on MWAA
+				</text>
+				<text x={740} y={612} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					schedules ingestion · dbt runs · data-quality checks · CI/CD
+				</text>
+				<text x={700} y={652} textAnchor="middle" fill="#4B5563" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					solid = primary flow · dashed = direct paths skipping S3
+				</text>
+
+				{/* Data packets (one per path, driven by the loop timeline) */}
+				{Array.from({ length: packetCount }, (_, i) => (
 					<circle
 						key={i}
 						className="pl-packet"
@@ -491,7 +487,7 @@ const PipelineSection = () => (
 		className="w-full relative select-none section-container py-8 md:py-12 flex flex-col items-center"
 	>
 		<p className="section-title-sm text-center mb-6 md:mb-8">How my data flows</p>
-		<div className="w-full max-w-5xl mx-auto">
+		<div className="w-full max-w-6xl mx-auto">
 			<PipelineDag />
 		</div>
 	</section>
