@@ -1,9 +1,3 @@
-// Copyright Ayush Singh 2021,2022. All Rights Reserved.
-// Project: folio
-// Author contact: https://www.linkedin.com/in/alphaayush/
-// This file is licensed under the MIT License.
-// License text available at https://opensource.org/licenses/MIT
-
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Menu from "@/components/common/menu";
@@ -35,7 +29,7 @@ const Header = () => {
 							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 						</a>
 					</Link>
-					<span className="text-[10px] text-white/60 font-mono">v3.8.0</span>
+					<span className="text-[10px] text-white/60 font-mono">v3.8.1</span>
 				</div>
 				<div className="hidden md:flex items-center justify-center">
 					{NAVBARITEMS.map((item: any) => (

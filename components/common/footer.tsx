@@ -1,9 +1,3 @@
-// Copyright Ayush Singh 2021,2022. All Rights Reserved.
-// Project: folio
-// Author contact: https://www.linkedin.com/in/alphaayush/
-// This file is licensed under the MIT License.
-// License text available at https://opensource.org/licenses/MIT
-
 import { SOCIAL_LINKS } from "../../constants";
 import Image from "next/image";
 import Button, { ButtonTypes } from "./button";
@@ -48,7 +42,7 @@ const Footer = () => {
 				></Button>
 			</div>
 			<p className="text-center text-xs text-white/60 mt-14">
-				Designed by Ayush
+				© 2026 Minh (Mark) Pham · Built with Next.js &amp; Tailwind
 			</p>
 		</>
 	);

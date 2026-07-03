@@ -1,9 +1,17 @@
 {
   "mcpServers": {
     "datamate": {
-      "url": "http://localhost:7702/sse",
-      "type": "sse",
-      "updatedAt": "2025-09-25T21:25:40.711Z"
+      "type": "stdio",
+      "command": "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin)",
+      "args": [
+        "/Users/minh.pham/.cursor/extensions/altimateai.vscode-altimate-mcp-server-0.8.4-darwin-arm64/dist/datamate-cli.js",
+        "start-stdio"
+      ],
+      "env": {
+        "ALTIMATE_EXTENSION_RPC": "/var/folders/zw/cbyf9snx0fd_bqpqdsx487dm0000gn/T/altimate-mcp-23057.sock",
+        "ELECTRON_RUN_AS_NODE": "1"
+      },
+      "updatedAt": "2026-07-03T16:48:24.341Z"
     }
   }
 }
