@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Menu from "@/components/common/menu";
+import useHideOnScroll from "@/components/common/use-hide-on-scroll";
 import { NAVBARITEMS } from "../../constants";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -9,6 +10,10 @@ import { trackEvent } from "../../utils/clarity";
 const Header = () => {
 	const [menuVisible, setmenuVisible] = useState(false);
 	const headerRef = useRef<HTMLElement>(null);
+
+	// Hide on scroll down, reveal on scroll up; parked while the mobile menu
+	// is open (the fullscreen menu lives inside this <header>).
+	useHideOnScroll(headerRef, menuVisible);
 
 	useEffect(() => {
 		if (headerRef.current) {
@@ -29,7 +34,7 @@ const Header = () => {
 							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 						</a>
 					</Link>
-					<span className="text-[10px] text-white/60 font-mono">v3.8.6</span>
+					<span className="text-[10px] text-white/60 font-mono">v3.8.7</span>
 				</div>
 				<div className="hidden md:flex items-center justify-center">
 					{NAVBARITEMS.map((item: any) => (

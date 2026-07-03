@@ -643,8 +643,25 @@ footer {
 .aurora-drift-4 { animation: aurora-drift-4 20s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-	.aurora-blob { animation: none !important; }
+	.aurora-blob,
+	.animate-float,
+	.animate-glow-pulse,
+	.animate-particle-float,
+	.wave-drift { animation: none !important; }
+	.timeline-dot-glow::after { animation: none !important; opacity: 0; }
 	.pl-packet { display: none; }
+	html { scroll-behavior: auto; }
+}
+
+/* Ambient drift for the section wave dividers (composited transform only).
+   Paths are periodic over 720 SVG units, so -720px loops seamlessly. */
+@keyframes wave-drift {
+	to { transform: translateX(-720px); }
+}
+
+.wave-drift {
+	animation: wave-drift 38s linear infinite;
+	will-change: transform;
 }
 
 .animate-float {
