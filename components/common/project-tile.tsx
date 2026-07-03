@@ -35,7 +35,16 @@ const ProjectTile = ({
 	index?: number;
 }) => {
 	const [showModal, setShowModal] = useState(false);
+	// Where the modal zooms from — the tile's viewport rect at open time.
+	const [originRect, setOriginRect] = useState<DOMRect | null>(null);
 	const tiltRef = useRef<HTMLDivElement>(null);
+
+	const openModal = () => {
+		trackEvent("project_open");
+		setTag("project_name", project.name);
+		setOriginRect(tiltRef.current?.getBoundingClientRect() ?? null);
+		setShowModal(true);
+	};
 
 	useEffect(() => {
 		const node = tiltRef.current;
@@ -73,14 +82,13 @@ const ProjectTile = ({
 					animationDelay: `${index * 50}ms`,
 					transformStyle: "preserve-3d",
 				}}
-				onClick={() => { trackEvent("project_open"); setTag("project_name", name); setShowModal(true); }}
+				onClick={openModal}
 				role="button"
 				tabIndex={0}
 				onKeyDown={(e) => {
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
-						trackEvent("project_open"); setTag("project_name", name);
-						setShowModal(true);
+						openModal();
 					}
 				}}
 			>
@@ -180,6 +188,7 @@ const ProjectTile = ({
 			{showModal && (
 				<ProjectModal
 					project={project}
+					originRect={originRect}
 					onClose={() => setShowModal(false)}
 				/>
 			)}

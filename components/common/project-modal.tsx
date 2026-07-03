@@ -3,10 +3,13 @@ import Image from "next/image";
 import { IProject } from "../../constants";
 import { gsap } from "gsap";
 import { trackEvent, setTag } from "../../utils/clarity";
+import { prefersReducedMotion } from "../../utils/motion";
 
 interface ProjectModalProps {
 	project: IProject;
 	onClose: () => void;
+	/** Viewport rect of the clicked tile — the modal zooms out of it. */
+	originRect?: DOMRect | null;
 }
 
 const getCategoryLabel = (category: string): string => {
@@ -20,20 +23,47 @@ const getCategoryLabel = (category: string): string => {
 	return labels[category] || category;
 };
 
-const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
+const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 	const overlayRef = useRef<HTMLDivElement>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
+	// x/y/scale deltas from the modal's resting place back to the clicked tile,
+	// measured once on mount (body scroll is locked, so viewport rects hold).
+	const zoomDeltas = useRef<{ x: number; y: number; scaleX: number; scaleY: number } | null>(null);
 
 	useEffect(() => {
 		document.body.style.overflow = "hidden";
 
 		if (overlayRef.current && cardRef.current) {
 			gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25 });
-			gsap.fromTo(
-				cardRef.current,
-				{ opacity: 0, scale: 0.95, y: 20 },
-				{ opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" }
-			);
+
+			const card = cardRef.current;
+			if (originRect && !prefersReducedMotion()) {
+				const final = card.getBoundingClientRect();
+				zoomDeltas.current = {
+					x: originRect.left + originRect.width / 2 - (final.left + final.width / 2),
+					y: originRect.top + originRect.height / 2 - (final.top + final.height / 2),
+					scaleX: originRect.width / final.width,
+					scaleY: originRect.height / final.height,
+				};
+				// Grow the card out of the tile; the content fades in slightly
+				// late to mask the non-uniform stretch.
+				gsap.fromTo(
+					card,
+					{ ...zoomDeltas.current, opacity: 0.4, transformOrigin: "center center" },
+					{ x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1, duration: 0.4, ease: "power3.out" }
+				);
+				gsap.fromTo(
+					card.children,
+					{ opacity: 0 },
+					{ opacity: 1, duration: 0.25, delay: 0.12 }
+				);
+			} else {
+				gsap.fromTo(
+					card,
+					{ opacity: 0, scale: 0.95, y: 20 },
+					{ opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" }
+				);
+			}
 		}
 
 		const handleEscape = (e: KeyboardEvent) => {
@@ -50,10 +80,22 @@ const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
 	const handleClose = () => {
 		if (overlayRef.current && cardRef.current) {
 			gsap.to(overlayRef.current, { opacity: 0, duration: 0.2 });
-			gsap.to(cardRef.current, {
-				opacity: 0, scale: 0.95, y: 10, duration: 0.2,
-				onComplete: onClose,
-			});
+			if (zoomDeltas.current) {
+				// Shrink back toward the tile it came from.
+				gsap.to(cardRef.current.children, { opacity: 0, duration: 0.12 });
+				gsap.to(cardRef.current, {
+					...zoomDeltas.current,
+					opacity: 0,
+					duration: 0.22,
+					ease: "power2.in",
+					onComplete: onClose,
+				});
+			} else {
+				gsap.to(cardRef.current, {
+					opacity: 0, scale: 0.95, y: 10, duration: 0.2,
+					onComplete: onClose,
+				});
+			}
 		} else {
 			onClose();
 		}
