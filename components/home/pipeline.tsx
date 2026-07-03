@@ -24,9 +24,11 @@ interface NodeProps {
 	/** Tool logo path (from /public). Icons stay visible on mobile, where
 	    the text labels are hidden — they carry the readability there. */
 	icon?: string;
+	/** CSS filter for the icon (e.g. invert(1) for black-on-transparent art). */
+	iconFilter?: string;
 }
 
-const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon }: NodeProps) => {
+const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilter }: NodeProps) => {
 	// With a left-aligned icon, the text block re-centers in the space to its right.
 	const textX = x + w / 2 + (icon ? 14 : 0);
 	return (
@@ -54,7 +56,14 @@ const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon }: NodePr
 				strokeWidth={1.5}
 			/>
 			{icon && (
-				<image href={icon} x={x + 12} y={y + h / 2 - 12} width={24} height={24} />
+				<image
+					href={icon}
+					x={x + 12}
+					y={y + h / 2 - 12}
+					width={24}
+					height={24}
+					style={iconFilter ? { filter: iconFilter } : undefined}
+				/>
 			)}
 			<text
 				x={textX}
@@ -395,10 +404,10 @@ const PipelineDag = () => {
 				</text>
 
 				{/* Sources */}
-				<Node x={30} y={102} w={200} h={56} label="marketing APIs" sub="Google Ads · FB · MS" name="src-marketing" />
-				<Node x={30} y={212} w={200} h={56} label="operational APIs" sub="leads · quotes · policies" name="src-operational" />
-				<Node x={30} y={322} w={200} h={56} label="partner files" sub="drop into S3" name="src-files" />
-				<Node x={30} y={432} w={200} h={56} label="partner email" sub="files as attachments" name="src-email" />
+				<Node x={30} y={102} w={200} h={56} label="marketing APIs" sub="Google Ads · FB · MS" name="src-marketing" icon="/pipeline/megaphone.svg" />
+				<Node x={30} y={212} w={200} h={56} label="operational APIs" sub="leads · quotes · policies" name="src-operational" icon="/pipeline/api.svg" />
+				<Node x={30} y={322} w={200} h={56} label="partner files" sub="drop into S3" name="src-files" icon="/pipeline/files.svg" />
+				<Node x={30} y={432} w={200} h={56} label="partner email" sub="files as attachments" name="src-email" icon="/pipeline/email.svg" />
 				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" />
 
 				{/* Ingestion */}
@@ -462,7 +471,7 @@ const PipelineDag = () => {
 				</g>
 
 				{/* Consumers */}
-				<Node x={1225} y={197} w={200} h={56} label="RTB ML model" sub="real-time bidding" name="con-rtb" stroke="#BF94FF" />
+				<Node x={1225} y={197} w={200} h={56} label="RTB ML model" sub="real-time bidding" name="con-rtb" stroke="#BF94FF" icon="/pipeline/kmeans.png" iconFilter="invert(1)" />
 				<Node x={1225} y={312} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" icon="/skills/1st/Mode.svg" />
 				<Node x={1225} y={427} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" icon="/skills/1st/Hex.svg" />
 
