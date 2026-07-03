@@ -499,6 +499,10 @@ footer {
 	select:focus-visible {
 		outline-color: #ff9a3c;
 	}
+
+	.nav-link-hover::after {
+		background: #f27d0d;
+	}
 }
 
 .section-heading {
