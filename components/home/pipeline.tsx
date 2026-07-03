@@ -21,58 +21,68 @@ interface NodeProps {
 	sub?: string;
 	name: string;
 	stroke?: string;
+	/** Tool logo path (from /public). Icons stay visible on mobile, where
+	    the text labels are hidden — they carry the readability there. */
+	icon?: string;
 }
 
-const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF" }: NodeProps) => (
-	<g className="pl-node" data-name={name}>
-		<rect
-			x={x - 3}
-			y={y - 3}
-			width={w + 6}
-			height={h + 6}
-			rx={13}
-			fill="none"
-			stroke={stroke}
-			strokeOpacity={0.12}
-			strokeWidth={1.5}
-		/>
-		<rect
-			x={x}
-			y={y}
-			width={w}
-			height={h}
-			rx={10}
-			fill="rgba(17, 24, 39, 0.65)"
-			stroke={stroke}
-			strokeOpacity={0.55}
-			strokeWidth={1.5}
-		/>
-		<text
-			x={x + w / 2}
-			y={sub ? y + h / 2 - 3 : y + h / 2 + 4.5}
-			textAnchor="middle"
-			fill="#D1D5DB"
-			fontSize={14}
-			fontFamily={MONO_FONT}
-			className={LABEL_HIDDEN_MOBILE}
-		>
-			{label}
-		</text>
-		{sub && (
+const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon }: NodeProps) => {
+	// With a left-aligned icon, the text block re-centers in the space to its right.
+	const textX = x + w / 2 + (icon ? 14 : 0);
+	return (
+		<g className="pl-node" data-name={name}>
+			<rect
+				x={x - 3}
+				y={y - 3}
+				width={w + 6}
+				height={h + 6}
+				rx={13}
+				fill="none"
+				stroke={stroke}
+				strokeOpacity={0.12}
+				strokeWidth={1.5}
+			/>
+			<rect
+				x={x}
+				y={y}
+				width={w}
+				height={h}
+				rx={10}
+				fill="rgba(17, 24, 39, 0.65)"
+				stroke={stroke}
+				strokeOpacity={0.55}
+				strokeWidth={1.5}
+			/>
+			{icon && (
+				<image href={icon} x={x + 12} y={y + h / 2 - 12} width={24} height={24} />
+			)}
 			<text
-				x={x + w / 2}
-				y={y + h / 2 + 15}
+				x={textX}
+				y={sub ? y + h / 2 - 3 : y + h / 2 + 4.5}
 				textAnchor="middle"
-				fill="#6B7280"
-				fontSize={11}
+				fill="#D1D5DB"
+				fontSize={14}
 				fontFamily={MONO_FONT}
 				className={LABEL_HIDDEN_MOBILE}
 			>
-				{sub}
+				{label}
 			</text>
-		)}
-	</g>
-);
+			{sub && (
+				<text
+					x={textX}
+					y={y + h / 2 + 15}
+					textAnchor="middle"
+					fill="#6B7280"
+					fontSize={11}
+					fontFamily={MONO_FONT}
+					className={LABEL_HIDDEN_MOBILE}
+				>
+					{sub}
+				</text>
+			)}
+		</g>
+	);
+};
 
 const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
 	<text
@@ -389,17 +399,18 @@ const PipelineDag = () => {
 				<Node x={30} y={212} w={200} h={56} label="operational APIs" sub="leads · quotes · policies" name="src-operational" />
 				<Node x={30} y={322} w={200} h={56} label="partner files" sub="drop into S3" name="src-files" />
 				<Node x={30} y={432} w={200} h={56} label="partner email" sub="files as attachments" name="src-email" />
-				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" />
+				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" />
 
 				{/* Ingestion */}
-				<Node x={295} y={212} w={180} h={56} label="custom python" sub="DE team — extract" name="ing-python" />
-				<Node x={295} y={432} w={180} h={56} label="email processor" sub="inbox → S3" name="ing-email" />
+				<Node x={295} y={212} w={180} h={56} label="custom python" sub="DE team — extract" name="ing-python" icon="/projects/tech/python.svg" />
+				<Node x={295} y={432} w={180} h={56} label="email processor" sub="inbox → S3" name="ing-email" icon="/projects/tech/python.svg" />
 
 				{/* Lake */}
 				<g className="pl-node" data-name="s3">
 					<rect x={532} y={227} width={146} height={226} rx={15} fill="none" stroke="#34D399" strokeOpacity={0.1} strokeWidth={1.5} />
 					<rect x={535} y={230} width={140} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
-					<text x={605} y={330} textAnchor="middle" fill="#34D399" fontSize={28} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<image href="/skills/1st/S3.webp" x={581} y={255} width={48} height={48} />
+					<text x={605} y={335} textAnchor="middle" fill="#34D399" fontSize={24} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						S3
 					</text>
 					<text x={605} y={368} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
@@ -411,8 +422,8 @@ const PipelineDag = () => {
 				</g>
 
 				{/* Load */}
-				<Node x={735} y={262} w={150} h={56} label="Airbyte" sub="S3 → Redshift" name="airbyte" />
-				<Node x={735} y={362} w={150} h={56} label="COPY" sub="bulk file loads" name="copy" />
+				<Node x={735} y={262} w={150} h={56} label="Airbyte" sub="S3 → Redshift" name="airbyte" icon="/skills/1st/Airbyte.svg" />
+				<Node x={735} y={362} w={150} h={56} label="COPY" sub="bulk file loads" name="copy" icon="/skills/1st/AWS%20Redshift.svg" />
 
 				{/* Warehouse + transform */}
 				<g className="pl-node" data-name="warehouse">
@@ -422,21 +433,24 @@ const PipelineDag = () => {
 						Redshift + dbt
 					</text>
 					<line x1={972} y1={212} x2={1138} y2={212} stroke="#9146FF" strokeOpacity={0.3} strokeWidth={1} />
-					<text x={1055} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<image href="/skills/1st/AWS%20Redshift.svg" x={988} y={232} width={20} height={20} />
+					<text x={1065} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						Redshift
 					</text>
 					<text x={1055} y={266} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						raw schemas + curated marts
 					</text>
 					<line x1={972} y1={292} x2={1138} y2={292} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
-					<text x={1055} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<image href="/skills/1st/dbt.svg" x={978} y={312} width={20} height={20} />
+					<text x={1065} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						dbt models
 					</text>
 					<text x={1055} y={346} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						stg → int → marts
 					</text>
 					<line x1={972} y1={372} x2={1138} y2={372} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
-					<text x={1055} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<image href="/skills/1st/Github.svg" x={982} y={392} width={20} height={20} />
+					<text x={1065} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						dbt CI/CD
 					</text>
 					<text x={1055} y={426} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
@@ -449,13 +463,14 @@ const PipelineDag = () => {
 
 				{/* Consumers */}
 				<Node x={1225} y={197} w={200} h={56} label="RTB ML model" sub="real-time bidding" name="con-rtb" stroke="#BF94FF" />
-				<Node x={1225} y={312} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" />
-				<Node x={1225} y={427} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" />
+				<Node x={1225} y={312} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" icon="/skills/1st/Mode.svg" />
+				<Node x={1225} y={427} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" icon="/skills/1st/Hex.svg" />
 
 				{/* Orchestration bar */}
 				<path d={ORCH_PATH} className="pl-orch-line" stroke="url(#pl-orch-grad)" strokeWidth={4} strokeLinecap="round" fill="none" />
 				<polygon points="1230,678 1258,690 1230,702" fill="#BF94FF" className="pl-label" />
-				<text x={775} y={664} textAnchor="middle" fill="#BF94FF" fontSize={16} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+				<image href="/projects/tech/Apache%20Airflow.svg" x={678} y={643} width={28} height={28} />
+				<text x={790} y={664} textAnchor="middle" fill="#BF94FF" fontSize={16} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 					Airflow on MWAA
 				</text>
 				<text x={775} y={724} textAnchor="middle" fill="#6B7280" fontSize={12.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
