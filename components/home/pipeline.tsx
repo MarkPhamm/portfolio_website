@@ -112,8 +112,8 @@ const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
 // 0-11 solid (primary flow), 12-13 dashed (direct paths skipping S3),
 // 14 is the Airflow orchestration bar.
 const SOLID_EDGES = [
-	"M230,240 C256,240 269,240 295,240", // operational APIs -> custom python
-	"M475,240 C505,240 509,300 535,300", // custom python -> S3
+	"M230,240 C256,240 269,240 295,240", // operational APIs -> apis processor
+	"M475,240 C505,240 509,300 535,300", // apis processor -> S3
 	"M230,350 C350,350 420,340 535,340", // partner files -> S3
 	"M230,460 C256,460 269,460 295,460", // partner email -> email processor
 	"M475,460 C505,460 509,380 535,380", // email processor -> S3
@@ -411,7 +411,7 @@ const PipelineDag = () => {
 				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" />
 
 				{/* Ingestion */}
-				<Node x={295} y={212} w={180} h={56} label="custom python" sub="DE team — extract" name="ing-python" icon="/projects/tech/python.svg" />
+				<Node x={295} y={212} w={180} h={56} label="apis processor" sub="transform · standardize" name="ing-python" icon="/projects/tech/python.svg" />
 				<Node x={295} y={432} w={180} h={56} label="email processor" sub="inbox → S3" name="ing-email" icon="/projects/tech/python.svg" />
 
 				{/* Lake */}
