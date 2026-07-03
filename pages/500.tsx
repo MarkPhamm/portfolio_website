@@ -1,4 +1,3 @@
-import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -20,10 +19,7 @@ export default function ServerError() {
 
 	return (
 		<>
-			<Head>
-				<title>500 — Something broke | Mark Pham</title>
-			</Head>
-			<Layout>
+			<Layout title="500 — Something broke | Mark Pham">
 				<Header />
 				<Cursor isDesktop={isDesktop} />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>

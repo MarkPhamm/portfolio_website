@@ -1,6 +1,6 @@
 {
 	"name": "minhbpham-portfolio",
-	"version": "3.8.1",
+	"version": "3.8.12",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",

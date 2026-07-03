@@ -9,6 +9,8 @@ class MyDocument extends Document {
 		return (
 			<Html lang="en">
 				<Head>
+					<meta name="theme-color" content="#111827" />
+					<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 					<link
 						rel="preload"
 						as="font"

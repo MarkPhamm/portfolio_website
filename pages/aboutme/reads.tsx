@@ -1,5 +1,4 @@
 import { METADATA, FAV_ARTICLES } from "../../constants";
-import Head from "next/head";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 
 import { gsap } from "gsap";
@@ -63,10 +62,7 @@ export default function Reads() {
 
 	return (
 		<>
-			<Head>
-				<title>Favorite Reads — {METADATA.title}</title>
-			</Head>
-			<Layout>
+			<Layout title={`Favorite Reads — ${METADATA.title}`} path="/aboutme/reads">
 				<Header />
 				<ProgressIndicator />
 				<Cursor isDesktop={isDesktop} />

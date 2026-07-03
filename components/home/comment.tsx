@@ -5,13 +5,6 @@ import { FaChevronLeft, FaChevronRight, FaQuoteLeft } from "react-icons/fa";
 import Image from "next/image";
 import { trackEvent } from "../../utils/clarity";
 
-const getTextSize = (length: number): string => {
-	if (length < 200) return "text-xl md:text-2xl";
-	if (length < 300) return "text-base md:text-lg";
-	if (length < 400) return "text-sm md:text-base";
-	return "text-xs md:text-sm";
-};
-
 const CommentTile = (props: {
 	text: string;
 	currentPosition: string;
@@ -19,8 +12,6 @@ const CommentTile = (props: {
 	avatar: string;
 	isActive: boolean;
 }) => {
-	const textSize = getTextSize(props.text.length);
-
 	return (
 		<div
 			className={`transition-all duration-[10ms] ${props.isActive
@@ -29,7 +20,7 @@ const CommentTile = (props: {
 				}`}
 			style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
 		>
-			<div className={`relative p-5 sm:p-8 md:p-10 mx-auto max-w-3xl min-h-[380px] sm:min-h-[440px] md:min-h-[520px] flex flex-col justify-center rounded-2xl border transition-all duration-[10ms] overflow-hidden ${props.isActive
+			<div className={`relative p-5 sm:p-8 md:p-10 mx-auto max-w-3xl min-h-[400px] sm:min-h-[440px] md:min-h-[470px] flex flex-col justify-center rounded-2xl border transition-all duration-[10ms] overflow-hidden ${props.isActive
 					? "bg-gray-900/90 backdrop-blur-sm border-[#9146FF]/30 shadow-lg shadow-[#9146FF]/5"
 					: "bg-gray-900 border-gray-800"
 				}`}>
@@ -47,8 +38,8 @@ const CommentTile = (props: {
 						/>
 					</div>
 
-					<p className={`${textSize} text-gray-200 leading-relaxed mb-8 italic text-left`}>
-						"{props.text}"
+					<p className="text-base md:text-lg text-gray-200 leading-relaxed mb-8 italic text-left">
+						&ldquo;{props.text}&rdquo;
 					</p>
 
 					<div className="text-right self-end">

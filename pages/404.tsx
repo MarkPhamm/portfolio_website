@@ -1,4 +1,3 @@
-import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -7,7 +6,6 @@ import Header from "@/components/common/header";
 import Cursor from "@/components/common/cursor";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
-import { METADATA } from "../constants";
 
 export default function NotFound() {
 	const [isDesktop, setIsDesktop] = useState(true);
@@ -26,10 +24,7 @@ export default function NotFound() {
 
 	return (
 		<>
-			<Head>
-				<title>404 — Page not found | Mark Pham</title>
-			</Head>
-			<Layout>
+			<Layout title="404 — Page not found | Mark Pham">
 				<Header />
 				<Cursor isDesktop={isDesktop} />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>

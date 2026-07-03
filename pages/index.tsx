@@ -1,5 +1,3 @@
-import { METADATA } from "../constants";
-import Head from "next/head";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 
@@ -85,9 +83,6 @@ export default function Home() {
 
 	return (
 		<>
-			<Head>
-				<title>{METADATA.title}</title>
-			</Head>
 			<Layout>
 				<Header />
 				<ProgressIndicator />
@@ -107,7 +102,6 @@ export default function Home() {
 					<ActivitySection />
 					<WaveDivider flip />
 					<TimelineSection isDesktop={isDesktop} />
-					{/* <AboutSection /> */}
 					<WaveDivider />
 					<CertificateSection isDesktop={isDesktop} />
 					<CollaborationSection />

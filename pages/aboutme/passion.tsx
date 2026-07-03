@@ -66,13 +66,12 @@ export default function Home() {
 	return (
 		<div className="theme-orange">
 			<Head>
-				<title>{METADATA.title}</title>
 				<style>{`
 					::-webkit-scrollbar-thumb { background: #f27d0d !important; }
 					::-webkit-scrollbar-thumb:hover { background: #ff9a3c !important; }
 				`}</style>
 			</Head>
-			<Layout>
+			<Layout title={`My Passion — ${METADATA.title}`} path="/aboutme/passion">
 				<Header />
 				<ProgressIndicator />
 				<Cursor isDesktop={isDesktop} />

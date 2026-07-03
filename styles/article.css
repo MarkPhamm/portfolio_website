@@ -1,24 +1,3 @@
-.amazon-color-orange {
-	color: #9146FF;
-}
-
-.amazon-color-black {
-	color: #232f3e;
-	font-weight: 600;
-}
-
-.amazon-color-black-text {
-	color: #232f3e;
-	text-decoration: underline;
-}
-
-.text-rounded-pill {
-	border-radius: 20px;
-	background-color: #9146FF;
-	color: #232f3e;
-	padding: 5px, 5px;
-}
-
 .sticky-scrollspy {
 	position: sticky;
 	top: 13%;
