@@ -22,22 +22,10 @@ const getCategoryLabel = (category: string): string => {
 	}
 };
 
-const getCategoryColor = (category: string): string => {
-	switch (category) {
-		case ProjectTypes.ENDTOEND:
-			return "bg-blue-600 text-white";
-		case ProjectTypes.BIDASHBOARDVIZ:
-			return "bg-gray-900 text-orange-400";
-		case ProjectTypes.STATISTICSML:
-			return "bg-purple-600 text-white";
-		case ProjectTypes.CLOUDINFRA:
-			return "bg-orange-700 text-white";
-		case ProjectTypes.LEARNING:
-			return "bg-green-700 text-white";
-		default:
-			return "bg-gray-600 text-white";
-	}
-};
+// One glass badge for every category — matches the tile's existing glass
+// language (expand icon, tech chips) instead of the old per-category rainbow.
+const CATEGORY_BADGE_STYLE =
+	"bg-gray-900/85 backdrop-blur-sm border border-white/10 text-gray-100";
 
 const ProjectTile = ({
 	project,
@@ -118,7 +106,7 @@ const ProjectTile = ({
 						{/* Category Badge */}
 						<div className="absolute top-4 left-4 z-20">
 							<span
-								className={`px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg ${getCategoryColor(category)}`}
+								className={`px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg ${CATEGORY_BADGE_STYLE}`}
 							>
 								{getCategoryLabel(category)}
 							</span>

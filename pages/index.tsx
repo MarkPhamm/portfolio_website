@@ -108,7 +108,7 @@ export default function Home() {
 					<WaveDivider flip />
 					<TimelineSection isDesktop={isDesktop} />
 					{/* <AboutSection /> */}
-					<WaveDivider flip />
+					<WaveDivider />
 					<CertificateSection isDesktop={isDesktop} />
 					<CollaborationSection />
 					<Footer />
