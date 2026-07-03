@@ -21,13 +21,19 @@ const useHideOnScroll = (
 		if (disabled) {
 			// e.g. mobile menu open — the menu lives inside the header, so make
 			// sure the header is on screen and stays there.
+			// overwrite "auto" (never true): true kills ALL tweens on the element,
+			// including the header's opacity entrance fade — which left the header
+			// permanently invisible whenever a scroll event fired during mount.
 			if (ref.current) {
-				gsap.to(ref.current, { yPercent: 0, duration: 0.2, overwrite: true });
+				gsap.to(ref.current, { yPercent: 0, duration: 0.2, overwrite: "auto" });
 			}
 			return;
 		}
 
 		let lastY = Math.max(0, window.scrollY);
+		// Only tween on state transitions — browsers fire scroll events on
+		// load/navigation, and a tween per event would fight the entrance.
+		let hidden = false;
 
 		const onScroll = () => {
 			const el = ref.current;
@@ -35,9 +41,15 @@ const useHideOnScroll = (
 			// Clamp for iOS rubber-band overscroll.
 			const y = Math.max(0, window.scrollY);
 			if (y > lastY + DELTA_THRESHOLD && y > ACTIVATION_OFFSET) {
-				gsap.to(el, { yPercent: -100, duration: 0.3, ease: "power3.out", overwrite: true });
+				if (!hidden) {
+					hidden = true;
+					gsap.to(el, { yPercent: -100, duration: 0.3, ease: "power3.out", overwrite: "auto" });
+				}
 			} else if (y < lastY - DELTA_THRESHOLD || y <= ACTIVATION_OFFSET) {
-				gsap.to(el, { yPercent: 0, duration: 0.25, ease: "power3.out", overwrite: true });
+				if (hidden) {
+					hidden = false;
+					gsap.to(el, { yPercent: 0, duration: 0.25, ease: "power3.out", overwrite: "auto" });
+				}
 			}
 			lastY = y;
 		};
