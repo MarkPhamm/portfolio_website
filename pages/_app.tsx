@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { IconContext } from "react-icons";
 import { useRouter } from "next/router";
 import { initClarity, trackPageView } from "../utils/clarity";
+import PageTransition from "../components/common/page-transition";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			    svg-img-alt a11y audit without per-icon props. */}
 			<IconContext.Provider value={{ attr: { "aria-hidden": "true", focusable: "false" } }}>
 				<Component {...pageProps} />
+				<PageTransition />
 			</IconContext.Provider>
 
 			{/* GA4 — lazyOnload defers loading until after the main thread is idle, keeping it off the critical path */}

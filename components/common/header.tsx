@@ -34,20 +34,35 @@ const Header = () => {
 							<Image src="/logo.svg" alt="Logo" width={22} height={22} />
 						</a>
 					</Link>
-					<span className="text-[10px] text-white/60 font-mono">v3.8.9</span>
+					<span className="text-[10px] text-white/60 font-mono">v3.8.10</span>
 				</div>
 				<div className="hidden md:flex items-center justify-center">
-					{NAVBARITEMS.map((item: any) => (
-						<a
-							key={item.name}
-							href={item.ref.startsWith('http') ? item.ref : (item.ref.startsWith('/') ? item.ref : `/#${item.ref}`)}
-							className="link px-3 nav-link-hover"
-							onClick={() => trackEvent("nav_link_click", { target: item.name, location: "header" })}
-							{...(item.ref.startsWith('http') && { target: "_blank", rel: "noreferrer" })}
-						>
-							{item.name}
-						</a>
-					))}
+					{NAVBARITEMS.map((item: any) => {
+						const isExternal = item.ref.startsWith("http");
+						const isRoute = !isExternal && item.ref.startsWith("/");
+						const onClick = () =>
+							trackEvent("nav_link_click", { target: item.name, location: "header" });
+						// Route items go through <Link> so navigation stays client-side
+						// (prefetch + page-transition curtain); hash anchors stay plain
+						// <a> to keep native smooth scrolling on the homepage.
+						return isRoute ? (
+							<Link href={item.ref} key={item.name}>
+								<a className="link px-3 nav-link-hover" onClick={onClick}>
+									{item.name}
+								</a>
+							</Link>
+						) : (
+							<a
+								key={item.name}
+								href={isExternal ? item.ref : `/#${item.ref}`}
+								className="link px-3 nav-link-hover"
+								onClick={onClick}
+								{...(isExternal && { target: "_blank", rel: "noreferrer" })}
+							>
+								{item.name}
+							</a>
+						);
+					})}
 				</div>
 				<nav className={`outer-menu md:hidden ${menuVisible ? "menu-visible" : ""}`}>
 					<button

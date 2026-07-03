@@ -19,25 +19,40 @@ const Menu = ({
 						className="list-none py-4 px-0 m-0 block max-h-screen"
 						role="menu"
 					>
-						{NAVBARITEMS.map((el) => (
-							<li
-								className="p-0 m-6 text-2xl block"
-								key={el.name}
-								role="menuitem"
-							>
-								<a
-									className="link relative inline font-bold text-5xl duration-[10ms] hover:no-underline text-white"
-									href={el.ref.startsWith('http') ? el.ref : (el.ref.startsWith('/') ? el.ref : `/#${el.ref}`)}
-									onClick={() => {
-										trackEvent("nav_link_click", { target: el.name, location: "mobile_menu" });
-										setmenuVisible(false);
-									}}
-									{...(el.ref.startsWith('http') && { target: "_blank", rel: "noreferrer" })}
+						{NAVBARITEMS.map((el) => {
+							const isExternal = el.ref.startsWith("http");
+							const isRoute = !isExternal && el.ref.startsWith("/");
+							const linkClass =
+								"link relative inline font-bold text-5xl duration-[10ms] hover:no-underline text-white";
+							const onClick = () => {
+								trackEvent("nav_link_click", { target: el.name, location: "mobile_menu" });
+								setmenuVisible(false);
+							};
+							return (
+								<li
+									className="p-0 m-6 text-2xl block"
+									key={el.name}
+									role="menuitem"
 								>
-									{el.name}
-								</a>
-							</li>
-						))}
+									{isRoute ? (
+										<Link href={el.ref}>
+											<a className={linkClass} onClick={onClick}>
+												{el.name}
+											</a>
+										</Link>
+									) : (
+										<a
+											className={linkClass}
+											href={isExternal ? el.ref : `/#${el.ref}`}
+											onClick={onClick}
+											{...(isExternal && { target: "_blank", rel: "noreferrer" })}
+										>
+											{el.name}
+										</a>
+									)}
+								</li>
+							);
+						})}
 
 					</ul>
 				</div>
