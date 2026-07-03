@@ -19,6 +19,7 @@ import WaveDivider from "@/components/common/wave-divider";
 
 // Below-the-fold sections — SSR for SEO, but the client JS chunks load lazily so
 // they don't compete with hero hydration on the main thread.
+const PipelineSection = dynamic(() => import("@/components/home/pipeline"));
 const CommentSection = dynamic(() => import("@/components/home/comment"));
 const ArticlesPreview = dynamic(() => import("@/components/home/articles-preview"));
 const ProjectsSection = dynamic(() => import("@/components/home/projects"));
@@ -94,6 +95,7 @@ export default function Home() {
 				<main className="flex-col flex">
 					{renderBackdrop()}
 					<HeroSection />
+					<PipelineSection />
 					<QuoteSection2 />
 					<WaveDivider />
 					<CommentSection isDesktop={isDesktop} />

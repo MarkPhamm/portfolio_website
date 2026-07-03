@@ -10,8 +10,7 @@ if (typeof window !== "undefined") {
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
-// Row centers and column geometry for the DAG (viewBox 1021x650 — same aspect
-// as the old hero illustration so the wrapper needs zero layout changes).
+// Row centers and column geometry for the DAG.
 const ROW = { top: 170, mid: 315, bottom: 460 };
 
 interface NodeProps {
@@ -91,13 +90,9 @@ const EDGES = [
 	`M852,${ROW.mid} C866,${ROW.mid} 874,${ROW.mid} 888,${ROW.mid}`,
 ];
 
-// On phones the DAG sits at half opacity behind the hero text — run a single
-// packet down the middle lane instead of the full nine-packet choreography.
-const MOBILE_PACKET_EDGES = [1, 4, 6, 7, 8];
-
 const BAR_HEIGHTS = [34, 62, 48, 84];
 
-const HeroPipeline = () => {
+const PipelineDag = () => {
 	const svgRef = useRef<SVGSVGElement>(null);
 
 	useEffect(() => {
@@ -133,8 +128,9 @@ const HeroPipeline = () => {
 		});
 		gsap.set(root, { opacity: 1 });
 
-		// --- Entrance: edges draw themselves, nodes pop in along the flow ---
-		const entrance = gsap.timeline({ defaults: { ease: "power2.out" } });
+		// --- Entrance: edges draw themselves, nodes pop in along the flow.
+		// Plays when the section scrolls into view (it sits below the hero). ---
+		const entrance = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
 		if (boundary) {
 			entrance.fromTo(boundary, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0);
 		}
@@ -234,29 +230,44 @@ const HeroPipeline = () => {
 		// Settle before the next run.
 		loop.to({}, { duration: 1.0 }, 6.9);
 
-		// Don't burn CPU while the visitor reads sections below the hero.
 		let started = false;
-		let inView = true;
+		let inView = false;
 		entrance.eventCallback("onComplete", () => {
 			started = true;
 			if (inView) loop.play();
 		});
-		const scrollTrigger = ScrollTrigger.create({
+		const entranceTrigger = ScrollTrigger.create({
+			trigger: svg,
+			start: "top 85%",
+			once: true,
+			onEnter: () => entrance.play(),
+		});
+		// Don't burn CPU while the section is off-screen.
+		const loopTrigger = ScrollTrigger.create({
 			trigger: svg,
 			start: "top bottom",
 			end: "bottom top",
-			onLeave: () => {
-				inView = false;
-				loop.pause();
+			onEnter: () => {
+				inView = true;
+				if (started) loop.play();
 			},
 			onEnterBack: () => {
 				inView = true;
 				if (started) loop.play();
 			},
+			onLeave: () => {
+				inView = false;
+				loop.pause();
+			},
+			onLeaveBack: () => {
+				inView = false;
+				loop.pause();
+			},
 		});
 
 		return () => {
-			scrollTrigger.kill();
+			entranceTrigger.kill();
+			loopTrigger.kill();
 			entrance.kill();
 			loop.kill();
 		};
@@ -268,7 +279,7 @@ const HeroPipeline = () => {
 			viewBox="0 0 1021 650"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			className="w-full h-auto pointer-events-none select-none opacity-60 md:opacity-100"
+			className="w-full h-auto pointer-events-none select-none"
 			aria-hidden="true"
 		>
 			<g className="pl-root" opacity={0}>
@@ -474,4 +485,16 @@ const HeroPipeline = () => {
 	);
 };
 
-export default HeroPipeline;
+const PipelineSection = () => (
+	<section
+		id="pipeline"
+		className="w-full relative select-none section-container py-8 md:py-12 flex flex-col items-center"
+	>
+		<p className="section-title-sm text-center mb-6 md:mb-8">How my data flows</p>
+		<div className="w-full max-w-5xl mx-auto">
+			<PipelineDag />
+		</div>
+	</section>
+);
+
+export default PipelineSection;
