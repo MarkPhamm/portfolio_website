@@ -646,6 +646,7 @@ footer {
 
 @media (prefers-reduced-motion: reduce) {
 	.aurora-blob { animation: none !important; }
+	.pl-packet { display: none; }
 }
 
 .animate-float {

@@ -16,7 +16,7 @@ import HeroAurora from "./hero-aurora";
 import { isSmallScreen } from "pages";
 import { trackEvent, setTag, upgradeSession } from "../../utils/clarity";
 
-const HeroImage = dynamic(() => import("./hero-image"), { ssr: false });
+const HeroPipeline = dynamic(() => import("./hero-pipeline"), { ssr: false });
 
 const firebaseConfig = {
 	apiKey: "AIzaSyC7Bd9cOnlhZFTrxMZVbVzaRa9opnSnc4k",
@@ -259,7 +259,7 @@ const HeroSection = React.memo(() => {
 					filter: "blur(60px)",
 				}}
 			/>
-			<HeroImage />
+			<HeroPipeline />
 		</div>
 	);
 
