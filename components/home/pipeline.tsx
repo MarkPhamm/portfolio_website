@@ -110,7 +110,8 @@ const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
 
 // Edge paths in flow order — packet i rides edge i.
 // 0-11 solid (primary flow), 12-13 dashed (direct paths skipping S3),
-// 14 is the Airflow orchestration bar.
+// 14-15 reverse ETL (warehouse → Hightouch → marketing APIs),
+// 16 is the Airflow orchestration bar.
 const SOLID_EDGES = [
 	"M230,240 C256,240 269,240 295,240", // operational APIs -> apis processor
 	"M475,240 C505,240 509,300 535,300", // apis processor -> S3
@@ -129,6 +130,14 @@ const SOLID_EDGES = [
 const DASHED_EDGES = [
 	"M230,130 C440,104 630,180 735,275", // marketing APIs -> Airbyte (skip S3)
 	"M230,590 C520,615 760,580 945,500", // RDS -> Redshift (skip S3 + Airbyte)
+];
+
+// Reverse ETL — curated marts flow back out to the ad platforms via Hightouch.
+// These run right→left across the top lane, opposite the primary flow.
+// Endpoints land on the Hightouch node's right (840,-62) and left (570,-62) edges.
+const REVERSE_EDGES = [
+	"M950,147 C885,110 845,10 840,-62", // Redshift -> Hightouch
+	"M570,-62 C395,-62 250,-40 180,102", // Hightouch -> marketing APIs
 ];
 
 const ORCH_PATH = "M320,690 L1230,690";
@@ -153,13 +162,14 @@ const PipelineDag = () => {
 		const small = isSmallScreen();
 		const solidEdges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-edge"));
 		const dashedEdges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-dashed"));
+		const reverseEdges = Array.from(svg.querySelectorAll<SVGPathElement>(".pl-reverse"));
 		const orchLine = svg.querySelector<SVGPathElement>(".pl-orch-line");
 		const packets = Array.from(svg.querySelectorAll<SVGCircleElement>(".pl-packet"));
 		const nodes = Array.from(svg.querySelectorAll<SVGGElement>(".pl-node"));
 		const labels = svg.querySelectorAll(".pl-label");
 		const status = svg.querySelector(".pl-status");
-		// Packet path lookup: 0-11 solid, 12-13 dashed, 14 orchestration.
-		const packetPaths: (SVGPathElement | null)[] = [...solidEdges, ...dashedEdges, orchLine];
+		// Packet path lookup: 0-11 solid, 12-13 dashed, 14-15 reverse ETL, 16 orchestration.
+		const packetPaths: (SVGPathElement | null)[] = [...solidEdges, ...dashedEdges, ...reverseEdges, orchLine];
 
 		const nodeByName = (name: string): SVGGElement | undefined =>
 			nodes.find((n) => n.dataset.name === name);
@@ -188,6 +198,9 @@ const PipelineDag = () => {
 		);
 		if (dashedEdges.length) {
 			entrance.fromTo(dashedEdges, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.9);
+		}
+		if (reverseEdges.length) {
+			entrance.fromTo(reverseEdges, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.95);
 		}
 		entrance.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.8);
 		if (status) entrance.set(status, { opacity: 0.6 });
@@ -231,13 +244,16 @@ const PipelineDag = () => {
 		};
 
 		if (small) {
-			// Single lane on phones: one packet walks the primary path.
+			// Single lane on phones: one packet walks the primary path,
+			// then the reverse-ETL loop back out to the ad platforms.
 			runPacket(0, 0, 0.9);
 			runPacket(1, 1.0, 0.9);
 			runPacket(5, 2.0, 0.8);
 			runPacket(7, 2.9, 0.8);
 			runPacket(9, 3.8, 0.9);
-			loop.to({}, { duration: 1.2 }, 5.2);
+			runPacket(14, 4.8, 1.0);
+			runPacket(15, 5.9, 1.1);
+			loop.to({}, { duration: 1.0 }, 7.1);
 		} else {
 			// Extract: sources feed ingestion + the lake (plus direct paths).
 			runPacket(0, 0, 0.9);
@@ -274,11 +290,17 @@ const PipelineDag = () => {
 			pulse("con-mode", 6.3);
 			pulse("con-hex", 6.45);
 
+			// Activate: Hightouch syncs curated marts back to the ad platforms.
+			runPacket(14, 6.0, 1.1);
+			pulse("rev-ht", 7.0);
+			runPacket(15, 7.15, 1.2);
+			pulse("src-marketing", 8.25);
+
 			// Orchestration heartbeat across the whole cycle.
-			runPacket(14, 0, 6.5);
+			runPacket(16, 0, 8.6);
 
 			// Settle before the next run.
-			loop.to({}, { duration: 1.4 }, 7.0);
+			loop.to({}, { duration: 1.3 }, 8.7);
 		}
 
 		let started = false;
@@ -324,12 +346,12 @@ const PipelineDag = () => {
 		};
 	}, []);
 
-	const packetCount = SOLID_EDGES.length + DASHED_EDGES.length + 1;
+	const packetCount = SOLID_EDGES.length + DASHED_EDGES.length + REVERSE_EDGES.length + 1;
 
 	return (
 		<svg
 			ref={svgRef}
-			viewBox="0 0 1440 800"
+			viewBox="0 -120 1440 920"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 			className="w-full h-auto pointer-events-none select-none"
@@ -342,6 +364,11 @@ const PipelineDag = () => {
 					<stop offset="0%" stopColor="#9146FF" />
 					<stop offset="100%" stopColor="#BF94FF" />
 				</linearGradient>
+				{/* Rounds the Hightouch brand mark into an app-icon chip — it ships on an
+				    opaque gradient, so a sharp square would read as a light tile. */}
+				<clipPath id="pl-ht-clip">
+					<rect x={590} y={-78} width={32} height={32} rx={7} />
+				</clipPath>
 			</defs>
 			<g className="pl-root" opacity={0}>
 				{/* Column headings */}
@@ -378,6 +405,21 @@ const PipelineDag = () => {
 						fill="none"
 					/>
 				))}
+
+				{/* Reverse ETL edges (warehouse → Hightouch → ad platforms).
+				    Lighter purple + fine dots set them apart from the primary flow. */}
+				{REVERSE_EDGES.map((d, i) => (
+					<path
+						key={i}
+						d={d}
+						className="pl-reverse"
+						stroke="#BF94FF"
+						strokeOpacity={0.45}
+						strokeWidth={1.5}
+						strokeDasharray="2 6"
+						fill="none"
+					/>
+				))}
 				<text
 					x={470}
 					y={112}
@@ -409,6 +451,23 @@ const PipelineDag = () => {
 				<Node x={30} y={322} w={200} h={56} label="partner files" sub="drop into S3" name="src-files" icon="/pipeline/files.svg" />
 				<Node x={30} y={432} w={200} h={56} label="partner email" sub="files as attachments" name="src-email" icon="/pipeline/email.svg" />
 				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" />
+
+				{/* Reverse ETL — Hightouch activates curated marts back to the ad platforms.
+				    Rendered inline (not via <Node>) so it can run a little larger than the
+				    other cards to spotlight the reverse-ETL leg; sits in the top lane and the
+				    arc returns down into the marketing APIs node. */}
+				<g className="pl-node" data-name="rev-ht">
+					<rect x={567} y={-101} width={276} height={78} rx={15} fill="none" stroke="#BF94FF" strokeOpacity={0.12} strokeWidth={1.5} />
+					<rect x={570} y={-98} width={270} height={72} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#BF94FF" strokeOpacity={0.55} strokeWidth={1.5} />
+					<image href="/pipeline/hightouch.png" x={590} y={-78} width={32} height={32} clipPath="url(#pl-ht-clip)" />
+					<text x={729} y={-68} textAnchor="middle" fill="#D1D5DB" fontSize={16} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						Hightouch
+					</text>
+					<text x={729} y={-48} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						reverse ETL · sync audiences
+					</text>
+				</g>
+				<polygon points="173,90 187,90 180,105" fill="#BF94FF" fillOpacity={0.7} className="pl-label" />
 
 				{/* Ingestion */}
 				<Node x={295} y={212} w={180} h={56} label="apis processor" sub="transform · standardize" name="ing-python" icon="/projects/tech/python.svg" />
@@ -486,7 +545,7 @@ const PipelineDag = () => {
 					schedules ingestion · dbt runs · data-quality checks · CI/CD
 				</text>
 				<text x={720} y={768} textAnchor="middle" fill="#4B5563" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-					solid = primary flow · dashed = direct paths skipping S3
+					solid = primary flow · dashed = direct paths · dotted = reverse ETL
 				</text>
 
 				{/* Data packets (one per path, driven by the loop timeline) */}
