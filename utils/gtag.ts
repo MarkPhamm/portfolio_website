@@ -16,7 +16,16 @@ function gtag(...args: unknown[]): void {
 }
 
 export function pageview(url: string): void {
-	gtag("config", GA_MEASUREMENT_ID, { page_path: url });
+	if (typeof window === "undefined") return;
+	// Send an explicit page_view event (not a repeat `config` — GA4 doesn't
+	// reliably emit a hit from that). page_location carries the full URL incl.
+	// utm_* params, which is where GA4 reads campaign/source attribution from;
+	// page_path alone (query-stripped) would lose them.
+	gtag("event", "page_view", {
+		page_path: url,
+		page_location: window.location.href,
+		page_title: document.title,
+	});
 }
 
 export function event(name: string, params?: GtagParams): void {

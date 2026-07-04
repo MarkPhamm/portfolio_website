@@ -17,7 +17,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 	}, []);
 
 	useEffect(() => {
-		trackPageView(router.pathname);
+		// asPath (not pathname) keeps the query string, so the landing page_view's
+		// page_path is accurate; utm_* attribution rides in page_location either way.
+		trackPageView(router.asPath);
 		const handleRouteChange = (url: string) => {
 			trackPageView(url);
 		};
@@ -37,12 +39,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<PageTransition />
 			</IconContext.Provider>
 
-			{/* GA4 — lazyOnload defers loading until after the main thread is idle, keeping it off the critical path */}
+			{/* GA4 — afterInteractive (not lazyOnload): the init must run right after
+			    hydration so window.gtag exists before the first (deferred) page_view
+			    fires. Under lazyOnload the landing page_view was dropped — window.gtag
+			    was still undefined — so utm_* on the entry URL never got recorded.
+			    Page views are sent manually (send_page_view:false) to avoid double
+			    counting; the initial one lands while the entry URL still holds utm_*. */}
 			<Script
 				src="https://www.googletagmanager.com/gtag/js?id=G-FH792RMCK7"
-				strategy="lazyOnload"
+				strategy="afterInteractive"
 			/>
-			<Script id="ga4-init" strategy="lazyOnload">
+			<Script id="ga4-init" strategy="afterInteractive">
 				{`
 					window.dataLayer = window.dataLayer || [];
 					function gtag(){dataLayer.push(arguments);}
