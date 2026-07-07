@@ -77,7 +77,6 @@ const ProjectTile = ({
 			<div
 				ref={tiltRef}
 				className="group block cursor-pointer"
-				data-cursor="view"
 				style={{
 					animationDelay: `${index * 50}ms`,
 					transformStyle: "preserve-3d",

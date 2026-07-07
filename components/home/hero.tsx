@@ -296,7 +296,6 @@ const HeroSection = React.memo(() => {
 				<a
 					href="/minh_pham_resume.pdf"
 					download
-					data-magnetic
 					onClick={() => { trackEvent("resume_download"); upgradeSession("resume_download"); }}
 					className="inline-flex items-center gap-3 px-5 py-3 bg-[#9146FF] hover:bg-[#7B3FD9] text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-[#9146FF]/25 hover:-translate-y-0.5"
 				>
@@ -311,7 +310,6 @@ const HeroSection = React.memo(() => {
 					href="https://calendly.com/minh-pham-insurify/30min"
 					target="_blank"
 					rel="noreferrer"
-					data-magnetic
 					onClick={() => { trackEvent("coffee_chat_click"); upgradeSession("coffee_chat_click"); }}
 					className="inline-flex items-center gap-3 px-5 py-3 bg-white hover:bg-gray-100 text-black text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-white/20 hover:-translate-y-0.5"
 				>

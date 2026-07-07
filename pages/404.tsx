@@ -3,22 +3,16 @@ import Link from "next/link";
 
 import Layout from "@/components/common/layout";
 import Header from "@/components/common/header";
-import Cursor from "@/components/common/cursor";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
 
 export default function NotFound() {
-	const [isDesktop, setIsDesktop] = useState(true);
 	// The 404 is statically pre-rendered as /404 — the real path is only
 	// knowable client-side. Never read router.asPath during render here
 	// (hydration mismatch); echo it post-mount instead.
 	const [path, setPath] = useState("…");
 
 	useEffect(() => {
-		setIsDesktop(
-			typeof window.orientation === "undefined" &&
-				navigator.userAgent.indexOf("IEMobile") === -1
-		);
 		setPath(window.location.pathname);
 	}, []);
 
@@ -26,7 +20,6 @@ export default function NotFound() {
 		<>
 			<Layout title="404 — Page not found | Mark Pham">
 				<Header />
-				<Cursor isDesktop={isDesktop} />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 				<main className="section-container min-h-screen flex flex-col items-center justify-center text-center select-none py-24">
 					<h1 className="text-7xl md:text-9xl font-bold text-gradient w-fit mb-8">

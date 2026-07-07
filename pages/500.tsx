@@ -1,27 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 
 import Layout from "@/components/common/layout";
 import Header from "@/components/common/header";
-import Cursor from "@/components/common/cursor";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
 
 export default function ServerError() {
-	const [isDesktop, setIsDesktop] = useState(true);
-
-	useEffect(() => {
-		setIsDesktop(
-			typeof window.orientation === "undefined" &&
-				navigator.userAgent.indexOf("IEMobile") === -1
-		);
-	}, []);
-
 	return (
 		<>
 			<Layout title="500 — Something broke | Mark Pham">
 				<Header />
-				<Cursor isDesktop={isDesktop} />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 				<main className="section-container min-h-screen flex flex-col items-center justify-center text-center select-none py-24">
 					<h1 className="text-7xl md:text-9xl font-bold text-gradient w-fit mb-8">

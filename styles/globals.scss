@@ -24,7 +24,6 @@
 
 body {
 	@apply bg-gray-900 text-white overflow-x-hidden;
-	cursor: none;
 }
 
 .sql-table {
@@ -191,11 +190,11 @@ html {
 }
 
 /* Visible keyboard-focus indicator.
-   The site hides the native cursor (custom cursor) and previously shipped no
-   focus styles, so keyboard / assistive-tech users had no affordance for where
-   they were on the page. :focus-visible only triggers for keyboard navigation
-   (never on mouse click), so this leaves the pointer-driven hover design
-   untouched while restoring an accessible focus ring. */
+   The site previously shipped no focus styles, so keyboard / assistive-tech
+   users had no affordance for where they were on the page. :focus-visible
+   only triggers for keyboard navigation (never on mouse click), so this
+   leaves the pointer-driven hover design untouched while restoring an
+   accessible focus ring. */
 a:focus-visible,
 button:focus-visible,
 [role="button"]:focus-visible,
@@ -241,10 +240,6 @@ select:focus-visible {
 	@media (min-width: 1800px) {
 		max-width: 80vw;
 	}
-}
-
-a {
-	cursor: none !important;
 }
 
 .typed-cursor {
