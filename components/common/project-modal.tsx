@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { IProject } from "../../constants";
+import { IProject, getTechUrl } from "../../constants";
 import { gsap } from "gsap";
 import { trackEvent, setTag } from "../../utils/clarity";
 import { prefersReducedMotion } from "../../utils/motion";
@@ -186,21 +186,42 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 							Tech Stack
 						</h3>
 						<div className="flex flex-wrap gap-2">
-							{project.tech.map((techItem) => (
-								<div
-									key={techItem}
-									className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800/80 border border-gray-700/50"
-								>
-									<Image
-										src={`/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"].includes(techItem) ? "webp" : "svg"}`}
-										alt={techItem}
-										height={18}
-										width={18}
-										className="opacity-80"
-									/>
-									<span className="text-sm text-gray-300">{techItem}</span>
-								</div>
-							))}
+							{project.tech.map((techItem) => {
+								const url = getTechUrl(techItem);
+								const iconSrc = `/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"].includes(techItem) ? "webp" : "svg"}`;
+								const chipClass =
+									"flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800/80 border border-gray-700/50";
+								const content = (
+									<>
+										<Image
+											src={iconSrc}
+											alt={techItem}
+											height={18}
+											width={18}
+											className="opacity-80"
+										/>
+										<span className="text-sm text-gray-300">{techItem}</span>
+									</>
+								);
+								// Real products link to their official site; concept-only
+								// tech (SSH, TCP/IP, DNS, …) renders as a plain chip.
+								return url ? (
+									<a
+										key={techItem}
+										href={url}
+										target="_blank"
+										rel="noopener noreferrer"
+										aria-label={`${techItem} — opens in new tab`}
+										className={`${chipClass} transition-colors duration-[10ms] hover:border-[#9146FF]/40 hover:bg-gray-700/80`}
+									>
+										{content}
+									</a>
+								) : (
+									<div key={techItem} className={chipClass}>
+										{content}
+									</div>
+								);
+							})}
 						</div>
 					</div>
 

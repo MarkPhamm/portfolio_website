@@ -4,6 +4,89 @@ export const METADATA = {
 	siteUrl: "https://minhbpham.com",
 };
 
+// Official site / definition page for each tech. Keys are lowercased so the
+// varied casing across the data ("dbt"/"Dbt", "Github", "PowerBI", "alteryx")
+// all resolve. Icons render in 3 places — the Skills grid, the project modal,
+// and the pipeline DAG — and all look up their link here via getTechUrl().
+// Concept-only names (ssh, tcp/ip, dns, normalDis, shell, kmeans) are omitted
+// on purpose so they fall back to a plain, non-clickable icon.
+export const TECH_LINKS: Record<string, string> = {
+	// Business Intelligence
+	powerbi: "https://powerbi.microsoft.com/",
+	tableau: "https://www.tableau.com/",
+	mode: "https://mode.com/",
+	hex: "https://hex.tech/",
+	looker: "https://cloud.google.com/looker",
+	// Warehouse and Lakehouse
+	snowflake: "https://www.snowflake.com/",
+	"aws redshift": "https://aws.amazon.com/redshift/",
+	databricks: "https://www.databricks.com/",
+	"apache iceberg": "https://iceberg.apache.org/",
+	"delta lake": "https://delta.io/",
+	// Data Integration
+	airbyte: "https://airbyte.com/",
+	dlt: "https://dlthub.com/",
+	fivetran: "https://www.fivetran.com/",
+	stitch: "https://www.stitchdata.com/",
+	alteryx: "https://www.alteryx.com/",
+	// Orchestration
+	"apache airflow": "https://airflow.apache.org/",
+	dagster: "https://dagster.io/",
+	mageai: "https://www.mage.ai/",
+	orchestra: "https://www.getorchestra.io/",
+	astronomer: "https://www.astronomer.io/",
+	// Data Processing
+	dbt: "https://www.getdbt.com/",
+	trino: "https://trino.io/",
+	spark: "https://spark.apache.org/",
+	hive: "https://hive.apache.org/",
+	hadoop: "https://hadoop.apache.org/",
+	// Streaming
+	kafka: "https://kafka.apache.org/",
+	flink: "https://flink.apache.org/",
+	"spark streaming": "https://spark.apache.org/streaming/",
+	"kinesis firehose": "https://aws.amazon.com/firehose/",
+	pubsub: "https://cloud.google.com/pubsub",
+	// Cloud (AWS)
+	s3: "https://aws.amazon.com/s3/",
+	ec2: "https://aws.amazon.com/ec2/",
+	lambda: "https://aws.amazon.com/lambda/",
+	mwaa: "https://aws.amazon.com/managed-workflows-for-apache-airflow/",
+	vpc: "https://aws.amazon.com/vpc/",
+	// DevOps
+	docker: "https://www.docker.com/",
+	kubernetes: "https://kubernetes.io/",
+	github: "https://github.com/",
+	terraform: "https://www.terraform.io/",
+	aws: "https://aws.amazon.com/",
+	// Project-only tech
+	python: "https://www.python.org/",
+	prefect: "https://www.prefect.io/",
+	duckdb: "https://duckdb.org/",
+	clickhouse: "https://clickhouse.com/",
+	fastapi: "https://fastapi.tiangolo.com/",
+	minio: "https://min.io/",
+	streamlit: "https://streamlit.io/",
+	pandas: "https://pandas.pydata.org/",
+	matplotlib: "https://matplotlib.org/",
+	numpy: "https://numpy.org/",
+	excel: "https://www.microsoft.com/en-us/microsoft-365/excel",
+	powerquery: "https://learn.microsoft.com/power-query/",
+	"microsoft sql server": "https://www.microsoft.com/en-us/sql-server",
+	postgresql: "https://www.postgresql.org/",
+	"docker compose": "https://docs.docker.com/compose/",
+	git: "https://git-scm.com/",
+	azure: "https://azure.microsoft.com/",
+	langchain: "https://www.langchain.com/",
+	openai: "https://openai.com/",
+	// Pipeline-only
+	hightouch: "https://hightouch.com/",
+};
+
+/** Official site for a tech name, or undefined when it has no link. */
+export const getTechUrl = (name: string): string | undefined =>
+	TECH_LINKS[name.trim().toLowerCase()];
+
 export const NAVBARITEMS = [
 	{
 		name: "Home",

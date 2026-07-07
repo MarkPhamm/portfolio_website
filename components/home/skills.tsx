@@ -1,4 +1,4 @@
-import { MENULINKS, SKILLS } from "../../constants";
+import { MENULINKS, SKILLS, getTechUrl } from "../../constants";
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback, memo } from "react";
 // @ts-ignore
@@ -30,8 +30,9 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 
 const SkillIcon = ({ skill, src }: { skill: string; src: string }) => {
 	const [tooltip, setTooltip] = useState<{ x: number; y: number } | null>(null);
+	const url = getTechUrl(skill);
 
-	return (
+	const icon = (
 		<div
 			className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 hover:scale-[1.15] transition-transform duration-[10ms] cursor-pointer"
 			onMouseEnter={(e) => {
@@ -62,6 +63,22 @@ const SkillIcon = ({ skill, src }: { skill: string; src: string }) => {
 				document.body
 			)}
 		</div>
+	);
+
+	// Real products link out to their official site; concept-only icons render
+	// as-is (no link).
+	return url ? (
+		<a
+			href={url}
+			target="_blank"
+			rel="noopener noreferrer"
+			aria-label={`${skill} — opens in new tab`}
+			className="block"
+		>
+			{icon}
+		</a>
+	) : (
+		icon
 	);
 };
 

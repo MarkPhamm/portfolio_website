@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/dist/MotionPathPlugin";
 import { isSmallScreen } from "pages";
 import { NO_MOTION_PREFERENCE_QUERY } from "../../utils/motion";
+import { getTechUrl } from "../../constants";
 
 if (typeof window !== "undefined") {
 	gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -11,6 +12,32 @@ if (typeof window !== "undefined") {
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 const LABEL_HIDDEN_MOBILE = "pl-label hidden md:block";
+
+// Wraps a piece of the (otherwise pointer-events-none) diagram in an SVG anchor
+// so it links to the tool's official site. Concept-only nodes pass a name with
+// no entry in TECH_LINKS and render inert. pointer-events:auto re-enables the
+// click that the root <svg> disables; the whole diagram stays scroll-through.
+const TechLink = ({
+	tech,
+	children,
+}: {
+	tech: string;
+	children: React.ReactNode;
+}) => {
+	const url = getTechUrl(tech);
+	if (!url) return <>{children}</>;
+	return (
+		<a
+			href={url}
+			target="_blank"
+			rel="noopener noreferrer"
+			aria-label={`${tech} — opens in new tab`}
+			className="pointer-events-auto cursor-pointer transition-opacity duration-[10ms] hover:opacity-70"
+		>
+			{children}
+		</a>
+	);
+};
 
 interface NodeProps {
 	x: number;
@@ -26,12 +53,14 @@ interface NodeProps {
 	icon?: string;
 	/** CSS filter for the icon (e.g. invert(1) for black-on-transparent art). */
 	iconFilter?: string;
+	/** Tech name for the outbound link; omit for concept-only nodes. */
+	tech?: string;
 }
 
-const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilter }: NodeProps) => {
+const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilter, tech }: NodeProps) => {
 	// With a left-aligned icon, the text block re-centers in the space to its right.
 	const textX = x + w / 2 + (icon ? 14 : 0);
-	return (
+	const group = (
 		<g className="pl-node" data-name={name}>
 			<rect
 				x={x - 3}
@@ -91,6 +120,7 @@ const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilt
 			)}
 		</g>
 	);
+	return tech ? <TechLink tech={tech}>{group}</TechLink> : group;
 };
 
 const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
@@ -355,8 +385,11 @@ const PipelineDag = () => {
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 			className="w-full h-auto pointer-events-none select-none"
-			aria-hidden="true"
 		>
+			{/* No aria-hidden: the node links are real anchors and must stay
+			    keyboard/screen-reader reachable. Each <a> carries its own label;
+			    decorative packets/edges have none. */}
+			<title>Data pipeline architecture diagram</title>
 			<defs>
 				{/* userSpaceOnUse — bounding-box gradients are undefined (invisible)
 				    on a perfectly horizontal line, whose bbox height is 0. */}
@@ -450,48 +483,52 @@ const PipelineDag = () => {
 				<Node x={30} y={212} w={200} h={56} label="operational APIs" sub="leads · quotes · policies" name="src-operational" icon="/pipeline/api.svg" />
 				<Node x={30} y={322} w={200} h={56} label="partner files" sub="drop into S3" name="src-files" icon="/pipeline/files.svg" />
 				<Node x={30} y={432} w={200} h={56} label="partner email" sub="files as attachments" name="src-email" icon="/pipeline/email.svg" />
-				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" />
+				<Node x={30} y={562} w={200} h={56} label="RDS tables" sub="Postgres / MySQL" name="src-rds" icon="/projects/tech/PostgreSQL.svg" tech="PostgreSQL" />
 
 				{/* Reverse ETL — Hightouch activates curated marts back to the ad platforms.
 				    Rendered inline (not via <Node>) so it can run a little larger than the
 				    other cards to spotlight the reverse-ETL leg; sits in the top lane and the
 				    arc returns down into the marketing APIs node. */}
-				<g className="pl-node" data-name="rev-ht">
-					<rect x={567} y={-101} width={276} height={78} rx={15} fill="none" stroke="#BF94FF" strokeOpacity={0.12} strokeWidth={1.5} />
-					<rect x={570} y={-98} width={270} height={72} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#BF94FF" strokeOpacity={0.55} strokeWidth={1.5} />
-					<image href="/pipeline/hightouch.png" x={590} y={-78} width={32} height={32} clipPath="url(#pl-ht-clip)" />
-					<text x={729} y={-68} textAnchor="middle" fill="#D1D5DB" fontSize={16} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						Hightouch
-					</text>
-					<text x={729} y={-48} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						reverse ETL · sync audiences
-					</text>
-				</g>
+				<TechLink tech="Hightouch">
+					<g className="pl-node" data-name="rev-ht">
+						<rect x={567} y={-101} width={276} height={78} rx={15} fill="none" stroke="#BF94FF" strokeOpacity={0.12} strokeWidth={1.5} />
+						<rect x={570} y={-98} width={270} height={72} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#BF94FF" strokeOpacity={0.55} strokeWidth={1.5} />
+						<image href="/pipeline/hightouch.png" x={590} y={-78} width={32} height={32} clipPath="url(#pl-ht-clip)" />
+						<text x={729} y={-68} textAnchor="middle" fill="#D1D5DB" fontSize={16} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							Hightouch
+						</text>
+						<text x={729} y={-48} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							reverse ETL · sync audiences
+						</text>
+					</g>
+				</TechLink>
 				<polygon points="173,90 187,90 180,105" fill="#BF94FF" fillOpacity={0.7} className="pl-label" />
 
 				{/* Ingestion */}
-				<Node x={295} y={212} w={180} h={56} label="apis processor" sub="transform · standardize" name="ing-python" icon="/projects/tech/python.svg" />
-				<Node x={295} y={432} w={180} h={56} label="email processor" sub="inbox → S3" name="ing-email" icon="/projects/tech/python.svg" />
+				<Node x={295} y={212} w={180} h={56} label="apis processor" sub="transform · standardize" name="ing-python" icon="/projects/tech/python.svg" tech="python" />
+				<Node x={295} y={432} w={180} h={56} label="email processor" sub="inbox → S3" name="ing-email" icon="/projects/tech/python.svg" tech="python" />
 
 				{/* Lake */}
-				<g className="pl-node" data-name="s3">
-					<rect x={532} y={227} width={146} height={226} rx={15} fill="none" stroke="#34D399" strokeOpacity={0.1} strokeWidth={1.5} />
-					<rect x={535} y={230} width={140} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
-					<image href="/skills/1st/S3.webp" x={581} y={255} width={48} height={48} />
-					<text x={605} y={335} textAnchor="middle" fill="#34D399" fontSize={24} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						S3
-					</text>
-					<text x={605} y={368} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						raw archive
-					</text>
-					<text x={605} y={388} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						daily partitions
-					</text>
-				</g>
+				<TechLink tech="S3">
+					<g className="pl-node" data-name="s3">
+						<rect x={532} y={227} width={146} height={226} rx={15} fill="none" stroke="#34D399" strokeOpacity={0.1} strokeWidth={1.5} />
+						<rect x={535} y={230} width={140} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
+						<image href="/skills/1st/S3.webp" x={581} y={255} width={48} height={48} />
+						<text x={605} y={335} textAnchor="middle" fill="#34D399" fontSize={24} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							S3
+						</text>
+						<text x={605} y={368} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							raw archive
+						</text>
+						<text x={605} y={388} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							daily partitions
+						</text>
+					</g>
+				</TechLink>
 
 				{/* Load */}
-				<Node x={735} y={262} w={150} h={56} label="Airbyte" sub="S3 → Redshift" name="airbyte" icon="/skills/1st/Airbyte.svg" />
-				<Node x={735} y={362} w={150} h={56} label="COPY" sub="bulk file loads" name="copy" icon="/skills/1st/AWS%20Redshift.svg" />
+				<Node x={735} y={262} w={150} h={56} label="Airbyte" sub="S3 → Redshift" name="airbyte" icon="/skills/1st/Airbyte.svg" tech="Airbyte" />
+				<Node x={735} y={362} w={150} h={56} label="COPY" sub="bulk file loads" name="copy" icon="/skills/1st/AWS%20Redshift.svg" tech="AWS Redshift" />
 
 				{/* Warehouse + transform */}
 				<g className="pl-node" data-name="warehouse">
@@ -501,29 +538,35 @@ const PipelineDag = () => {
 						Redshift + dbt
 					</text>
 					<line x1={972} y1={212} x2={1138} y2={212} stroke="#9146FF" strokeOpacity={0.3} strokeWidth={1} />
-					<image href="/skills/1st/AWS%20Redshift.svg" x={988} y={232} width={20} height={20} />
-					<text x={1065} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						Redshift
-					</text>
-					<text x={1055} y={266} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						raw schemas + curated marts
-					</text>
+					<TechLink tech="AWS Redshift">
+						<image href="/skills/1st/AWS%20Redshift.svg" x={988} y={232} width={20} height={20} />
+						<text x={1065} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							Redshift
+						</text>
+						<text x={1055} y={266} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							raw schemas + curated marts
+						</text>
+					</TechLink>
 					<line x1={972} y1={292} x2={1138} y2={292} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
-					<image href="/skills/1st/dbt.svg" x={978} y={312} width={20} height={20} />
-					<text x={1065} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						dbt models
-					</text>
-					<text x={1055} y={346} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						stg → int → marts
-					</text>
+					<TechLink tech="dbt">
+						<image href="/skills/1st/dbt.svg" x={978} y={312} width={20} height={20} />
+						<text x={1065} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							dbt models
+						</text>
+						<text x={1055} y={346} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							stg → int → marts
+						</text>
+					</TechLink>
 					<line x1={972} y1={372} x2={1138} y2={372} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
-					<image href="/skills/1st/Github.svg" x={982} y={392} width={20} height={20} />
-					<text x={1065} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						dbt CI/CD
-					</text>
-					<text x={1055} y={426} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-						PR checks · deploy
-					</text>
+					<TechLink tech="Github">
+						<image href="/skills/1st/Github.svg" x={982} y={392} width={20} height={20} />
+						<text x={1065} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							dbt CI/CD
+						</text>
+						<text x={1055} y={426} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							PR checks · deploy
+						</text>
+					</TechLink>
 					<text x={1055} y={482} textAnchor="middle" fill="#34D399" fontSize={13} fontFamily={MONO_FONT} opacity={0.6} className={`pl-status ${LABEL_HIDDEN_MOBILE}`}>
 						dbt run ✓
 					</text>
@@ -531,16 +574,18 @@ const PipelineDag = () => {
 
 				{/* Consumers */}
 				<Node x={1225} y={197} w={200} h={56} label="RTB ML model" sub="real-time bidding" name="con-rtb" stroke="#BF94FF" icon="/pipeline/kmeans.png" iconFilter="invert(1)" />
-				<Node x={1225} y={312} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" icon="/skills/1st/Mode.svg" />
-				<Node x={1225} y={427} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" icon="/skills/1st/Hex.svg" />
+				<Node x={1225} y={312} w={200} h={56} label="Mode" sub="BI dashboards" name="con-mode" stroke="#BF94FF" icon="/skills/1st/Mode.svg" tech="Mode" />
+				<Node x={1225} y={427} w={200} h={56} label="Hex" sub="notebooks · ad-hoc" name="con-hex" stroke="#BF94FF" icon="/skills/1st/Hex.svg" tech="Hex" />
 
 				{/* Orchestration bar */}
 				<path d={ORCH_PATH} className="pl-orch-line" stroke="url(#pl-orch-grad)" strokeWidth={4} strokeLinecap="round" fill="none" />
 				<polygon points="1230,678 1258,690 1230,702" fill="#BF94FF" className="pl-label" />
-				<image href="/projects/tech/Apache%20Airflow.svg" x={678} y={643} width={28} height={28} />
-				<text x={790} y={664} textAnchor="middle" fill="#BF94FF" fontSize={16} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
-					Airflow on MWAA
-				</text>
+				<TechLink tech="Apache Airflow">
+					<image href="/projects/tech/Apache%20Airflow.svg" x={678} y={643} width={28} height={28} />
+					<text x={790} y={664} textAnchor="middle" fill="#BF94FF" fontSize={16} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+						Airflow on MWAA
+					</text>
+				</TechLink>
 				<text x={775} y={724} textAnchor="middle" fill="#6B7280" fontSize={12.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 					schedules ingestion · dbt runs · data-quality checks · CI/CD
 				</text>
