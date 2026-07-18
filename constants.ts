@@ -151,6 +151,13 @@ export const MENULINKS = [
 
 export const COMMENTS = [
 	{
+		comment: "Mark is a superb analytics engineer and coworker. At Insurify, he owns a number of key data pipelines and is the human dictionary of our tech stack. He works hard, efficiently, and sets the example for learning new technologies. He is a force for progress within Insurify, and I'm thankful to count him as a coworker and friend.",
+		author: "Peter, Manto",
+		position: "Data Analyst - Insurify",
+		recomendationType: "work",
+		avatar: "/person/manto.webp",
+	},
+	{
 		comment: "Minh's exceptional documentation skills stood out significantly. He always meticulously documented every process and project he worked on, ensuring that his contributions would continue to benefit the team long after his internship concluded. His proactive approach and willingness to go above and beyond what was expected of his position truly set him apart.",
 		author: "Josef, Cohen",
 		position: "Associate Data Engineer - Meta (Ex-Lazard)",
