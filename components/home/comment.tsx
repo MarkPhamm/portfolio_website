@@ -52,11 +52,24 @@ const CommentTile = (props: {
 	);
 };
 
+const FILTERS = [
+	{ label: "Insurify", value: "insurify" },
+	{ label: "Lazard", value: "lazard" },
+	{ label: "Mentorship", value: "mentorship" },
+	{ label: "Academia", value: "academia" },
+];
+
 const CommentSection = ({ }: IDesktop) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [isPaused, setIsPaused] = useState(false);
+	const [activeFilter, setActiveFilter] = useState("all");
 
-	const totalSlides = COMMENTS.length;
+	const filteredComments =
+		activeFilter === "all"
+			? COMMENTS
+			: COMMENTS.filter((comment) => comment.company === activeFilter);
+
+	const totalSlides = filteredComments.length;
 
 	const goToNext = useCallback(() => {
 		setCurrentIndex((prev) => (prev + 1) % totalSlides);
@@ -72,6 +85,13 @@ const CommentSection = ({ }: IDesktop) => {
 
 	const handleNav = (direction: "prev" | "next" | "dot", slide?: number) => {
 		trackEvent("testimonial_nav", { direction, ...(slide !== undefined && { slide }) });
+	};
+
+	const handleFilter = (filter: string) => {
+		const nextFilter = activeFilter === filter ? "all" : filter;
+		trackEvent("testimonial_filter", { filter: nextFilter });
+		setActiveFilter(nextFilter);
+		setCurrentIndex(0);
 	};
 
 	// Auto-play functionality
@@ -128,9 +148,9 @@ const CommentSection = ({ }: IDesktop) => {
 
 					{/* Slides Container */}
 					<div className="relative mb-4 overflow-hidden">
-						{COMMENTS.map((comment, index) => (
+						{filteredComments.map((comment, index) => (
 							<div
-								key={index}
+								key={comment.author}
 								className={index === currentIndex ? "relative" : "absolute inset-0 pointer-events-none"}
 							>
 								<CommentTile
@@ -170,9 +190,9 @@ const CommentSection = ({ }: IDesktop) => {
 
 				{/* Navigation Dots */}
 				<div className="flex justify-center gap-3 mt-3">
-					{COMMENTS.map((_, index) => (
+					{filteredComments.map((comment, index) => (
 						<button
-							key={index}
+							key={comment.author}
 							onClick={() => { handleNav("dot", index); goToSlide(index); }}
 							className={`w-3.5 h-3.5 rounded-full transition-all duration-[10ms] ${index === currentIndex
 									? "bg-[#9146FF] w-10"
@@ -191,6 +211,22 @@ const CommentSection = ({ }: IDesktop) => {
 							style={{ width: `${((currentIndex + 1) / totalSlides) * 100}%` }}
 						/>
 					</div>
+				</div>
+
+				{/* Filter Buttons */}
+				<div className="flex flex-wrap justify-center gap-3 mt-6">
+					{FILTERS.map((filter) => (
+						<button
+							key={filter.value}
+							onClick={() => handleFilter(filter.value)}
+							className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-[10ms] ${activeFilter === filter.value
+									? "bg-[#9146FF] border-[#9146FF] text-white"
+									: "bg-gray-900 border-gray-700 text-gray-300 hover:border-[#9146FF]/50 hover:text-white"
+								}`}
+						>
+							{filter.label}
+						</button>
+					))}
 				</div>
 
 				<div className="mt-6 flex justify-center">

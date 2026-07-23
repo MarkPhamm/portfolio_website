@@ -155,6 +155,7 @@ export const COMMENTS = [
 		author: "Peter, Manto",
 		position: "Data Analyst - Insurify",
 		recomendationType: "work",
+		company: "insurify",
 		avatar: "/person/manto.webp",
 	},
 	{
@@ -162,6 +163,7 @@ export const COMMENTS = [
 		author: "Josef, Cohen",
 		position: "Associate Data Engineer - Meta (Ex-Lazard)",
 		recomendationType: "college",
+		company: "lazard",
 		avatar: "/person/josef.webp",
 	},
 	{
@@ -169,6 +171,7 @@ export const COMMENTS = [
 		author: "Kelly, Slaughter",
 		position: "BIS Program Director - Texas Christian University",
 		recomendationType: "college",
+		company: "academia",
 		avatar: "/person/slaughter.webp",
 	},
 	{
@@ -176,6 +179,7 @@ export const COMMENTS = [
 		author: "Tom, Kinch",
 		position: "Senior Data Engineer - Lazard",
 		recomendationType: "college",
+		company: "lazard",
 		avatar: "/person/default.webp",
 	},
 	{
@@ -183,6 +187,7 @@ export const COMMENTS = [
 		author: "Gary, Klinger",
 		position: "Python for Data Analytics Professor - Texas Christian University",
 		recomendationType: "college",
+		company: "academia",
 		avatar: "/person/klinger.webp",
 	},
 	{
@@ -190,7 +195,32 @@ export const COMMENTS = [
 		author: "Luo, Hubert",
 		position: "Data Analytic Vice President - Lazard",
 		recomendationType: "college",
+		company: "lazard",
 		avatar: "/person/hubert.webp",
+	},
+	{
+		comment: "Minh's passion for data is genuine and inspiring, whether he's writing on Substack or just asking questions to deepen his own understanding. What I appreciate most is how he mentors: he believes in his students and always pushes us to think deeper instead of handing over the answers. His support and belief in my potential have meant more than he probably realizes.",
+		author: "Mia, Tran",
+		position: "GHC '25 | SDS, Quant Econ @ Smith College",
+		recomendationType: "mentee",
+		company: "mentorship",
+		avatar: "/person/mia.webp",
+	},
+	{
+		comment: "Mark is the kind of mentor that pushes you forward and is critical of your work — he won't let you look back on a failure without a lesson attached. Your notes end up full of irreplaceable insights: interview tips, business context, technical updates. Working with Mark is the fastest way to level up your skills in a corporate setting, even if you've never experienced one before.",
+		author: "Gwen, Nguyen",
+		position: "Incoming @ Arch",
+		recomendationType: "mentee",
+		company: "mentorship",
+		avatar: "/person/gwen.webp",
+	},
+	{
+		comment: "Mark owns numerous pipelines and alert systems that improved efficiency across all sites at Insurify, and is credited for his speed and scalability mindset. He's good at what he knows — and if he doesn't know something yet, he will by next Monday. Glad to work with him as a coworker and a friend.",
+		author: "Derek, Le",
+		position: "Data @ Insurify | Data Science @ TCU",
+		recomendationType: "work",
+		company: "insurify",
+		avatar: "/person/derek.webp",
 	}
 ]
 
