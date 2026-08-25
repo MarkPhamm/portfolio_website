@@ -254,6 +254,12 @@ const Editor = ({ file }: { file: ITestimonialFile | null }) => {
 				<span className="flex items-center gap-1" style={{ color }}>
 					<VscFolderOpened aria-hidden="true" /> {file.folder}
 				</span>
+				{file.subfolder && (
+					<>
+						<VscChevronRight aria-hidden="true" />
+						<span className="text-gray-400">{file.subfolder}</span>
+					</>
+				)}
 				<VscChevronRight aria-hidden="true" />
 				<span className="flex items-center gap-1 text-gray-300">
 					<VscMarkdown style={{ color }} aria-hidden="true" /> {file.fileName}

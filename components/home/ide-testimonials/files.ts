@@ -5,6 +5,7 @@ export interface ITestimonialFile {
 	id: string; // "noah-pelberg"
 	fileName: string; // "noah_pelberg.md"
 	folder: string; // company: insurify | lazard | academia | mentees | mentors
+	subfolder?: string; // Insurify relationship group: senior | peers | junior
 	tag: string; // recomendationType: work | college | mentee
 	displayName: string; // "Noah Pelberg"
 	rawAuthor: string; // "Noah, Pelberg" — the COMMENTS/THEMES join key
@@ -40,10 +41,21 @@ const toLines = (comment: string): string[] =>
 
 export const FILES: ITestimonialFile[] = COMMENTS.map((c) => {
 	const parts = nameParts(c.author);
+	const insurifyGroup: Record<string, string> = {
+		"Aaron, Chen": "senior",
+		"Noah, Pelberg": "peers",
+		"Steven, Egnaczyk": "peers",
+		"Max, Brinker": "peers",
+		"Peter, Manto": "peers",
+		"Derek, Le": "junior",
+		"Yuki, Fang": "junior",
+		"Ethan, Liu": "junior",
+	};
 	return {
 		id: parts.join("-"),
 		fileName: `${parts.join("_")}.md`,
 		folder: c.company,
+		subfolder: c.company === "insurify" ? insurifyGroup[c.author] : undefined,
 		tag: c.recomendationType,
 		displayName: c.author.replace(", ", " "),
 		rawAuthor: c.author,
@@ -53,17 +65,32 @@ export const FILES: ITestimonialFile[] = COMMENTS.map((c) => {
 	};
 });
 
-// Folders grouped by company, in first-encounter order.
-export const FOLDERS: { name: string; files: ITestimonialFile[] }[] =
-	FILES.reduce<{ name: string; files: ITestimonialFile[] }[]>(
-		(folders, file) => {
-			const existing = folders.find((f) => f.name === file.folder);
-			if (existing) existing.files.push(file);
-			else folders.push({ name: file.folder, files: [file] });
-			return folders;
-		},
-		[]
-	);
+export interface ITestimonialFolder {
+	name: string;
+	files: ITestimonialFile[];
+	children?: ITestimonialFolder[];
+}
+
+// Folders grouped by company, with Insurify recommendations split by working
+// relationship. Other companies remain one level deep.
+export const FOLDERS: ITestimonialFolder[] = FILES.reduce<ITestimonialFolder[]>(
+	(folders, file) => {
+		const existing = folders.find((f) => f.name === file.folder);
+		if (existing) {
+			if (file.folder !== "insurify") existing.files.push(file);
+		} else if (file.folder === "insurify") {
+			const groups = ["senior", "peers", "junior"].map((name) => ({
+				name,
+				files: FILES.filter((candidate) => candidate.subfolder === name),
+			}));
+			folders.push({ name: file.folder, files: [], children: groups });
+		} else {
+			folders.push({ name: file.folder, files: [file] });
+		}
+		return folders;
+	},
+	[]
+);
 
 // TESTIMONIAL_THEMES.authors keeps the raw "First, Last" strings — this lookup
 // bridges them to files without touching the constants.ts contract.
