@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.16.5 | 2026-08-25 | Add Aaron Chen's LinkedIn recommendation to `COMMENTS` as the newest Insurify entry, using his supplied portrait at `/person/aaron.png`. Link Aaron to the matching common-theme groups for mentorship, end-to-end pipelines, technical expertise, passion, teamwork, and going above and beyond. |
 | v3.16.4 | 2026-08-11 | Ace Mentorships stack tweak (Mark: "remove airbyte add python there") — Airbyte swapped for Python; final stack: Snowflake · dbt · Mode · Airflow · Python · Terraform. |
 | v3.16.3 | 2026-08-11 | Tech stack for the Ace Mentorships timeline card (Mark: "data career montor is similar to insurify but remove redshift add snowflake and remove hex") — the Data Mentor entry gets Insurify's stack with Snowflake in place of Redshift and Hex dropped: Snowflake · dbt · Mode · Airflow · Airbyte · Terraform. |
 | v3.16.2 | 2026-08-11 | Timeline card order tweak (Mark: "move the icon of the experience to above the location") — the tech-stack icon row now renders between the role subtitle and the location badge instead of below the badge. Pure JSX reorder in `timeline.tsx`; alignment/margins unchanged. |
