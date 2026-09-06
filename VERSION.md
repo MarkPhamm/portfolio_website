@@ -2,6 +2,7 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.17.4 | 2026-08-25 | Add Aaron Chen's LinkedIn recommendation to `COMMENTS` as the newest Insurify entry, using his supplied portrait at `/person/aaron.png`. Link Aaron to the matching common-theme groups for mentorship, end-to-end pipelines, technical expertise, passion, teamwork, and going above and beyond. Kept from `main` (was v3.16.5 there) when merging into this branch; the branch already used v3.16.5 for the Infinite Lambda tech-stack row. |
 | v3.17.3 | 2026-08-12 | Warehouse-card row alignment (Mark, with a screenshot of the Snowflake + dbt card: "why does these not allign") — each row's icon+label pair centered on a different axis (~1045) than its sub line (1055), so rows looked staggered. Row labels now sit at x=1069 (= 1055 + half the icon+gap width) with icons positioned from each label's mono width, so every icon+label pair and its sub line share the 1055 center. Fixed in BOTH variants — the Insurify Redshift card had the same flaw since v3.8.x. |
 | v3.17.2 | 2026-08-12 | Faster auto-morph (Mark: "can you auto toggle it after like 5 seconds?") — the one-time Insurify → Infinite Lambda auto-switch now fires 5s into the loop (`loop.call(..., 5)`) instead of after a full ~10s pass (`onRepeat`). Still rides the timeline, so it pauses off-screen and any manual pill click cancels it. |
 | v3.17.1 | 2026-08-12 | Infinite Lambda start date corrected on the timeline (Mark: "change start date to september 2026 instead") — TIMELINE header "October 2026" → "September 2026". |

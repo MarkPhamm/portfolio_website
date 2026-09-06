@@ -172,6 +172,22 @@ export const MENULINKS = [
 
 export const COMMENTS = [
 	{
+		comment: "Minh has been a stellar contributor to the Analytics team at Insurify. He excels at communicating with stakeholders and at sharing his deep analytics engineering knowledge with the team — he's genuinely versed in the mechanics of how tools like dbt, Snowflake, and Redshift work under the hood, not just how to use them. He also worked closely and effectively with the SEO team to figure out metrics that actually mattered to them. His passion for the field comes through in an unmatched work ethic, day in and day out. Any organization that values end-to-end data engineering expertise would be lucky to have Minh — he's the real deal.",
+		author: "Aaron, Chen",
+		position: "Senior Analytics Engineer @ Insurify",
+		recomendationType: "work",
+		company: "insurify",
+		avatar: "/person/aaron.png",
+	},
+	{
+		comment: "Me and Minh joined Insurify around 2 weeks apart and it was evidently clear from the beginning that he is a 1 of 1 individual. Incredibly curious and hard-working, Minh quickly became a prominent team member helping our core analytics team grow at Insurify. On the occasions where I worked directly with Minh on a task, he was sharp, thorough, and had refused to stop until he had enough information to fully understand and solve the problem. He has the foresight and thirst for knowledge to solve for not only the current task, but any tasks that might come after it. Minh's departure from Insurify will leave a large hole in the office not just for what he brings to the table technically, but culturally as well. Any company, manager, or team would be lucky to have Minh as an additional to their team.",
+		author: "Steven, Egnaczyk",
+		position: "Product @ Insurify | MS in Computer Science and Engineering",
+		recomendationType: "work",
+		company: "insurify",
+		avatar: "/person/steven.png",
+	},
+	{
 		comment: "I worked with Mark at Insurify, where he owned a large breadth and depth of marketing data models and pipelines. What sets Mark apart is that analytics engineering is not only his career, it's his passion — no one talks about it with such passion and conviction as Mark does. Amongst many great traits and skills, his best is that he is A TEAM MULTIPLIER: an expert IC who multiplies those around him, taking the time to educate and mentor his teammates, unlocking and democratizing analytics for all. If I'm starting a business tomorrow, Mark is my first analytics engineering hire.",
 		author: "Noah, Pelberg",
 		position: "Product & Analytics @ Insurify",
@@ -306,6 +322,7 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 		label: "Mentorship & teaching",
 		blurb: "Educates and levels up everyone around him",
 		authors: [
+			"Aaron, Chen",
 			"Noah, Pelberg",
 			"Ethan, Liu",
 			"Yuki, Fang",
@@ -318,6 +335,7 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 		label: "Owns pipelines end-to-end",
 		blurb: "Trusted with the data models decisions run on",
 		authors: [
+			"Aaron, Chen",
 			"Noah, Pelberg",
 			"Ethan, Liu",
 			"Max, Brinker",
@@ -329,6 +347,7 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 		label: "Deep technical expertise",
 		blurb: "SQL, Python, dbt — the team's human dictionary",
 		authors: [
+			"Aaron, Chen",
 			"Max, Brinker",
 			"Peter, Manto",
 			"Yuki, Fang",
@@ -341,6 +360,7 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 		label: "Passion & fast learning",
 		blurb: "Genuine drive; learns anything by next Monday",
 		authors: [
+			"Aaron, Chen",
 			"Noah, Pelberg",
 			"Kelly, Slaughter",
 			"Gary, Klinger",
@@ -353,12 +373,19 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 	{
 		label: "Team multiplier",
 		blurb: "Coordinates across teams and lifts everyone's output",
-		authors: ["Noah, Pelberg", "Max, Brinker", "Peter, Manto", "Derek, Le"],
+		authors: [
+			"Aaron, Chen",
+			"Noah, Pelberg",
+			"Max, Brinker",
+			"Peter, Manto",
+			"Derek, Le",
+		],
 	},
 	{
 		label: "Goes above & beyond",
 		blurb: "Does more than the role asks — every time",
 		authors: [
+			"Aaron, Chen",
 			"Josef, Cohen",
 			"Tom, Kinch",
 			"Gary, Klinger",
