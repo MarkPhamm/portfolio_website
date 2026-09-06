@@ -114,7 +114,7 @@ const Assistant = ({
 				<span className="font-mono text-xs font-semibold tracking-widest bg-gradient-to-r from-[#9146FF] to-[#BF94FF] bg-clip-text text-transparent">
 					MARKBOT
 				</span>
-				<span className="hidden sm:inline font-mono text-[10px] text-gray-500">
+				<span className="hidden sm:inline font-mono text-[10px] text-gray-400">
 					scripted · no tokens were harmed
 				</span>
 				<span className="ml-auto text-gray-500 lg:hidden" aria-hidden="true">
@@ -188,7 +188,7 @@ const Assistant = ({
 
 				{/* Prompt chips */}
 				<div className="mt-auto px-3 py-3 border-t border-gray-800/70">
-					<p className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+					<p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-2">
 						Suggested prompts
 					</p>
 					<div className="flex flex-wrap gap-1.5">

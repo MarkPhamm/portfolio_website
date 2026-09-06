@@ -136,7 +136,7 @@ const DailyActivityHeatmap = () => {
 		<div className="relative rounded-xl overflow-hidden bg-gray-800/30 border border-gray-700/30 p-4">
 			<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] opacity-40" />
 			<h4 className="text-sm font-medium text-gray-400 mb-4">
-				Daily Activity <span className="text-gray-500">· last 12 months</span>
+				Daily Activity <span className="text-gray-400">· last 12 months</span>
 			</h4>
 			<a
 				href={`https://wakatime.com/@${WAKATIME_USERNAME}`}

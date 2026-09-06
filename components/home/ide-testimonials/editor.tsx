@@ -248,7 +248,7 @@ const Editor = ({ file }: { file: ITestimonialFile | null }) => {
 			</div>
 
 			{/* Breadcrumbs */}
-			<div className="flex items-center gap-1 px-4 pt-2 font-mono text-[11px] text-gray-500 select-none">
+			<div className="flex items-center gap-1 px-4 pt-2 font-mono text-[11px] text-gray-400 select-none">
 				recommendations
 				<VscChevronRight aria-hidden="true" />
 				<span className="flex items-center gap-1" style={{ color }}>

@@ -406,17 +406,17 @@ export const TESTIMONIAL_THEMES: ITestimonialTheme[] = [
 ];
 
 export const TYPED_STRINGS = [
-	'<span style="color:#9146FF">1000+</span> SQL questions solved',
-	'<span style="color:#9146FF">Senior Analytics Engineer</span> @InfiniteLambda',
-	'<span style="color:#9146FF">TCU</span> class of 2025',
-	'<span style="color:#9146FF">Remote</span>',
+	'<span style="color:#BF94FF">1000+</span> SQL questions solved',
+	'<span style="color:#BF94FF">Senior Analytics Engineer</span> @InfiniteLambda',
+	'<span style="color:#BF94FF">TCU</span> class of 2025',
+	'<span style="color:#BF94FF">Remote</span>',
 ];
 
 export const QUOTE_STRINGS = [
-	'Analytics isn\'t just my job - it\'s my <span style="color:#9146FF">obsession</span>',
-	'Always run the <span style="color:#9146FF">extra miles</span>',
-	'I don\'t just <span style="color:#9146FF">"meet"</span> expectations - I go <span style="color:#9146FF">beyond</span> them',
-	'Turning <span style="color:#9146FF">raw data</span> into <span style="color:#9146FF">actionable insights</span>',
+	'Analytics isn\'t just my job - it\'s my <span style="color:#BF94FF">obsession</span>',
+	'Always run the <span style="color:#BF94FF">extra miles</span>',
+	'I don\'t just <span style="color:#BF94FF">"meet"</span> expectations - I go <span style="color:#BF94FF">beyond</span> them',
+	'Turning <span style="color:#BF94FF">raw data</span> into <span style="color:#BF94FF">actionable insights</span>',
 ];
 
 export const SOCIAL_LINKS = {

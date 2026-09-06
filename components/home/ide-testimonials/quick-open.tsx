@@ -143,7 +143,7 @@ const QuickOpen = ({
 				</div>
 				<div ref={listRef} className="max-h-64 overflow-y-auto ide-scroll py-1">
 					{results.length === 0 && (
-						<p className="px-4 py-3 font-mono text-xs text-gray-500">
+						<p className="px-4 py-3 font-mono text-xs text-gray-400">
 							no matching files — try a first name
 						</p>
 					)}

@@ -305,7 +305,7 @@ const SqlTerminalSection = () => {
 								>
 									{t.table}
 								</button>
-								<div className="mt-1 text-gray-500 leading-relaxed">
+								<div className="mt-1 text-gray-400 leading-relaxed">
 									{t.columns.join(" · ")}
 								</div>
 							</div>
@@ -422,7 +422,7 @@ const SqlTerminalSection = () => {
 														className="px-3 py-2 border-b border-gray-800/50 text-gray-300 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis"
 													>
 														{row[c] === null || row[c] === undefined ? (
-															<span className="text-gray-600">NULL</span>
+															<span className="text-gray-400">NULL</span>
 														) : (
 															String(row[c])
 														)}
@@ -435,7 +435,7 @@ const SqlTerminalSection = () => {
 							</div>
 						</div>
 						{rows.length > MAX_RENDERED_ROWS && (
-							<p className="mt-2 font-mono text-xs text-gray-500">
+							<p className="mt-2 font-mono text-xs text-gray-400">
 								showing {MAX_RENDERED_ROWS} of {rows.length} rows
 							</p>
 						)}

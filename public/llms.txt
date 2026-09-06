@@ -1,0 +1,25 @@
+# Minh (Mark) Pham
+
+> Senior Analytics Engineer at Infinite Lambda. This site is a portfolio of data engineering work, analytics writing, projects, and ways to get in touch.
+
+I bridge the gap between data and actionable insights. The homepage includes a live SQL playground, skillset, selected projects, GitHub and WakaTime activity, and experience.
+
+## Pages
+
+- [Home](https://minhbpham.com/): Portfolio homepage with skills, projects, experience, and a live SQL playground
+- [Passion](https://minhbpham.com/aboutme/passion): Cooking and life outside of data work
+- [Start-up](https://minhbpham.com/aboutme/startup): Scholarship start-up story
+- [Reads](https://minhbpham.com/aboutme/reads): Books and articles I recommend
+
+## Writing and work
+
+- [Substack](https://substack.com/@markphammm/posts): Analytics engineering writing
+- [Resume](https://minhbpham.com/minh_pham_resume.pdf): Downloadable PDF resume
+
+## Connect
+
+- [LinkedIn](https://www.linkedin.com/in/minhbphamm/): Professional profile
+- [GitHub](https://github.com/MarkPhamm): Open source and project code
+- [WakaTime](https://wakatime.com/@MarkPham): Coding activity
+- [LeetCode](https://leetcode.com/u/markphammm/): SQL and algorithm practice
+- [Book a coffee chat](https://calendly.com/minhbpham2003/30min): 30-minute intro call

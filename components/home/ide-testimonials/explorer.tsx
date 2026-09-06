@@ -89,7 +89,7 @@ const Explorer = ({
 
 	return (
 		<div className="py-3 font-mono text-xs text-gray-400 h-full overflow-y-auto ide-scroll">
-			<p className="px-4 mb-2 text-[10px] tracking-widest uppercase text-gray-500 select-none">
+			<p className="px-4 mb-2 text-[10px] tracking-widest uppercase text-gray-400 select-none">
 				Explorer
 			</p>
 			<p className="ide-tree-row px-4 py-1 flex items-center gap-1.5 text-gray-300 select-none">

@@ -196,7 +196,7 @@ const ThreadsMarquee = ({
 
 	return (
 		<div className="mb-10" ref={stripRef}>
-			<p className="text-xs uppercase tracking-widest text-gray-500 mb-3">
+			<p className="text-xs uppercase tracking-widest text-gray-400 mb-3">
 				Common threads · click to open who said it
 			</p>
 			<div
