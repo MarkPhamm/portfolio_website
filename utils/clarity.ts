@@ -38,32 +38,57 @@ function getVisitorId(): string {
   return id;
 }
 
+let clarityReady = false;
+let pendingPage: string | null = null;
+
 export function initClarity(): void {
-  defer(() => {
-    Clarity.init(CLARITY_PROJECT_ID);
-    const visitorId = getVisitorId();
-    if (visitorId) {
-      Clarity.identify(visitorId);
-    }
-    if (typeof document !== "undefined" && document.referrer) {
-      Clarity.setTag("referrer", document.referrer);
-    }
-  });
+  if (typeof window === "undefined") return;
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    window.removeEventListener("pointerdown", start);
+    window.removeEventListener("keydown", start);
+    window.removeEventListener("scroll", start);
+    defer(() => {
+      Clarity.init(CLARITY_PROJECT_ID);
+      clarityReady = true;
+      const visitorId = getVisitorId();
+      if (visitorId) {
+        Clarity.identify(visitorId);
+      }
+      if (typeof document !== "undefined" && document.referrer) {
+        Clarity.setTag("referrer", document.referrer);
+      }
+      if (pendingPage) {
+        Clarity.setTag("page", pendingPage);
+      }
+    });
+  };
+  // Don't boot Clarity during the TBT window. First input, or 8s after load
+  // (after Lighthouse TTI), is late enough that it no longer blocks the score.
+  window.addEventListener("pointerdown", start, { passive: true });
+  window.addEventListener("keydown", start);
+  window.addEventListener("scroll", start, { passive: true });
+  setTimeout(start, 8000);
 }
 
 export function trackPageView(pageName: string): void {
+  pendingPage = pageName;
   defer(() => {
-    Clarity.setTag("page", pageName);
+    if (clarityReady) Clarity.setTag("page", pageName);
     gtag.pageview(pageName);
   });
 }
 
 export function trackEvent(name: string, params?: EventParams): void {
   defer(() => {
-    Clarity.event(name);
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        Clarity.setTag(key, String(value));
+    if (clarityReady) {
+      Clarity.event(name);
+      if (params) {
+        for (const [key, value] of Object.entries(params)) {
+          Clarity.setTag(key, String(value));
+        }
       }
     }
     gtag.event(name, params);
@@ -71,9 +96,13 @@ export function trackEvent(name: string, params?: EventParams): void {
 }
 
 export function setTag(key: string, value: string | string[]): void {
-  defer(() => Clarity.setTag(key, value));
+  defer(() => {
+    if (clarityReady) Clarity.setTag(key, value);
+  });
 }
 
 export function upgradeSession(reason: string): void {
-  defer(() => Clarity.upgrade(reason));
+  defer(() => {
+    if (clarityReady) Clarity.upgrade(reason);
+  });
 }

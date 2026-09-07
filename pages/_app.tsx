@@ -39,25 +39,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<PageTransition />
 			</IconContext.Provider>
 
-			{/* GA4 — afterInteractive (not lazyOnload): the init must run right after
-			    hydration so window.gtag exists before the first (deferred) page_view
-			    fires. Under lazyOnload the landing page_view was dropped — window.gtag
-			    was still undefined — so utm_* on the entry URL never got recorded.
-			    Page views are sent manually (send_page_view:false) to avoid double
-			    counting; the initial one lands while the entry URL still holds utm_*. */}
+			{/* Stub lives in _document so page_view can queue (utm_* still on
+			    the URL). The 160KB gtag.js payload waits until after load. */}
 			<Script
 				src="https://www.googletagmanager.com/gtag/js?id=G-FH792RMCK7"
-				strategy="afterInteractive"
+				strategy="lazyOnload"
 			/>
-			<Script id="ga4-init" strategy="afterInteractive">
-				{`
-					window.dataLayer = window.dataLayer || [];
-					function gtag(){dataLayer.push(arguments);}
-					window.gtag = gtag;
-					gtag('js', new Date());
-					gtag('config', 'G-FH792RMCK7', { send_page_view: false });
-				`}
-			</Script>
 		</>
 	);
 }

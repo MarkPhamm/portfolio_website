@@ -25,12 +25,18 @@ class MyDocument extends Document {
 						href="/fonts/GoogleSans-Bold.woff2"
 						crossOrigin="anonymous"
 					/>
-					<link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-					<link rel="preconnect" href="https://scripts.clarity.ms" crossOrigin="anonymous" />
+					<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+					<link rel="dns-prefetch" href="https://scripts.clarity.ms" />
 					<link rel="dns-prefetch" href="https://static.cloudflareinsights.com" />
 					<link rel="dns-prefetch" href="https://api.github.com" />
 					<link rel="dns-prefetch" href="https://api.ipify.org" />
 					<link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+					<script
+						dangerouslySetInnerHTML={{
+							__html:
+								"window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config','G-FH792RMCK7',{send_page_view:false});",
+						}}
+					/>
 				</Head>
 				<body>
 					<Main />

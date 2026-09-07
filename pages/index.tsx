@@ -34,7 +34,7 @@ if (typeof window !== "undefined") {
 
 const DEBOUNCE_TIME = 100;
 
-export const isSmallScreen = (): boolean => document.body.clientWidth < 767;
+export const isSmallScreen = (): boolean => window.innerWidth < 767;
 export const NO_MOTION_PREFERENCE_QUERY =
 	"(prefers-reduced-motion: no-preference)";
 
@@ -65,10 +65,20 @@ export default function Home() {
 
 		window.addEventListener("resize", debouncedDimensionCalculator);
 
-		// Refresh ScrollTrigger after initial load to prevent first-visit bugs
+		// After hero paint, not during it — a 500ms refresh was landing in the
+		// TBT window and re-measuring every section that had just hydrated.
 		const refreshTimer = setTimeout(() => {
-			ScrollTrigger.refresh();
-		}, 500);
+			const ric = (
+				window as Window & {
+					requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+				}
+			).requestIdleCallback;
+			if (typeof ric === "function") {
+				ric(() => ScrollTrigger.refresh(), { timeout: 3000 });
+			} else {
+				ScrollTrigger.refresh();
+			}
+		}, 2000);
 
 		return () => {
 			window.removeEventListener("resize", debouncedDimensionCalculator);
