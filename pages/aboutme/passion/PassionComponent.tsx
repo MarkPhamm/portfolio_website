@@ -5,6 +5,11 @@ import Typed from "typed.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { prefersReducedMotion } from "../../../utils/motion";
+import RecipePanel, {
+	RecipeStoreProvider,
+	RecipeToggle,
+} from "@/components/aboutme/recipe-panel";
+import { RECIPES } from "../../../utils/recipes";
 
 const ScrollReveal = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -44,12 +49,18 @@ interface DishCardProps {
 	caption: string;
 	description: React.ReactNode;
 	reverse?: boolean;
+	/** Key into RECIPES; renders the collapsible recipe under the description. */
+	recipe?: string;
 }
 
-const DishCard = ({ image, title, subtitle, caption, description, reverse = false }: DishCardProps) => (
-	<div className={`grid grid-cols-1 lg:grid-cols-2 gap-6`}>
-		<ScrollReveal delay={0} className={`group ${reverse ? 'lg:order-2' : ''}`}>
-			<div className="relative overflow-hidden rounded-2xl shadow-2xl aspect-[4/3] border border-gray-700/50 group-hover:border-[#f27d0d]/50 group-hover:shadow-lg group-hover:shadow-[#f27d0d]/10 transition-all duration-500">
+const DishCard = ({ image, title, subtitle, caption, description, reverse = false, recipe }: DishCardProps) => (
+	<div>
+		<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+		<ScrollReveal delay={0} className={`group flex flex-col ${reverse ? 'lg:order-2' : ''}`}>
+			{/* 4:3 is the floor, not the rule: on desktop the photo grows (never
+			    shrinks) into whatever height the prose column sets, which lands
+			    the caption on the same line as the View Recipe toggle. */}
+			<div className="relative overflow-hidden rounded-2xl shadow-2xl aspect-[4/3] lg:flex-grow lg:flex-shrink-0 border border-gray-700/50 group-hover:border-[#f27d0d]/50 group-hover:shadow-lg group-hover:shadow-[#f27d0d]/10 transition-all duration-500">
 				<Image
 					src={image}
 					layout="fill"
@@ -62,9 +73,9 @@ const DishCard = ({ image, title, subtitle, caption, description, reverse = fals
 			</div>
 			<p className="text-sm text-gray-300 italic text-center mt-3">{caption}</p>
 		</ScrollReveal>
-		<ScrollReveal delay={200} className={`${reverse ? 'lg:order-1' : ''}`}>
+		<ScrollReveal delay={200} className={`flex flex-col ${reverse ? 'lg:order-1' : ''}`}>
 			{subtitle && (
-				<span className="inline-block px-3 py-1 bg-[#f27d0d]/20 text-[#f27d0d] text-sm font-medium rounded-full mb-3">
+				<span className="self-start px-3 py-1 bg-[#f27d0d]/20 text-[#f27d0d] text-sm font-medium rounded-full mb-3">
 					{subtitle}
 				</span>
 			)}
@@ -72,7 +83,16 @@ const DishCard = ({ image, title, subtitle, caption, description, reverse = fals
 			<div className="text-gray-300 text-lg md:text-xl leading-relaxed space-y-4">
 				{description}
 			</div>
+			{recipe && RECIPES[recipe] && (
+				// mt-auto drops the toggle to the column floor, so on cards where
+				// the photo is the taller side it lines up with the image caption.
+				<div className="mt-auto pt-4">
+					<RecipeToggle recipe={RECIPES[recipe]} />
+				</div>
+			)}
 		</ScrollReveal>
+		</div>
+		{recipe && RECIPES[recipe] && <RecipePanel recipe={RECIPES[recipe]} />}
 	</div>
 );
 
@@ -259,6 +279,7 @@ export default function PassionComponent() {
 	};
 
 	return (
+		<RecipeStoreProvider>
 		<div className="min-h-screen relative">
 			{/* Hero Section */}
 			<PassionHero />
@@ -287,6 +308,7 @@ export default function PassionComponent() {
 							image="/about/passion/xaxiu.webp"
 							title="Xa Xiu Noodles"
 							subtitle="A Special Dish for Family Celebrations"
+							recipe="xa-xiu"
 							caption="Xa Xiu Noodles with Char Siu Pork, Dumplings, Shrimp and Quail Eggs"
 							description={
 								<>
@@ -320,6 +342,7 @@ export default function PassionComponent() {
 							image="/about/passion/steak2.webp"
 							title="Dry-Aged Ribeye"
 							subtitle="Rosemary, Thyme & Garlic Butter"
+							recipe="ribeye"
 							caption="Dry-Aged Ribeye with Rosemary, Thyme and Garlic Butter"
 							description={
 								<>
@@ -345,6 +368,7 @@ export default function PassionComponent() {
 								image="/about/passion/steak3.webp"
 								title="Seared Lamb Rack"
 								subtitle="The Next Challenge"
+								recipe="lamb-rack"
 								caption="Seared Lamb Rack with Rosemary, Thyme and Garlic Butter"
 								description={
 									<>
@@ -462,6 +486,7 @@ export default function PassionComponent() {
 								image="/about/passion/sphagheti1.webp"
 								title="Spaghetti Bolognese"
 								subtitle="The Classic"
+								recipe="bolognese"
 								caption="Spaghetti Bolognese with a sprinkle of fresh parsley"
 								description={
 									<p>
@@ -481,6 +506,7 @@ export default function PassionComponent() {
 								image="/about/passion/sphagheti2.webp"
 								title="Spaghetti con il Tonno"
 								subtitle="Simple Elegance"
+								recipe="tonno"
 								caption="Spaghetti con il Tonno - Tuna Pasta"
 								description={
 									<p>
@@ -499,6 +525,7 @@ export default function PassionComponent() {
 								image="/about/passion/carbo.webp"
 								title="Seafood Carbonara"
 								subtitle="Ocean-Inspired Fusion"
+								recipe="carbonara"
 								caption="Seafood Carbonara with pan-seared asparagus"
 								description={
 									<p>
@@ -554,5 +581,6 @@ export default function PassionComponent() {
 			</div>
 			</div>
 		</div>
+		</RecipeStoreProvider>
 	);
 }

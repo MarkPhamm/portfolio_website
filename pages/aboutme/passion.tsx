@@ -1,6 +1,11 @@
 import { METADATA } from "../../constants";
 import Head from "next/head";
 import React, { useEffect, useCallback, useRef } from "react";
+import {
+	RECIPE_LIST,
+	flattenIngredients,
+	isoDuration,
+} from "../../utils/recipes";
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -14,6 +19,28 @@ import Scripts from "@/components/common/scripts";
 import PassionComponent from "./passion/PassionComponent";
 
 const DEBOUNCE_TIME = 100;
+
+// Each dish's collapsible recipe also ships as a schema.org Recipe so the
+// panels are eligible for rich results instead of being invisible markup.
+const RECIPE_JSON_LD = {
+	"@context": "https://schema.org",
+	"@graph": RECIPE_LIST.map((recipe) => ({
+		"@type": "Recipe",
+		name: recipe.name,
+		image: `${METADATA.siteUrl}${recipe.image}`,
+		author: { "@type": "Person", name: "Minh (Mark) Pham" },
+		prepTime: isoDuration(recipe.prepMinutes),
+		cookTime: isoDuration(recipe.cookMinutes),
+		totalTime: isoDuration(recipe.prepMinutes + recipe.cookMinutes),
+		recipeYield: `${recipe.serves} servings`,
+		recipeIngredient: flattenIngredients(recipe),
+		recipeInstructions: recipe.steps.map((step, index) => ({
+			"@type": "HowToStep",
+			position: index + 1,
+			text: step,
+		})),
+	})),
+};
 
 export const isSmallScreen = (): boolean => document.body.clientWidth < 767;
 export const NO_MOTION_PREFERENCE_QUERY =
@@ -57,6 +84,10 @@ export default function Home() {
 					::-webkit-scrollbar-thumb { background: #f27d0d !important; }
 					::-webkit-scrollbar-thumb:hover { background: #ff9a3c !important; }
 				`}</style>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(RECIPE_JSON_LD) }}
+				/>
 			</Head>
 			<Layout title={`My Passion — ${METADATA.title}`} path="/aboutme/passion">
 				<Header />

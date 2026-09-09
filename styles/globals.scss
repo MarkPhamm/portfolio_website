@@ -669,6 +669,7 @@ footer {
 	.card-shine::before { animation: none !important; }
 	.ide-caret { animation: none !important; }
 	.chevron-bounce { animation: none !important; }
+	.recipe-steam { display: none !important; }
 	html { scroll-behavior: auto; }
 }
 
@@ -884,6 +885,37 @@ footer {
 
 .chevron-bounce {
 	animation: chevron-bounce 1.8s ease-in-out infinite;
+}
+
+/* Steam wisps drifting off the recipe panel heading (/aboutme/passion) */
+@keyframes recipe-steam {
+	0% { transform: translateY(0) scaleX(1); opacity: 0; }
+	25% { opacity: 0.8; }
+	100% { transform: translateY(-22px) scaleX(1.9); opacity: 0; }
+}
+
+.recipe-steam {
+	position: absolute;
+	top: -22px;
+	left: 8px;
+	display: flex;
+	gap: 9px;
+	pointer-events: none;
+
+	span {
+		display: block;
+		width: 3px;
+		height: 20px;
+		border-radius: 9999px;
+		/* Blurred so the wisps read as vapor rather than solid bars */
+		filter: blur(2.5px);
+		background: linear-gradient(to top, rgba(242, 125, 13, 0.9), transparent);
+		animation: recipe-steam 3.2s ease-in-out infinite;
+		will-change: transform, opacity;
+
+		&:nth-child(2) { animation-delay: 1.05s; }
+		&:nth-child(3) { animation-delay: 2.1s; }
+	}
 }
 
 /* Section divider */
