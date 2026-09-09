@@ -489,15 +489,24 @@ export default function PassionComponent() {
 								recipe="bolognese"
 								caption="Spaghetti Bolognese with a sprinkle of fresh parsley"
 								description={
-									<p>
-										Spaghetti Bolognese is one of those dishes that I find myself
-										returning to time and time again. There's something incredibly
-										comforting about a bowl of al dente spaghetti topped with a rich,
-										savory Bolognese sauce. I make mine with tender minced meat, slowly
-										simmered in a tomato-based sauce and hints of garlic, onion, and
-										herbs. The flavors meld beautifully, creating a symphony of richness
-										and family warmth.
-									</p>
+									<>
+										<p>
+											Spaghetti Bolognese is one of those dishes that I find myself
+											returning to time and time again. There's something incredibly
+											comforting about a bowl of al dente spaghetti topped with a rich,
+											savory Bolognese sauce. I make mine with tender minced meat, slowly
+											simmered in a tomato-based sauce and hints of garlic, onion, and
+											herbs. The flavors meld beautifully, creating a symphony of richness
+											and family warmth.
+										</p>
+										<p>
+											What took me longest to learn was patience. My early versions were
+											done in forty minutes and tasted like it: thin, sharp, all tomato
+											and no depth. Now I let it sit at a bare simmer for most of an
+											afternoon, and by the end the whole apartment smells like someone's
+											home.
+										</p>
+									</>
 								}
 								reverse
 							/>
@@ -509,15 +518,24 @@ export default function PassionComponent() {
 								recipe="tonno"
 								caption="Spaghetti con il Tonno - Tuna Pasta"
 								description={
-									<p>
-										Another Italian favorite of mine is Spaghetti con il Tonno. Such a
-										beauty of simplicity. Al dente spaghetti is tossed with tender tuna
-										flakes, sautéed garlic, a splash of olive oil, and a sprinkle of fresh
-										parsley. The result is light yet satisfying, a dish that's as
-										comforting as it is flavorful. It reminds me of
-										the versatility of Italian cuisine—how just a handful of quality
-										ingredients can create something memorable.
-									</p>
+									<>
+										<p>
+											Another Italian favorite of mine is Spaghetti con il Tonno. Such a
+											beauty of simplicity. Al dente spaghetti is tossed with tender tuna
+											flakes, sautéed garlic, a splash of olive oil, and a sprinkle of fresh
+											parsley. The result is light yet satisfying, a dish that's as
+											comforting as it is flavorful. It reminds me of
+											the versatility of Italian cuisine—how just a handful of quality
+											ingredients can create something memorable.
+										</p>
+										<p>
+											It's also what I reach for on the nights I get home late and still
+											want to eat properly. Everything comes out of the pantry, it's on
+											the table in twenty minutes, and it never feels like a compromise.
+											If anything, it taught me restraint: knowing what to leave out
+											matters as much as knowing what to add.
+										</p>
+									</>
 								}
 							/>
 
@@ -528,15 +546,24 @@ export default function PassionComponent() {
 								recipe="carbonara"
 								caption="Seafood Carbonara with pan-seared asparagus"
 								description={
-									<p>
-										Seafood Carbonara has become one of my go-to dishes when I want to
-										serve something special. It's a rich, ocean-inspired spin on classic
-										carbonara. Instead of the usual pancetta, I like to use fresh
-										seafood—plump shrimp, sweet crab, or, if I feel indulgent enough, a
-										touch of lobster. The creamy, egg-based sauce, blended with Parmigiano
-										Reggiano, coats the pasta perfectly, while the seafood brings in a
-										burst of briny flavor that takes the whole dish up a notch.
-									</p>
+									<>
+										<p>
+											Seafood Carbonara has become one of my go-to dishes when I want to
+											serve something special. It's a rich, ocean-inspired spin on classic
+											carbonara. Instead of the usual pancetta, I like to use fresh
+											seafood—plump shrimp, sweet crab, or, if I feel indulgent enough, a
+											touch of lobster. The creamy, egg-based sauce, blended with Parmigiano
+											Reggiano, coats the pasta perfectly, while the seafood brings in a
+											burst of briny flavor that takes the whole dish up a notch.
+										</p>
+										<p>
+											It's also the dish that still makes me nervous every time. The sauce
+											lives or dies in about fifteen seconds off the heat, and there's no
+											saving it once the egg scrambles. Pulling it off in front of the
+											people I'm cooking for is one of the most satisfying feelings I get
+											in the kitchen.
+										</p>
+									</>
 								}
 								reverse
 							/>
