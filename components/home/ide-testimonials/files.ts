@@ -43,6 +43,7 @@ export const FILES: ITestimonialFile[] = COMMENTS.map((c) => {
 	const parts = nameParts(c.author);
 	const insurifyGroup: Record<string, string> = {
 		"Aaron, Chen": "senior",
+		"Liam, Fitz": "peers",
 		"Noah, Pelberg": "peers",
 		"Steven, Egnaczyk": "peers",
 		"Max, Brinker": "peers",

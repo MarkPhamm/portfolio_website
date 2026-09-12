@@ -172,6 +172,14 @@ export const MENULINKS = [
 
 export const COMMENTS = [
 	{
+		comment: "Minh is an exceptional engineer and human being. His work ethic is second to none and he's a deeply curious individual. He's a great teammate, friend, and teacher. No task is too big or too small for him; he is always willing to put the team first and get the job done. I'm very grateful to have worked alongside him and believe wholeheartedly that he is a credit to any team lucky enough to have him.",
+		author: "Liam, Fitz",
+		position: "Operations Lead @ Datavations | Ex-Data Analyst @ Insurify",
+		recomendationType: "work",
+		company: "insurify",
+		avatar: "/person/liam.png",
+	},
+	{
 		comment: "Minh has been a stellar contributor to the Analytics team at Insurify. He excels at communicating with stakeholders and at sharing his deep analytics engineering knowledge with the team — he's genuinely versed in the mechanics of how tools like dbt, Snowflake, and Redshift work under the hood, not just how to use them. He also worked closely and effectively with the SEO team to figure out metrics that actually mattered to them. His passion for the field comes through in an unmatched work ethic, day in and day out. Any organization that values end-to-end data engineering expertise would be lucky to have Minh — he's the real deal.",
 		author: "Aaron, Chen",
 		position: "Senior Analytics Engineer @ Insurify",
