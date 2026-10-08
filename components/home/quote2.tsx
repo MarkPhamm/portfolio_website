@@ -1,113 +1,142 @@
-import React, { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
+import React, { useEffect, useRef } from "react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import type Typed from "typed.js";
 import { QUOTE_STRINGS } from "../../constants";
-import { prefersReducedMotion } from "../../utils/motion";
+import { prefersReducedMotion, revealUp } from "../../utils/motion";
 
+type Segment = { text: string; highlight: boolean };
+
+// QUOTE_STRINGS carry their highlights as inline <span style="color:…">.
+// Parse them at render time (server-safe, no innerHTML) into plain segments.
+const parseQuote = (html: string): Segment[] => {
+	const out: Segment[] = [];
+	const re = /<span[^>]*>(.*?)<\/span>/g;
+	let last = 0;
+	let match: RegExpExecArray | null;
+	while ((match = re.exec(html))) {
+		if (match.index > last) out.push({ text: html.slice(last, match.index), highlight: false });
+		out.push({ text: match[1], highlight: true });
+		last = re.lastIndex;
+	}
+	if (last < html.length) out.push({ text: html.slice(last), highlight: false });
+	return out;
+};
+
+const LINES = QUOTE_STRINGS.map(parseQuote);
+
+// What typed.js types: the same strings, highlights restyled as `.mf-hi`.
+const TYPED_LINES = QUOTE_STRINGS.map((html) =>
+	html.replace(/<span[^>]*>(.*?)<\/span>/g, '<span class="mf-hi">$1</span>')
+);
+
+const LINE_CLASS =
+	"col-start-1 row-start-1 text-[clamp(2rem,5.2vw,4.75rem)] font-light leading-[1.08] tracking-[-0.035em] text-ink-1";
+
+const renderSegments = (segments: Segment[]) =>
+	segments.map((seg, i) =>
+		seg.highlight ? (
+			<span key={i} className="mf-hi">
+				{seg.text}
+			</span>
+		) : (
+			<React.Fragment key={i}>{seg.text}</React.Fragment>
+		)
+	);
+
+/**
+ * The manifesto, typed the way it always was: one line at a time — type,
+ * hold 4s, backspace, next — looping (typed.js, same speeds as before), now
+ * in display type. Every line also sits invisibly in the same grid cell, so
+ * the box is always as tall as the longest line at this width and typing
+ * never shifts the page. Screen readers get all four lines as a list.
+ * Reduced motion: the first line, static.
+ */
 const QuoteSection2 = () => {
+	const sectionRef = useRef<HTMLElement>(null);
 	const typedRef = useRef<HTMLSpanElement>(null);
-	const targetSection = useRef<HTMLDivElement>(null);
-	const [isVisible, setIsVisible] = useState(false);
-	const typedInstance = useRef<Typed | null>(null);
 
 	useEffect(() => {
-		if (!targetSection.current) return;
-
-		const reduceMotion = prefersReducedMotion();
-		const lines = targetSection.current.querySelectorAll(".quote-line");
-		const ghost = targetSection.current.querySelector(".quote-ghost");
-
-		if (!reduceMotion) {
-			gsap.set(lines, { opacity: 0, y: 24 });
-			if (ghost) gsap.set(ghost, { opacity: 0, scale: 0.6 });
+		const section = sectionRef.current;
+		const target = typedRef.current;
+		if (!section || !target) return;
+		if (prefersReducedMotion()) {
+			target.innerHTML = TYPED_LINES[0];
+			return;
 		}
 
-		const trigger = ScrollTrigger.create({
-			trigger: targetSection.current,
-			start: "top 80%",
-			onEnter: () => {
-				setIsVisible(true);
-				if (reduceMotion) return;
-				gsap.to(lines, {
-					opacity: 1,
-					y: 0,
-					duration: 0.7,
-					ease: "power3.out",
-					stagger: 0.15,
-				});
-				if (ghost) {
-					gsap.to(ghost, {
-						opacity: 1,
-						scale: 1,
-						duration: 1,
-						ease: "power2.out",
-					});
-				}
-			},
-			once: true,
-		});
-
-		return () => trigger.kill();
-	}, []);
-
-	useEffect(() => {
-		if (!isVisible || !typedRef.current) return;
-
+		let typed: Typed | null = null;
 		let cancelled = false;
-		import("typed.js").then(({ default: Typed }) => {
-			if (cancelled || !typedRef.current) return;
-			typedInstance.current = new Typed(typedRef.current, {
-				strings: QUOTE_STRINGS,
-				typeSpeed: 40,
-				backSpeed: 25,
-				backDelay: 4000,
-				contentType: 'html',
-				loop: true,
-			});
+		const trigger = ScrollTrigger.create({
+			trigger: section,
+			start: "top 80%",
+			once: true,
+			onEnter: () => {
+				import("typed.js").then(({ default: TypedCtor }) => {
+					if (cancelled) return;
+					typed = new TypedCtor(target, {
+						strings: TYPED_LINES,
+						typeSpeed: 40,
+						backSpeed: 25,
+						backDelay: 4000,
+						contentType: "html",
+						loop: true,
+					});
+				});
+			},
 		});
+		const cleanupTail = revealUp(section.querySelectorAll(".mf-tail"), { start: "top 95%" });
 
 		return () => {
 			cancelled = true;
-			typedInstance.current?.destroy();
+			trigger.kill();
+			typed?.destroy();
+			cleanupTail();
 		};
-	}, [isVisible]);
+	}, []);
 
 	return (
-		<section className="w-full relative select-none" ref={targetSection}>
-			<div className="py-16 sm:py-24 md:py-36 tall:py-30 section-container relative">
-				{/* Oversized ghost quote mark */}
+		<section ref={sectionRef} className="relative w-full select-none overflow-hidden">
+			<div className="section-container relative py-28 md:py-44">
+				{/* Oversized outline quote mark */}
 				<span
 					aria-hidden="true"
-					className="quote-ghost absolute -top-2 left-2 md:left-10 text-[8rem] md:text-[12rem] leading-none font-bold text-[#9146FF]/10 pointer-events-none"
+					className="pointer-events-none absolute -top-4 left-2 select-none text-[9rem] font-light leading-none md:left-10 md:text-[15rem]"
+					style={{ color: "transparent", WebkitTextStroke: "1px rgb(var(--accent) / 0.28)" }}
 				>
 					&ldquo;
 				</span>
 
-				{/* Soft ambient glow behind the quote */}
-				<div
-					aria-hidden="true"
-					className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] h-[16rem] md:w-[30rem] md:h-[18rem] rounded-full bg-[#9146FF]/10 blur-3xl aurora-blob aurora-drift-3 pointer-events-none"
-				/>
+				<div className="relative mx-auto grid max-w-6xl text-center" aria-hidden="true">
+					{LINES.map((segments, i) => (
+						<p key={i} className={`invisible ${LINE_CLASS}`}>
+							{renderSegments(segments)}
+							<span className="typed-cursor">|</span>
+						</p>
+					))}
+					<p className={LINE_CLASS}>
+						<span ref={typedRef} />
+					</p>
+				</div>
+				<ul className="sr-only">
+					{LINES.map((segments, i) => (
+						<li key={i}>{segments.map((seg) => seg.text).join("")}</li>
+					))}
+				</ul>
 
-				<div className="text-center relative">
-					<p className="quote-line font-medium text-3xl md:text-5xl min-h-[1.5em]">
-						<span ref={typedRef}></span>
+				<div className="mf-tail mt-16 flex flex-col items-center gap-6 md:mt-24">
+					<p className="font-mono text-[12px] uppercase tracking-[0.16em] text-ink-3">
+						scroll down and <span className="text-ink-1">see for yourself</span>
 					</p>
-					<p className="quote-line mt-4 text-xl md:text-2xl text-gray-400">
-						scroll down and <span className="text-[#BF94FF] font-bold">see for yourself</span>
-					</p>
-					<div className="quote-line mt-8 flex justify-center" aria-hidden="true">
-						<svg
-							className="chevron-bounce w-6 h-6 text-[#BF94FF]"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							strokeWidth="2"
-						>
-							<path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-						</svg>
-					</div>
+					<svg
+						aria-hidden="true"
+						className="chevron-bounce h-5 w-5 text-accent-soft"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						strokeWidth="1.5"
+					>
+						<path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+					</svg>
 				</div>
 			</div>
 		</section>

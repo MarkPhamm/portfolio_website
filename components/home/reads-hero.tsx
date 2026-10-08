@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { READS_LAST_UPDATED } from "../../constants";
 import { trackEvent } from "../../utils/clarity";
+import { scrollToTarget } from "../../utils/scroll";
 
 // Classes applied to a random card by the "Surprise me" chip, then removed.
 // Kept as full literal strings so Tailwind's scanner generates them.
@@ -36,7 +37,8 @@ const ReadsHero = () => {
 		const pick = cards[Math.floor(Math.random() * cards.length)];
 
 		cards.forEach((c) => c.classList.remove(...PULSE_CLASSES));
-		pick.scrollIntoView({ behavior: "smooth", block: "center" });
+		// Through the scroll helper so Lenis (when running) owns the motion.
+		scrollToTarget(pick, { offset: -(window.innerHeight - pick.getBoundingClientRect().height) / 2 });
 		pick.classList.add(...PULSE_CLASSES);
 
 		if (pulseTimer.current) clearTimeout(pulseTimer.current);

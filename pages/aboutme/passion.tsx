@@ -17,6 +17,7 @@ import CollaborationSection from "@/components/home/collaboration";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
 import PassionComponent from "./passion/PassionComponent";
+import usePageAccent from "../../utils/use-page-accent";
 
 const DEBOUNCE_TIME = 100;
 
@@ -77,13 +78,12 @@ export default function Home() {
 		<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 	);
 
+	// Orange accent for the shell (menu, curtain, cursor label, scrollbar).
+	usePageAccent("242 125 13", "255 154 60");
+
 	return (
 		<div className="theme-orange">
 			<Head>
-				<style>{`
-					::-webkit-scrollbar-thumb { background: #f27d0d !important; }
-					::-webkit-scrollbar-thumb:hover { background: #ff9a3c !important; }
-				`}</style>
 				<script
 					type="application/ld+json"
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(RECIPE_JSON_LD) }}

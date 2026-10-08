@@ -1,15 +1,20 @@
 import React, { useEffect, useRef } from "react";
+// @ts-ignore — no @types/react-dom in this repo (same as skills.tsx)
+import ReactDOM from "react-dom";
 import Image from "next/image";
-import { IProject, getTechUrl } from "../../constants";
+import { IProject, getTechIconSrc, getTechUrl } from "../../constants";
 import { gsap } from "gsap";
 import { trackEvent, setTag } from "../../utils/clarity";
 import { prefersReducedMotion } from "../../utils/motion";
+import { lockScroll, unlockScroll } from "../../utils/scroll";
 
 interface ProjectModalProps {
 	project: IProject;
 	onClose: () => void;
-	/** Viewport rect of the clicked tile — the modal zooms out of it. */
+	/** Viewport rect of the clicked card's frame — the modal zooms out of it. */
 	originRect?: DOMRect | null;
+	/** Focus goes back here on close (the card that opened it). */
+	returnFocusRef?: React.RefObject<HTMLElement>;
 }
 
 const getCategoryLabel = (category: string): string => {
@@ -23,18 +28,62 @@ const getCategoryLabel = (category: string): string => {
 	return labels[category] || category;
 };
 
-const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
+/**
+ * Project details. Portaled to <body>: the card lives inside the Works reel's
+ * transformed track, which would otherwise become the containing block for
+ * this fixed overlay (and trap its z-index under the header).
+ */
+const ProjectModal = ({ project, onClose, originRect, returnFocusRef }: ProjectModalProps) => {
 	const overlayRef = useRef<HTMLDivElement>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
-	// x/y/scale deltas from the modal's resting place back to the clicked tile,
-	// measured once on mount (body scroll is locked, so viewport rects hold).
+	const closeRef = useRef<HTMLButtonElement>(null);
+	// x/y/scale deltas from the modal's resting place back to the clicked card,
+	// measured once on mount (scroll is locked, so viewport rects hold).
 	const zoomDeltas = useRef<{ x: number; y: number; scaleX: number; scaleY: number } | null>(null);
+	const closingRef = useRef(false);
+
+	const handleClose = () => {
+		if (closingRef.current) return;
+		closingRef.current = true;
+		const done = () => {
+			onClose();
+			returnFocusRef?.current?.focus();
+		};
+		if (overlayRef.current && cardRef.current) {
+			gsap.to(overlayRef.current, { opacity: 0, duration: 0.2 });
+			if (zoomDeltas.current) {
+				// Shrink back toward the card it came from.
+				gsap.to(cardRef.current.children, { opacity: 0, duration: 0.12 });
+				gsap.to(cardRef.current, {
+					...zoomDeltas.current,
+					opacity: 0,
+					duration: 0.24,
+					ease: "power2.in",
+					onComplete: done,
+				});
+			} else {
+				gsap.to(cardRef.current, {
+					opacity: 0,
+					scale: 0.96,
+					y: 10,
+					duration: 0.2,
+					onComplete: done,
+				});
+			}
+		} else {
+			done();
+		}
+	};
+
+	// Escape always reaches the latest handler.
+	const handleCloseRef = useRef(handleClose);
+	handleCloseRef.current = handleClose;
 
 	useEffect(() => {
-		document.body.style.overflow = "hidden";
+		lockScroll();
 
 		if (overlayRef.current && cardRef.current) {
-			gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+			gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 });
 
 			const card = cardRef.current;
 			if (originRect && !prefersReducedMotion()) {
@@ -50,56 +99,31 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 				gsap.fromTo(
 					card,
 					{ ...zoomDeltas.current, opacity: 0.4, transformOrigin: "center center" },
-					{ x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1, duration: 0.4, ease: "power3.out" }
+					{ x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1, duration: 0.5, ease: "power4.out" }
 				);
-				gsap.fromTo(
-					card.children,
-					{ opacity: 0 },
-					{ opacity: 1, duration: 0.25, delay: 0.12 }
-				);
+				gsap.fromTo(card.children, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.15 });
 			} else {
 				gsap.fromTo(
 					card,
-					{ opacity: 0, scale: 0.95, y: 20 },
+					{ opacity: 0, scale: 0.96, y: 20 },
 					{ opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" }
 				);
 			}
 		}
+		closeRef.current?.focus({ preventScroll: true });
 
 		const handleEscape = (e: KeyboardEvent) => {
-			if (e.key === "Escape") handleClose();
+			if (e.key === "Escape") handleCloseRef.current();
 		};
 		window.addEventListener("keydown", handleEscape);
 
 		return () => {
-			document.body.style.overflow = "";
+			unlockScroll();
 			window.removeEventListener("keydown", handleEscape);
 		};
+		// Mount-only: originRect is captured at open time.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	const handleClose = () => {
-		if (overlayRef.current && cardRef.current) {
-			gsap.to(overlayRef.current, { opacity: 0, duration: 0.2 });
-			if (zoomDeltas.current) {
-				// Shrink back toward the tile it came from.
-				gsap.to(cardRef.current.children, { opacity: 0, duration: 0.12 });
-				gsap.to(cardRef.current, {
-					...zoomDeltas.current,
-					opacity: 0,
-					duration: 0.22,
-					ease: "power2.in",
-					onComplete: onClose,
-				});
-			} else {
-				gsap.to(cardRef.current, {
-					opacity: 0, scale: 0.95, y: 10, duration: 0.2,
-					onComplete: onClose,
-				});
-			}
-		} else {
-			onClose();
-		}
-	};
 
 	const [stop1, stop2] = project.gradient;
 	const description = project.fullDescription || project.description;
@@ -107,100 +131,72 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 	const modal = (
 		<div
 			ref={overlayRef}
-			className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+			className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-8"
+			role="dialog"
+			aria-modal="true"
+			aria-label={project.name}
 			onClick={(e) => {
 				if (e.target === e.currentTarget) handleClose();
 			}}
 		>
-			<div className="absolute inset-0 bg-black/70 backdrop-blur-sm pointer-events-none" />
+			<div className="pointer-events-none absolute inset-0 bg-black/70 backdrop-blur-md" />
 
 			<div
 				ref={cardRef}
-				className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-none rounded-2xl bg-gray-900 border border-gray-700/50 shadow-2xl"
+				data-lenis-prevent
+				className="scrollbar-none relative max-h-[86vh] w-full max-w-2xl overflow-y-auto rounded-[28px] border border-line-strong bg-surface-1 shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]"
 			>
-				{/* Close button */}
 				<button
+					ref={closeRef}
 					onClick={handleClose}
-					className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-					aria-label="Close modal"
+					className="glass absolute right-4 top-4 z-30 grid h-10 w-10 place-items-center rounded-full text-ink-2 transition-colors duration-[10ms] hover:text-ink-1"
+					aria-label="Close project details"
 				>
-					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+					<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
 						<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				</button>
 
-				{/* Hero image */}
-				<div className="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
+				<div className="relative aspect-[16/9] overflow-hidden rounded-t-[28px]">
 					<div
-						className="absolute inset-0 opacity-50 z-10"
-						style={{
-							background: `linear-gradient(135deg, ${stop1}90 0%, ${stop2}90 100%)`,
-						}}
+						className="absolute inset-0 z-10"
+						style={{ background: `linear-gradient(150deg, ${stop1}33 0%, transparent 45%, ${stop2}40 100%)` }}
 					/>
-					<Image
-						src={project.image}
-						alt={project.name}
-						layout="fill"
-						objectFit="cover"
-					/>
-					<div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-900 to-transparent z-10" />
+					<Image src={project.image} alt={project.name} layout="fill" objectFit="cover" />
+					<div className="absolute bottom-0 left-0 right-0 z-10 h-28 bg-gradient-to-t from-surface-1 to-transparent" />
 				</div>
 
-				{/* Content */}
-				<div className="p-6 md:p-8 -mt-8 relative z-20">
-					{/* Category */}
-					<span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#9146FF]/20 text-[#BF94FF] mb-3">
-						{getCategoryLabel(project.category)}
-					</span>
+				<div className="relative z-20 -mt-6 p-6 md:p-9">
+					<span className="eyebrow mb-4">{getCategoryLabel(project.category)}</span>
 
-					<h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-						{project.name}
-					</h2>
+					<h2 className="mb-4 mt-4 text-3xl font-light tracking-[-0.03em] text-ink-1 md:text-4xl">{project.name}</h2>
 
-					<p className="text-gray-300 leading-relaxed mb-6">
-						{description}
-					</p>
+					<p className="mb-8 leading-relaxed text-ink-2">{description}</p>
 
-					{/* Impact metrics */}
 					{project.impact && project.impact.length > 0 && (
-						<div className="mb-6">
-							<h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-								Key Highlights
-							</h3>
-							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+						<div className="mb-8">
+							<h3 className="mono-label mb-3">Key highlights</h3>
+							<div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
 								{project.impact.map((item, i) => (
-									<div
-										key={i}
-										className="px-4 py-3 rounded-xl bg-gray-800/80 border border-gray-700/50 text-center"
-									>
-										<span className="text-sm text-gray-200 font-medium">{item}</span>
+									<div key={i} className="bg-surface-1 px-4 py-4 text-sm text-ink-1">
+										{item}
 									</div>
 								))}
 							</div>
 						</div>
 					)}
 
-					{/* Tech stack */}
-					<div className="mb-6">
-						<h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-							Tech Stack
-						</h3>
+					<div className="mb-8">
+						<h3 className="mono-label mb-3">Tech stack</h3>
 						<div className="flex flex-wrap gap-2">
 							{project.tech.map((techItem) => {
 								const url = getTechUrl(techItem);
-								const iconSrc = `/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"].includes(techItem) ? "webp" : "svg"}`;
 								const chipClass =
-									"flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800/80 border border-gray-700/50";
+									"inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-ink-2";
 								const content = (
 									<>
-										<Image
-											src={iconSrc}
-											alt={techItem}
-											height={18}
-											width={18}
-											className="opacity-80"
-										/>
-										<span className="text-sm text-gray-300">{techItem}</span>
+										<Image src={getTechIconSrc(techItem)} alt="" height={16} width={16} className="opacity-80" />
+										<span>{techItem}</span>
 									</>
 								);
 								// Real products link to their official site; concept-only
@@ -212,7 +208,7 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label={`${techItem} — opens in new tab`}
-										className={`${chipClass} transition-colors duration-[10ms] hover:border-[#9146FF]/40 hover:bg-gray-700/80`}
+										className={`${chipClass} transition-colors duration-[10ms] hover:border-line-strong hover:text-ink-1`}
 									>
 										{content}
 									</a>
@@ -225,19 +221,18 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 						</div>
 					</div>
 
-					{/* CTA button */}
 					{project.url && (
 						<a
 							href={project.url}
 							target="_blank"
 							rel="noreferrer"
-							className="inline-flex items-center gap-2 px-6 py-3 bg-[#9146FF] hover:bg-[#7B3FD9] text-white font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-[#9146FF]/25"
+							className="btn-pill btn-primary"
 							onClick={() => { trackEvent("project_view_external"); setTag("project_name", project.name); }}
 						>
-							View Project
-							<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-								<path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-							</svg>
+							View project
+							<span className="btn-disc" aria-hidden="true">
+								↗
+							</span>
 						</a>
 					)}
 				</div>
@@ -245,7 +240,7 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 		</div>
 	);
 
-	return modal;
+	return ReactDOM.createPortal(modal, document.body);
 };
 
 export default ProjectModal;

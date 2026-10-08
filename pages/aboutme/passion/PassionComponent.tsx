@@ -10,6 +10,7 @@ import RecipePanel, {
 	RecipeToggle,
 } from "@/components/aboutme/recipe-panel";
 import { RECIPES } from "../../../utils/recipes";
+import { scrollToTarget } from "../../../utils/scroll";
 
 const ScrollReveal = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -273,7 +274,8 @@ export default function PassionComponent() {
 			setContentVisible(true);
 			const tabs = tabsRef.current;
 			if (tabs && window.scrollY > tabs.offsetTop) {
-				tabs.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+				// 96px = the tabs' scroll-mt-24; the helper handles Lenis + reduced motion.
+				scrollToTarget(tabs, { offset: -96 });
 			}
 		}, 250);
 	};

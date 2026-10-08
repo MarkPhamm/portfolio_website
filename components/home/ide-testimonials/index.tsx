@@ -7,7 +7,9 @@ import {
 	VscSourceControl,
 } from "react-icons/vsc";
 import { trackEvent } from "../../../utils/clarity";
-import { initHeadingWipe, prefersReducedMotion } from "../../../utils/motion";
+import { revealUp } from "../../../utils/motion";
+import { scrollToTarget } from "../../../utils/scroll";
+import SectionHeader from "../../common/section-header";
 import { FILES, ITestimonialFile } from "./files";
 import Editor, { lineCount } from "./editor";
 import Explorer from "./explorer";
@@ -54,10 +56,7 @@ const IdeTestimonialsSection = () => {
 			typeof window !== "undefined" &&
 			window.innerWidth < 1024
 		) {
-			cardRef.current?.scrollIntoView({
-				behavior: prefersReducedMotion() ? "auto" : "smooth",
-				block: "start",
-			});
+			if (cardRef.current) scrollToTarget(cardRef.current, { offset: -80 });
 		}
 	}, []);
 
@@ -115,61 +114,22 @@ const IdeTestimonialsSection = () => {
 		};
 	}, []);
 
-	// Entrance choreography (sql-terminal pattern)
-	useEffect(() => {
-		if (!sectionRef.current) return;
-		const triggers: ScrollTrigger[] = [];
-
-		const wipe = initHeadingWipe(sectionRef.current);
-		if (wipe) triggers.push(wipe);
-
-		if (!prefersReducedMotion() && cardRef.current) {
-			const card = cardRef.current;
-			const rows = card.querySelectorAll(".ide-tree-row");
-			gsap.set(card, { opacity: 0, y: 50, scale: 0.96 });
-			gsap.set(rows, { opacity: 0, x: -8 });
-			triggers.push(
-				ScrollTrigger.create({
-					trigger: card,
-					start: "top 85%",
-					once: true,
-					onEnter: () => {
-						gsap.to(card, {
-							opacity: 1,
-							y: 0,
-							scale: 1,
-							duration: 0.7,
-							ease: "back.out(1.2)",
-						});
-						gsap.to(rows, {
-							opacity: 1,
-							x: 0,
-							duration: 0.35,
-							stagger: 0.03,
-							delay: 0.2,
-							ease: "power2.out",
-						});
-					},
-				})
-			);
-		}
-
-		return () => triggers.forEach((t) => t.kill());
-	}, []);
+	// Entrance choreography (sql-terminal pattern): the window rises in.
+	useEffect(() => revealUp(cardRef.current, { y: 40 }), []);
 
 	return (
 		<section
 			ref={sectionRef}
 			id="comments"
-			className="w-full relative section-container py-8 md:py-12 flex flex-col"
+			className="w-full relative section-container py-24 md:py-36 flex flex-col"
 		>
-			<div className="flex flex-col mb-10">
-				<h2 className="section-heading seq">What Others Say</h2>
-				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2 text-gray-200">
-					{FILES.length} recommendations, one editor. Browse the files — or
-					just ask the bot.
-				</h3>
-			</div>
+			<SectionHeader
+				index="03"
+				eyebrow="Testimonials"
+				title="What Others Say"
+				tagline={`${FILES.length} recommendations, one editor. Browse the files — or just ask the bot.`}
+				className="mb-12 md:mb-16"
+			/>
 
 			<ThreadsMarquee
 				activeAuthor={activeFile?.rawAuthor ?? null}
@@ -178,23 +138,23 @@ const IdeTestimonialsSection = () => {
 
 			<div
 				ref={cardRef}
-				className="ide-window rounded-2xl overflow-hidden bg-gray-900/80 backdrop-blur-sm border border-gray-800/50 transition-all duration-[10ms] hover:border-[#9146FF]/40 hover:shadow-[0_20px_40px_-12px_rgba(145,70,255,0.15)]"
+				className="ide-window relative rounded-[24px] overflow-hidden bg-surface-1 border border-line shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] transition-colors duration-[10ms] hover:border-line-strong"
 			>
 				{/* Title bar */}
-				<div className="flex items-center gap-3 px-4 py-3 border-b border-gray-800/70 bg-gray-900/60">
+				<div className="flex items-center gap-3 px-4 py-3 border-b border-line bg-surface-2/60">
 					<div className="flex gap-1.5" aria-hidden="true">
-						<span className="w-3 h-3 rounded-full bg-red-500/80"></span>
-						<span className="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-						<span className="w-3 h-3 rounded-full bg-green-500/80"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
 					</div>
-					<span className="font-mono text-xs text-gray-400 truncate">
+					<span className="font-mono text-[11px] text-ink-3 truncate">
 						recommendations — markpham
 					</span>
 					<div className="ml-auto flex items-center gap-2">
 						<button
 							type="button"
 							onClick={() => setDrawerOpen(true)}
-							className="lg:hidden flex items-center gap-1.5 font-mono text-xs text-[#BF94FF] hover:text-white transition-colors duration-[10ms]"
+							className="lg:hidden flex items-center gap-1.5 font-mono text-[11px] text-violet-soft hover:text-ink-1 transition-colors duration-[10ms]"
 							aria-label="Open file explorer"
 						>
 							<VscListTree aria-hidden="true" /> explorer
@@ -202,7 +162,7 @@ const IdeTestimonialsSection = () => {
 						<button
 							type="button"
 							onClick={() => showQuickOpen("button")}
-							className="font-mono text-[10px] text-[#BF94FF] border border-[#9146FF]/30 rounded px-1.5 py-0.5 hover:text-white hover:border-[#9146FF]/60 transition-all duration-[10ms]"
+							className="font-mono text-[10px] text-ink-2 border border-line-strong rounded-md px-1.5 py-0.5 hover:text-ink-1 hover:border-white/30 transition-colors duration-[10ms]"
 							aria-label="Quick open a recommendation file"
 						>
 							{isMac ? "⌘P" : "Ctrl+P"}
@@ -215,7 +175,7 @@ const IdeTestimonialsSection = () => {
 					{/* Fixed workbench height — switching files scrolls inside the
 					    panes instead of resizing the whole window */}
 					<div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_300px] lg:h-[560px]">
-						<aside className="hidden lg:block border-r border-gray-800/70 bg-gray-900/40 lg:min-h-0 lg:overflow-hidden">
+						<aside className="hidden lg:block border-r border-line bg-surface-2/40 lg:min-h-0 lg:overflow-hidden">
 							<Explorer
 								activeId={activeId}
 								onOpen={(file) => openFile(file, "explorer")}
@@ -232,7 +192,7 @@ const IdeTestimonialsSection = () => {
 							<Editor file={activeFile} />
 						</div>
 
-						<div className="border-t lg:border-t-0 lg:border-l border-gray-800/70 lg:min-h-0 lg:overflow-hidden">
+						<div className="border-t lg:border-t-0 lg:border-l border-line bg-surface-2/40 lg:min-h-0 lg:overflow-hidden">
 							<Assistant onOpenFile={openFile} />
 						</div>
 					</div>
@@ -248,11 +208,11 @@ const IdeTestimonialsSection = () => {
 					{drawerOpen && (
 						<>
 							<div
-								className="absolute inset-0 z-20 bg-gray-950/60 lg:hidden"
+								className="absolute inset-0 z-20 bg-canvas/70 lg:hidden"
 								onClick={() => setDrawerOpen(false)}
 								aria-hidden="true"
 							/>
-							<div className="absolute inset-y-0 left-0 z-30 w-60 bg-gray-950 border-r border-gray-800 lg:hidden overflow-y-auto">
+							<div className="absolute inset-y-0 left-0 z-30 w-60 bg-surface-1 border-r border-line lg:hidden overflow-y-auto">
 								<Explorer
 									activeId={activeId}
 									onOpen={(file) => openFile(file, "explorer")}
@@ -263,7 +223,7 @@ const IdeTestimonialsSection = () => {
 				</div>
 
 				{/* Status bar — colored segments, VS Code-theme style */}
-				<div className="flex items-center border-t border-gray-800/70 bg-gray-950/80 font-mono text-[11px] text-gray-300 overflow-hidden">
+				<div className="flex items-center border-t border-line bg-gray-950/80 font-mono text-[11px] text-ink-2 overflow-hidden">
 					<button
 						type="button"
 						onClick={() => {
@@ -272,7 +232,7 @@ const IdeTestimonialsSection = () => {
 							});
 							window.open(LINKEDIN_RECS_URL, "_blank", "noopener,noreferrer");
 						}}
-						className="flex items-center gap-1.5 px-3 py-1.5 bg-[#9146FF] text-white hover:bg-[#7c3aed] transition-colors duration-[10ms]"
+						className="flex items-center gap-1.5 px-3 py-1.5 bg-violet/80 text-white hover:bg-violet transition-colors duration-[10ms]"
 						title="View all recommendations on LinkedIn"
 					>
 						<VscSourceControl aria-hidden="true" /> main*
@@ -283,7 +243,7 @@ const IdeTestimonialsSection = () => {
 					</span>
 					<span className="ml-auto hidden sm:flex items-center py-1.5">
 						{activeFile && (
-							<span className="px-3 text-[#BF94FF]">
+							<span className="px-3 text-violet-soft">
 								Ln {lineCount(activeFile)}, Col 42
 							</span>
 						)}
@@ -293,31 +253,31 @@ const IdeTestimonialsSection = () => {
 				</div>
 			</div>
 
-			<div className="mt-6 flex flex-wrap justify-center items-center gap-x-3 gap-y-2">
+			<div className="mt-8 flex flex-wrap justify-center items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-[0.14em]">
 				<a
 					href={LINKEDIN_RECS_URL}
-					className="text-[#BF94FF] text-md underline hover:text-white transition-colors"
+					className="text-ink-3 hover:text-ink-1 transition-colors duration-[10ms]"
 					target="_blank"
 					rel="noreferrer"
 					onClick={() =>
 						trackEvent("recommendations_click", { source: "linkedin" })
 					}
 				>
-					View all on LinkedIn &rarr;
+					View all on LinkedIn <span className="text-accent-soft">↗</span>
 				</a>
-				<span className="text-gray-600" aria-hidden="true">
+				<span className="text-ink-3" aria-hidden="true">
 					·
 				</span>
 				<a
 					href={LAZARD_PDF_URL}
-					className="text-[#BF94FF] text-md underline hover:text-white transition-colors"
+					className="text-ink-3 hover:text-ink-1 transition-colors duration-[10ms]"
 					target="_blank"
 					rel="noreferrer"
 					onClick={() =>
 						trackEvent("recommendations_click", { source: "lazard_pdf" })
 					}
 				>
-					Lazard reference letter (PDF)
+					Lazard reference letter (PDF) <span className="text-accent-soft">↗</span>
 				</a>
 			</div>
 		</section>

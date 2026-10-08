@@ -1,15 +1,20 @@
-import { gsap, Linear } from "gsap";
+import { gsap } from "gsap";
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { isSmallScreen, NO_MOTION_PREFERENCE_QUERY } from "pages";
 import { trackEvent } from "../../utils/clarity";
-import { initMagneticHover } from "../../utils/motion";
+import { NO_MOTION_PREFERENCE_QUERY, initMagneticHover } from "../../utils/motion";
+
+// Not imported from "pages" — that dragged the homepage module into every
+// subpage bundle (this section also renders on Passion / Start-up / Reads).
+const isSmallScreen = (): boolean => window.innerWidth < 767;
 
 const COLLABORATION_STYLE = {
-	SLIDING_TEXT: "collab-marquee opacity-[0.15] motion-reduce:opacity-[0.25] text-3xl sm:text-5xl md:text-7xl font-bold whitespace-nowrap",
+	SLIDING_TEXT:
+		"collab-marquee opacity-60 motion-reduce:opacity-40 text-6xl md:text-8xl font-light tracking-[-0.03em] whitespace-nowrap leading-none",
 	SECTION:
-		"w-full relative select-none py-12 sm:py-18 md:py-24 tall:py-18 section-container flex flex-col",
-	TITLE: "mt-6 md:mt-8 font-medium text-3xl sm:text-4xl md:text-5xl text-center",
+		"w-full relative select-none overflow-hidden py-24 md:py-40 section-container flex flex-col",
+	TITLE:
+		"relative mt-10 md:mt-14 text-center font-light text-[clamp(2.5rem,6vw,5.75rem)] leading-[1.02] tracking-[-0.035em]",
 };
 
 const CollaborationSection = () => {
@@ -23,7 +28,7 @@ const CollaborationSection = () => {
 		targetSection: React.RefObject<HTMLDivElement | null>
 	): ScrollTrigger => {
 		if (!quoteRef.current || !targetSection.current) return ScrollTrigger.create({});
-		const timeline = gsap.timeline({ defaults: { ease: Linear.easeNone } });
+		const timeline = gsap.timeline({ defaults: { ease: "none" } });
 		timeline
 			.from(quoteRef.current, { opacity: 0, duration: 2 })
 			.to(quoteRef.current.querySelector(".text-strong"), {
@@ -45,7 +50,7 @@ const CollaborationSection = () => {
 		targetSection: React.RefObject<HTMLDivElement | null>
 	) => {
 		if (!targetSection.current) return ScrollTrigger.create({});
-		const slidingTl = gsap.timeline({ defaults: { ease: Linear.easeNone } });
+		const slidingTl = gsap.timeline({ defaults: { ease: "none" } });
 
 		slidingTl
 			.to(targetSection.current.querySelector(".ui-left"), {
@@ -96,14 +101,11 @@ const CollaborationSection = () => {
 	const renderTitle = () => (
 		<h2
 			ref={quoteRef}
-			className={`${COLLABORATION_STYLE.TITLE} ${willChange ? "will-change-opacity" : ""
-				}`}
+			className={`${COLLABORATION_STYLE.TITLE} ${willChange ? "will-change-opacity" : ""}`}
 		>
-			Interested in{" "}
-			<span className="text-strong font-bold">
-				Analytics Engineering
-			</span>
-			?
+			<span className="text-ink-2">Interested in</span>{" "}
+			<span className="text-strong">Analytics Engineering</span>
+			<span className="text-ink-1">?</span>
 		</h2>
 	);
 
@@ -113,26 +115,23 @@ const CollaborationSection = () => {
 
 			{renderTitle()}
 
-			<div className="flex justify-center mt-6">
+			<div className="relative mb-10 mt-10 flex justify-center md:mb-14">
 				<a
 					ref={ctaRef}
 					href="https://www.linkedin.com/in/minhbphamm/"
 					target="_blank"
 					rel="noreferrer"
-					className="collab-btn inline-flex items-center gap-2 px-8 py-3 rounded-full text-white font-bold text-lg transition-all duration-[10ms] hover:-translate-y-1 hover:scale-105"
+					className="btn-pill btn-primary"
 					onClick={() => trackEvent("collaboration_connect")}
 				>
-					Let's Connect
-					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-						<path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-					</svg>
+					Let&apos;s Connect
+					<span className="btn-disc" aria-hidden="true">
+						↗
+					</span>
 				</a>
 			</div>
 
-			{renderSlidingText(
-				" dbt - Airflow - Redshift -  ",
-				"mt-6 md:mt-8 ui-right"
-			)}
+			{renderSlidingText(" dbt - Airflow - Redshift -  ", "ui-right")}
 		</section>
 	);
 };

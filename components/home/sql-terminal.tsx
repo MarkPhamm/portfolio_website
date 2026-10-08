@@ -9,7 +9,8 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { FaSnowflake } from "react-icons/fa";
 import Prism from "prismjs";
 import "prismjs/components/prism-sql";
-import { initHeadingWipe, prefersReducedMotion } from "../../utils/motion";
+import { prefersReducedMotion, revealUp } from "../../utils/motion";
+import SectionHeader from "../common/section-header";
 import { setTag, trackEvent, upgradeSession } from "../../utils/clarity";
 import {
 	PRESET_QUERIES,
@@ -149,39 +150,11 @@ const SqlTerminalSection = () => {
 		if (!sectionRef.current) return;
 		const triggers: ScrollTrigger[] = [];
 
-		const wipe = initHeadingWipe(sectionRef.current);
-		if (wipe) triggers.push(wipe);
-
-		if (!prefersReducedMotion() && cardRef.current) {
-			const card = cardRef.current;
-			const chips = sectionRef.current.querySelectorAll(".sql-chip");
-			gsap.set(card, { opacity: 0, y: 50, scale: 0.96 });
-			gsap.set(chips, { opacity: 0, y: 12 });
-			triggers.push(
-				ScrollTrigger.create({
-					trigger: card,
-					start: "top 85%",
-					once: true,
-					onEnter: () => {
-						gsap.to(card, {
-							opacity: 1,
-							y: 0,
-							scale: 1,
-							duration: 0.7,
-							ease: "back.out(1.2)",
-						});
-						gsap.to(chips, {
-							opacity: 1,
-							y: 0,
-							duration: 0.4,
-							stagger: 0.06,
-							delay: 0.15,
-							ease: "power2.out",
-						});
-					},
-				})
-			);
-		}
+		// The window rises in, then the preset chips follow.
+		const cleanups = [
+			revealUp(cardRef.current, { y: 40 }),
+			revealUp(sectionRef.current.querySelectorAll(".sql-chip"), { y: 10, stagger: 0.04, start: "top 92%" }),
+		];
 
 		triggers.push(
 			ScrollTrigger.create({
@@ -192,7 +165,10 @@ const SqlTerminalSection = () => {
 			})
 		);
 
-		return () => triggers.forEach((t) => t.kill());
+		return () => {
+			triggers.forEach((t) => t.kill());
+			cleanups.forEach((fn) => fn());
+		};
 	}, []);
 
 	// New result rows stagger in
@@ -250,39 +226,40 @@ const SqlTerminalSection = () => {
 		<section
 			ref={sectionRef}
 			id="sql"
-			className="w-full relative section-container py-8 md:py-12 flex flex-col"
+			className="w-full relative section-container py-24 md:py-36 flex flex-col"
 		>
-			<div className="flex flex-col mb-10">
-				<h2 className="section-heading seq">Query my career</h2>
-				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2 text-gray-200">
-					1000+ SQL questions solved — run one yourself. Real data, real SQL,
-					zero warehouse bill.
-				</h3>
-			</div>
+			<SectionHeader
+				index="02"
+				eyebrow="Query me"
+				title="Query my career"
+				tagline="1000+ SQL questions solved — run one yourself. Real data, real SQL, zero warehouse bill."
+				className="mb-12 md:mb-16"
+			/>
 
+			<div className="relative">
 			<div
 				ref={cardRef}
-				className="sql-terminal rounded-2xl overflow-hidden bg-gray-900/80 backdrop-blur-sm border border-gray-800/50 transition-all duration-[10ms] hover:border-[#9146FF]/40 hover:shadow-[0_20px_40px_-12px_rgba(145,70,255,0.15)]"
+				className="sql-terminal relative rounded-[24px] overflow-hidden bg-surface-1 border border-line shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] transition-colors duration-[10ms] hover:border-line-strong"
 			>
 				{/* Title bar */}
-				<div className="flex items-center gap-3 px-4 py-3 border-b border-gray-800/70 bg-gray-900/60">
+				<div className="flex items-center gap-3 px-4 py-3 border-b border-line bg-surface-2/60">
 					<div className="flex gap-1.5" aria-hidden="true">
-						<span className="w-3 h-3 rounded-full bg-red-500/80"></span>
-						<span className="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-						<span className="w-3 h-3 rounded-full bg-green-500/80"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
+						<span className="w-2.5 h-2.5 rounded-full bg-white/[0.15]"></span>
 					</div>
-					<span className="font-mono text-xs text-gray-400 flex items-center gap-2">
+					<span className="font-mono text-[11px] text-ink-3 flex items-center gap-2">
 						<FaSnowflake
 							className="text-[#29B5E8] text-sm"
 							aria-hidden="true"
 						/>
 						markpham_dw · connected
-						<span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+						<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgb(52_211_153/0.8)] animate-pulse"></span>
 					</span>
 					<button
 						type="button"
 						onClick={() => setSchemaOpen((v) => !v)}
-						className="ml-auto font-mono text-xs text-[#BF94FF] hover:text-white transition-colors duration-[10ms]"
+						className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-violet-soft hover:text-ink-1 transition-colors duration-[10ms]"
 						aria-expanded={schemaOpen}
 					>
 						schema {schemaOpen ? "▴" : "▾"}
@@ -291,7 +268,7 @@ const SqlTerminalSection = () => {
 
 				{/* Schema panel */}
 				{schemaOpen && (
-					<div className="px-4 py-3 border-b border-gray-800/70 bg-gray-900/40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+					<div className="px-4 py-4 border-b border-line bg-surface-2/40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{SCHEMA.map((t) => (
 							<div key={t.table} className="font-mono text-xs">
 								<button
@@ -300,12 +277,12 @@ const SqlTerminalSection = () => {
 										setQuery(`SELECT * FROM ${t.table} LIMIT 10;`);
 										textareaRef.current?.focus();
 									}}
-									className="text-[#BF94FF] font-semibold hover:text-white transition-colors duration-[10ms]"
+									className="text-violet-soft font-semibold hover:text-ink-1 transition-colors duration-[10ms]"
 									title={`SELECT * FROM ${t.table}`}
 								>
 									{t.table}
 								</button>
-								<div className="mt-1 text-gray-400 leading-relaxed">
+								<div className="mt-1 text-ink-3 leading-relaxed">
 									{t.columns.join(" · ")}
 								</div>
 							</div>
@@ -314,13 +291,13 @@ const SqlTerminalSection = () => {
 				)}
 
 				{/* Preset chips */}
-				<div className="flex gap-2 px-4 pt-4 overflow-x-auto pb-1">
+				<div className="flex gap-2 px-4 pt-4 overflow-x-auto pb-1" data-lenis-prevent-horizontal>
 					{PRESET_QUERIES.map((p) => (
 						<button
 							key={p.label}
 							type="button"
 							onClick={() => runPreset(p.label, p.sql)}
-							className="sql-chip whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-full bg-[#9146FF]/15 text-[#BF94FF] border border-[#9146FF]/20 hover:bg-[#9146FF]/30 hover:border-[#9146FF]/50 transition-all duration-[10ms]"
+							className="sql-chip whitespace-nowrap text-xs px-3 py-1.5 rounded-full border border-line bg-white/[0.02] text-ink-2 hover:border-line-strong hover:bg-white/[0.05] hover:text-ink-1 transition-colors duration-[10ms]"
 						>
 							{p.label}
 						</button>
@@ -328,7 +305,7 @@ const SqlTerminalSection = () => {
 				</div>
 
 				{/* Editor: transparent textarea over a Prism-highlighted mirror */}
-				<div className="relative m-4 rounded-xl bg-gray-950/80 border border-gray-800/70 focus-within:border-[#9146FF]/50 transition-colors duration-[10ms]">
+				<div className="relative m-4 rounded-xl bg-gray-950/80 border border-line focus-within:border-violet/50 transition-colors duration-[10ms]">
 					<pre
 						ref={preRef}
 						aria-hidden="true"
@@ -355,7 +332,7 @@ const SqlTerminalSection = () => {
 						autoCorrect="off"
 						rows={4}
 						aria-label="SQL query editor"
-						className="sql-editor-metrics relative block w-full resize-none bg-transparent text-transparent caret-[#BF94FF] outline-none selection:bg-[#9146FF]/40"
+						className="sql-editor-metrics relative block w-full resize-none bg-transparent text-transparent caret-violet-soft outline-none selection:bg-violet/40"
 					/>
 				</div>
 
@@ -364,10 +341,10 @@ const SqlTerminalSection = () => {
 					<button
 						type="button"
 						onClick={() => execute(query, "custom")}
-						className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#9146FF] text-white text-sm font-semibold hover:bg-[#7c3aed] hover:shadow-[0_8px_24px_-8px_rgba(145,70,255,0.6)] transition-all duration-[10ms]"
+						className="btn-pill btn-primary no-disc h-10 gap-2 px-5 text-sm"
 					>
 						▸ Run
-						<span className="hidden md:inline font-mono text-[10px] opacity-70 border border-white/30 rounded px-1">
+						<span className="hidden md:inline font-mono text-[10px] opacity-60 border border-black/25 rounded px-1">
 							⌘↵
 						</span>
 					</button>
@@ -375,10 +352,10 @@ const SqlTerminalSection = () => {
 						role="status"
 						className={`font-mono text-xs ${
 							status.kind === "ok"
-								? "text-green-400"
+								? "text-emerald-400"
 								: status.kind === "error"
 								? "text-red-400"
-								: "text-gray-400"
+								: "text-ink-3"
 						}`}
 					>
 						{status.text}
@@ -395,7 +372,7 @@ const SqlTerminalSection = () => {
 				{/* Results */}
 				{rows && rows.length > 0 && (
 					<div ref={resultsRef} className="px-4 pb-4">
-						<div className="rounded-xl border border-gray-800/70 overflow-hidden">
+						<div className="rounded-xl border border-line overflow-hidden">
 							<div className="overflow-x-auto max-h-80 overflow-y-auto">
 								<table className="w-full font-mono text-xs md:text-sm text-left">
 									<thead>
@@ -403,7 +380,7 @@ const SqlTerminalSection = () => {
 											{columns.map((c) => (
 												<th
 													key={c}
-													className="bg-gray-900 text-[#BF94FF] font-semibold px-3 py-2 border-b border-[#9146FF]/30 whitespace-nowrap"
+													className="bg-surface-2 text-ink-3 font-normal uppercase tracking-[0.08em] text-[11px] px-3 py-2.5 border-b border-line whitespace-nowrap"
 												>
 													{c}
 												</th>
@@ -414,15 +391,15 @@ const SqlTerminalSection = () => {
 										{visibleRows.map((row, i) => (
 											<tr
 												key={i}
-												className="sql-row odd:bg-gray-900/40 hover:bg-[#9146FF]/10 transition-colors duration-[10ms]"
+												className="sql-row odd:bg-white/[0.02] hover:bg-violet/10 transition-colors duration-[10ms]"
 											>
 												{columns.map((c) => (
 													<td
 														key={c}
-														className="px-3 py-2 border-b border-gray-800/50 text-gray-300 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis"
+														className="px-3 py-2 border-b border-line text-ink-2 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis"
 													>
 														{row[c] === null || row[c] === undefined ? (
-															<span className="text-gray-400">NULL</span>
+															<span className="text-ink-3">NULL</span>
 														) : (
 															String(row[c])
 														)}
@@ -435,12 +412,13 @@ const SqlTerminalSection = () => {
 							</div>
 						</div>
 						{rows.length > MAX_RENDERED_ROWS && (
-							<p className="mt-2 font-mono text-xs text-gray-400">
+							<p className="mt-2 font-mono text-xs text-ink-3">
 								showing {MAX_RENDERED_ROWS} of {rows.length} rows
 							</p>
 						)}
 					</div>
 				)}
+			</div>
 			</div>
 		</section>
 	);

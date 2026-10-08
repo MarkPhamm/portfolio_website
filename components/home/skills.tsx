@@ -1,10 +1,8 @@
 import { MENULINKS, SKILLS, getTechUrl } from "../../constants";
 import Image from "next/image";
-import { useEffect, useRef, useState, useCallback, memo } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 // @ts-ignore
 import ReactDOM from "react-dom";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { IDesktop } from "pages";
 import {
 	TbChartBar,
@@ -16,6 +14,8 @@ import {
 	TbPlug,
 	TbSettings,
 } from "react-icons/tb";
+import SectionHeader from "../common/section-header";
+import { revealUp } from "../../utils/motion";
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
 	"Business Intelligence": TbChartBar,
@@ -32,33 +32,39 @@ const SkillIcon = ({ skill, src }: { skill: string; src: string }) => {
 	const [tooltip, setTooltip] = useState<{ x: number; y: number } | null>(null);
 	const url = getTechUrl(skill);
 
+	// Smooth scrolling moves the tile out from under a fixed tooltip — drop it.
+	useEffect(() => {
+		if (!tooltip) return;
+		const hide = () => setTooltip(null);
+		window.addEventListener("scroll", hide, { passive: true, once: true });
+		return () => window.removeEventListener("scroll", hide);
+	}, [tooltip]);
+
 	const icon = (
 		<div
-			className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 hover:scale-[1.15] transition-transform duration-[10ms] cursor-pointer"
+			className="relative grid h-14 w-14 cursor-pointer place-items-center rounded-2xl border border-line bg-white/[0.02] transition-colors duration-[10ms] hover:border-line-strong hover:bg-white/[0.06] md:h-16 md:w-16"
 			onMouseEnter={(e) => {
 				const rect = e.currentTarget.getBoundingClientRect();
-				const centerX = rect.left + rect.width / 2;
-				const centerY = rect.top + rect.height / 2;
-				const unscaledHalf = rect.height / 2 / 1.15;
-				setTooltip({ x: centerX, y: centerY - unscaledHalf });
+				setTooltip({ x: rect.left + rect.width / 2, y: rect.top });
 			}}
 			onMouseLeave={() => setTooltip(null)}
 		>
-			<Image
-				src={src}
-				alt={skill}
-				layout="fill"
-				objectFit="contain"
-				className="skill"
-				loading="lazy"
-			/>
+			<div className="relative h-8 w-8 md:h-9 md:w-9">
+				<Image
+					src={src}
+					alt={skill}
+					layout="fill"
+					objectFit="contain"
+					className="skill"
+					loading="lazy"
+				/>
+			</div>
 			{tooltip && ReactDOM.createPortal(
 				<div
-					className="fixed px-3 py-1.5 text-xs bg-white text-gray-800 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
-					style={{ left: tooltip.x, top: tooltip.y - 8, transform: "translate(-50%, -100%)", zIndex: 9999 }}
+					className="glass pointer-events-none fixed whitespace-nowrap rounded-lg px-2.5 py-1 font-mono text-[11px] tracking-[0.04em] text-ink-1 shadow-[0_10px_30px_-10px_rgb(0_0_0/0.8)]"
+					style={{ left: tooltip.x, top: tooltip.y - 10, transform: "translate(-50%, -100%)", zIndex: 9999 }}
 				>
 					{skill}
-					<div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white" />
 				</div>,
 				document.body
 			)}
@@ -84,8 +90,7 @@ const SkillIcon = ({ skill, src }: { skill: string; src: string }) => {
 
 const SKILL_STYLES = {
 	SECTION:
-		"w-full relative select-none mb-6 section-container py-8 md:py-12 flex flex-col justify-center",
-	SKILL_TITLE: "section-title-sm seq",
+		"w-full relative select-none section-container py-24 md:py-36 flex flex-col justify-center",
 };
 
 const PNG_SKILLS = [
@@ -95,126 +100,42 @@ const PNG_SKILLS = [
 	"Hightouch",
 ];
 
+const SKILL_GROUPS = [
+	["Business Intelligence", "Warehouse and Lakehouse"],
+	["Data Processing", "Orchestration"],
+	["Streaming", "Cloud (AWS)"],
+	["Data Integration", "DevOps"],
+];
+
 const SkillsSection = ({ isDesktop }: IDesktop) => {
 	const targetSection = useRef<HTMLDivElement>(null);
 	const cardsRef = useRef<HTMLDivElement>(null);
 
+	// Panels rise in batches as they scroll in.
 	useEffect(() => {
 		if (!cardsRef.current) return;
-
-		const cards = cardsRef.current.querySelectorAll(".skill-card");
-		const triggers: ScrollTrigger[] = [];
-
-		// Set initial state
-		gsap.set(cards, { opacity: 0, y: 40, scale: 0.95 });
-
-		// Stagger from center outward when section enters view
-		const trigger = ScrollTrigger.create({
-			trigger: cardsRef.current,
-			start: "top 80%",
-			once: true,
-			onEnter: () => {
-				gsap.to(cards, {
-					opacity: 1,
-					y: 0,
-					scale: 1,
-					duration: 0.7,
-					ease: "power2.out",
-					stagger: {
-						amount: 0.6,
-						grid: [4, 2],
-						from: "start",
-					},
-				});
-			},
-		});
-		triggers.push(trigger);
-
-		// ClipPath wipe on section heading
-		const heading = cardsRef.current.querySelector(".section-heading");
-		if (heading) {
-			gsap.set(heading, { clipPath: "inset(0 100% 0 0)" });
-			const headingTrigger = ScrollTrigger.create({
-				trigger: heading,
-				start: "top 85%",
-				once: true,
-				onEnter: () => {
-					gsap.to(heading, {
-						clipPath: "inset(0 0% 0 0)",
-						duration: 0.8,
-						ease: "power2.inOut",
-					});
-				},
-			});
-			triggers.push(headingTrigger);
-		}
-
-		return () => {
-			triggers.forEach((t) => t.kill());
-		};
+		return revealUp(cardsRef.current.querySelectorAll(".skill-card"), { stagger: 0.06 });
 	}, []);
-
-	const renderSectionTitle = useCallback(
-		(): React.ReactNode => (
-			<div className="flex flex-col">
-				<h2 className="section-heading">My Skills</h2>
-				<h3 className="text-2xl md:max-w-2xl w-full mt-2">
-					Technical skills & tools I use to deliver data-driven solutions
-				</h3>
-			</div>
-		),
-		[]
-	);
-
-	const renderBackgroundPattern = useCallback(
-		(): React.ReactNode => (
-			<>
-				<div className="absolute right-0 -bottom-1/3 w-1/5 max-w-xs md:flex hidden justify-end">
-					<Image
-						src="/pattern-r.svg"
-						height={700}
-						width={320}
-						alt="pattern"
-						loading="lazy"
-					/>
-				</div>
-				<div className="absolute left-0 -bottom-3.5 w-1/12 max-w-xs md:block hidden">
-					<Image
-						src="/pattern-l.svg"
-						height={335}
-						width={140}
-						alt="pattern"
-						loading="lazy"
-					/>
-				</div>
-			</>
-		),
-		[]
-	);
 
 	const getSkillImagePath = useCallback((skill: string): string => {
 		return `/skills/1st/${skill}.${PNG_SKILLS.includes(skill) ? "webp" : "svg"}`;
 	}, []);
 
 	const renderSkillColumn = useCallback(
-		(title: string, skills: string[]): React.ReactNode => {
+		(title: string, skills: string[], index: number): React.ReactNode => {
 			const Icon = CATEGORY_ICONS[title];
 			return (
 				<div
 					key={title}
-					className="skill-card p-6 rounded-2xl border border-gray-800/50 bg-gray-900/30 backdrop-blur-sm hover:border-[#9146FF]/30 transition-all duration-[10ms] relative overflow-hidden"
+					className="skill-card relative overflow-hidden rounded-[24px] border border-line bg-surface-1/60 p-6 shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] transition-colors duration-[10ms] hover:border-line-strong md:p-8"
 				>
-					{/* Gradient accent line at top */}
-					<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] opacity-40" />
-
-					{/* Category header with icon */}
-					<div className="flex items-center gap-2 mb-4">
-						{Icon && (
-							<div className="w-5 h-5 rounded bg-[#9146FF]/10 flex items-center justify-center flex-shrink-0">
-								<Icon className="w-3 h-3 text-[#BF94FF]" />
-							</div>
-						)}
-						<h4 className={SKILL_STYLES.SKILL_TITLE}>{title}</h4>
+					{/* Category header: index, icon, mono label */}
+					<div className="mb-6 flex items-center gap-3">
+						<span className="font-mono text-[11px] tracking-[0.14em] text-ink-3">
+							{String(index + 1).padStart(2, "0")}
+						</span>
+						{Icon && <Icon className="h-4 w-4 flex-shrink-0 text-accent-soft" aria-hidden="true" />}
+						<h3 className="mono-label">{title}</h3>
 					</div>
 
 					{(() => {
@@ -242,32 +163,31 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 		[getSkillImagePath]
 	);
 
-	const SKILL_GROUPS = [
-		["Business Intelligence", "Warehouse and Lakehouse"],
-		["Data Processing", "Orchestration"],
-		["Streaming", "Cloud (AWS)"],
-		["Data Integration", "DevOps"],
-	];
-
 	return (
 		<section className="relative">
-			{renderBackgroundPattern()}
 			<div
 				className={SKILL_STYLES.SECTION}
 				id={MENULINKS[1].ref}
 				ref={targetSection}
 			>
 				<div className="flex flex-col" ref={cardsRef}>
-					{renderSectionTitle()}
+					<SectionHeader
+						index="04"
+						eyebrow="Skillset"
+						title="My Skills"
+						tagline="Technical skills & tools I use to deliver data-driven solutions"
+						className="mb-12 md:mb-16"
+					/>
 
-					{SKILL_GROUPS.map((group, i) => (
-						<div
-							key={i}
-							className="grid lg:grid-cols-2 md:grid-cols-1 mt-10 gap-8 xl:gap-12 2xl:gap-16"
-						>
-							{group.map((title) => renderSkillColumn(title, (SKILLS as any)[title]))}
-						</div>
-					))}
+					<div className="flex flex-col gap-6 xl:gap-8">
+						{SKILL_GROUPS.map((group, i) => (
+							<div key={i} className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:gap-8">
+								{group.map((title, j) =>
+									renderSkillColumn(title, (SKILLS as any)[title], i * 2 + j)
+								)}
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		</section>

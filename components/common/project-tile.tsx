@@ -1,11 +1,10 @@
 import Image from "next/image";
-import React, { useState, useRef, useEffect } from "react";
-import VanillaTilt from "vanilla-tilt";
-import { IProject, ProjectTypes } from "../../constants";
+import React, { useRef, useState } from "react";
+import { IProject, ProjectTypes, getTechIconSrc } from "../../constants";
 import ProjectModal from "./project-modal";
 import { trackEvent, setTag } from "../../utils/clarity";
 
-const getCategoryLabel = (category: string): string => {
+export const getCategoryLabel = (category: string): string => {
 	switch (category) {
 		case ProjectTypes.ENDTOEND:
 			return "Data Pipeline";
@@ -22,68 +21,43 @@ const getCategoryLabel = (category: string): string => {
 	}
 };
 
-// One glass badge for every category — matches the tile's existing glass
-// language (expand icon, tech chips) instead of the old per-category rainbow.
-const CATEGORY_BADGE_STYLE =
-	"bg-gray-900/85 backdrop-blur-sm border border-white/10 text-gray-100";
-
-const ProjectTile = ({
-	project,
-	index = 0,
-}: {
-	project: IProject;
-	index?: number;
-}) => {
+/**
+ * Project card for the Works grid: screenshot on top, details in the card
+ * body (the pre-redesign layout, restyled). Clicking zooms the modal out of
+ * the screenshot's frame. Hovers are the house 10ms snap.
+ */
+const ProjectTile = ({ project, index = 0 }: { project: IProject; index?: number }) => {
 	const [showModal, setShowModal] = useState(false);
-	// Where the modal zooms from — the tile's viewport rect at open time.
+	// Where the modal zooms from — the frame's viewport rect at open time.
 	const [originRect, setOriginRect] = useState<DOMRect | null>(null);
-	const tiltRef = useRef<HTMLDivElement>(null);
+	const cardRef = useRef<HTMLDivElement>(null);
+	const frameRef = useRef<HTMLDivElement>(null);
 
 	const openModal = () => {
 		trackEvent("project_open");
 		setTag("project_name", project.name);
-		setOriginRect(tiltRef.current?.getBoundingClientRect() ?? null);
+		setOriginRect(frameRef.current?.getBoundingClientRect() ?? null);
 		setShowModal(true);
 	};
-
-	useEffect(() => {
-		const node = tiltRef.current;
-		if (!node) return;
-		// Only enable on non-touch devices
-		if (typeof window !== "undefined" && "ontouchstart" in window) return;
-		VanillaTilt.init(node, {
-			max: 8,
-			speed: 400,
-			glare: true,
-			"max-glare": 0.12,
-			perspective: 1000,
-		});
-		return () => {
-			(node as any).vanillaTilt?.destroy();
-		};
-	}, []);
 
 	const {
 		name,
 		tech,
 		image,
 		category,
-		url,
 		gradient: [stop1, stop2],
 	} = project;
 
 	return (
 		<>
 			<div
-				ref={tiltRef}
-				className="group block cursor-pointer h-full"
-				style={{
-					animationDelay: `${index * 50}ms`,
-					transformStyle: "preserve-3d",
-				}}
+				ref={cardRef}
+				className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-line bg-surface-1/80 shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] transition-colors duration-[10ms] hover:border-line-strong"
+				data-cursor-label="View"
 				onClick={openModal}
 				role="button"
 				tabIndex={0}
+				aria-label={`${name} — open project details`}
 				onKeyDown={(e) => {
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
@@ -91,96 +65,68 @@ const ProjectTile = ({
 					}
 				}}
 			>
-				<div className="relative h-full rounded-2xl overflow-hidden bg-gray-900/80 backdrop-blur-sm border border-gray-800/50 transition-all duration-[10ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:border-[#9146FF]/40 hover:shadow-[0_20px_40px_-12px_rgba(145,70,255,0.15)] hover:-translate-y-2">
-					{/* Image Container */}
-					<div className="relative aspect-[16/10] overflow-hidden">
-						{/* Gradient Overlay */}
-						<div
-							className="absolute inset-0 opacity-60 z-10"
-							style={{
-								background: `linear-gradient(135deg, ${stop1}90 0%, ${stop2}90 100%)`,
-							}}
-						/>
-						<Image
-							src={image}
-							alt={name}
-							layout="fill"
-							objectFit="cover"
-							sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-							className="transition-transform duration-[10ms] group-hover:scale-110"
-							loading="lazy"
-						/>
-						{/* Category Badge */}
-						<div className="absolute top-4 left-4 z-20">
-							<span
-								className={`px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg ${CATEGORY_BADGE_STYLE}`}
-							>
-								{getCategoryLabel(category)}
-							</span>
-						</div>
-						{/* Expand Icon */}
-						<div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-[10ms]">
-							<div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-								<svg
-									className="w-4 h-4 text-white"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7"
-									/>
-								</svg>
-							</div>
-						</div>
-					</div>
-
-					{/* Content */}
-					<div className="p-5" style={{ transform: "translateZ(20px)" }}>
-						{/* Project Name */}
-						<h3 className="text-lg font-semibold text-white mb-2 group-hover:text-[#BF94FF] transition-colors duration-[10ms] line-clamp-2">
-							{name}
-						</h3>
-
-						{/* Description */}
-						{project.description && (
-							<p className="text-sm text-gray-400 mb-3 line-clamp-2 leading-relaxed">
-								{project.description}
-							</p>
-						)}
-
-						{/* Tech Stack */}
-						<div className="flex flex-wrap gap-2">
-							{tech.slice(0, 5).map((techItem) => (
-								<div
-									key={techItem}
-									className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800/80 border border-gray-700/50 transition-colors duration-[10ms] hover:border-[#9146FF]/30 hover:bg-gray-700/80"
-								>
-									<Image
-										src={`/projects/tech/${techItem}.${["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"].includes(techItem) ? "webp" : "svg"}`}
-										alt={techItem}
-										height={18}
-										width={18}
-										className="opacity-80"
-									/>
-									<span className="text-xs text-gray-300">
-										{techItem}
-									</span>
-								</div>
-							))}
-						</div>
-					</div>
-
-					{/* Bottom gradient line */}
+				<div ref={frameRef} className="relative aspect-[16/10] overflow-hidden border-b border-line bg-surface-2">
+					<Image
+						src={image}
+						alt={name}
+						layout="fill"
+						objectFit="cover"
+						sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+						className="transition-transform duration-[10ms] group-hover:scale-[1.04]"
+						loading="lazy"
+					/>
+					{/* Per-project tint, kept faint so the screenshots read. */}
 					<div
-						className="absolute bottom-0 left-0 right-0 h-1 opacity-30 group-hover:opacity-100 transition-opacity duration-[10ms]"
+						className="absolute inset-0"
 						style={{
-							background: `linear-gradient(90deg, ${stop1} 0%, ${stop2} 100%)`,
+							background: `linear-gradient(150deg, ${stop1}33 0%, transparent 45%, ${stop2}40 100%)`,
 						}}
 					/>
+					<div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10" />
+					<span className="absolute left-4 top-4 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-1">
+						{getCategoryLabel(category)}
+					</span>
+					<span className="absolute bottom-4 right-4 font-mono text-[11px] tracking-[0.14em] text-white/70">
+						{String(index + 1).padStart(2, "0")}
+					</span>
+				</div>
+
+				<div className="flex flex-1 flex-col p-5 md:p-6">
+					<div className="flex items-start justify-between gap-5">
+						<div className="min-w-0">
+							<h3 className="text-xl font-normal tracking-[-0.02em] text-ink-1 transition-colors duration-[10ms] group-hover:text-violet-soft md:text-[1.35rem]">
+								{name}
+							</h3>
+							{project.description && (
+								<p className="mt-2 line-clamp-2 text-[15px] leading-relaxed text-ink-2">
+									{project.description}
+								</p>
+							)}
+						</div>
+						<span
+							aria-hidden="true"
+							className="mt-1 grid h-9 w-9 flex-none place-items-center rounded-full border border-line bg-white/[0.04] text-ink-2 transition-colors duration-[10ms] group-hover:border-line-strong group-hover:text-ink-1"
+						>
+							↗
+						</span>
+					</div>
+
+					<div className="mt-auto flex flex-wrap gap-1.5 pt-5">
+						{tech.slice(0, 4).map((techItem) => (
+							<span
+								key={techItem}
+								className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[0.08em] text-ink-3"
+							>
+								<Image src={getTechIconSrc(techItem)} alt="" height={13} width={13} className="opacity-80" />
+								{techItem}
+							</span>
+						))}
+						{tech.length > 4 && (
+							<span className="inline-flex items-center rounded-full border border-line px-2.5 py-1 font-mono text-[10.5px] tracking-[0.08em] text-ink-3">
+								+{tech.length - 4}
+							</span>
+						)}
+					</div>
 				</div>
 			</div>
 
@@ -188,6 +134,7 @@ const ProjectTile = ({
 				<ProjectModal
 					project={project}
 					originRect={originRect}
+					returnFocusRef={cardRef}
 					onClose={() => setShowModal(false)}
 				/>
 			)}

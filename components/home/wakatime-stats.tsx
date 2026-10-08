@@ -4,7 +4,7 @@ import { SiWakatime } from "react-icons/si";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { trackEvent } from "../../utils/clarity";
-import { prefersReducedMotion } from "../../utils/motion";
+import { EASE, prefersReducedMotion } from "../../utils/motion";
 
 const WAKATIME_USERNAME = "MarkPham";
 
@@ -133,17 +133,17 @@ const DailyActivityHeatmap = () => {
 	}
 
 	return (
-		<div className="relative rounded-xl overflow-hidden bg-gray-800/30 border border-gray-700/30 p-4">
-			<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] opacity-40" />
-			<h4 className="text-sm font-medium text-gray-400 mb-4">
-				Daily Activity <span className="text-gray-400">· last 12 months</span>
-			</h4>
+		<div className="relative rounded-2xl overflow-hidden bg-surface-2 border border-line p-4 md:p-5">
+			<h3 className="mono-label mb-4">
+				Daily activity <span className="text-ink-3">· last 12 months</span>
+			</h3>
 			<a
 				href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackWakatimeClick("activity_heatmap")}
 				className="block overflow-x-auto"
+				data-lenis-prevent-horizontal
 			>
 				{svgMarkup ? (
 					<div
@@ -159,15 +159,11 @@ const DailyActivityHeatmap = () => {
 };
 
 const STAT_CARD_CLASSES =
-	"wk-stat-card flex items-center gap-4 p-4 rounded-xl border border-gray-700/30 hover:border-[#9146FF]/20 transition-all duration-[10ms] hover:scale-105";
-
-const STAT_CARD_BG = {
-	background: "linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(17, 24, 39, 0.8))",
-};
+	"wk-stat-card flex items-center gap-4 bg-surface-1 p-5 transition-colors duration-[10ms] hover:bg-surface-2";
 
 /**
- * Glass sub-card for a third-party Wakatime embed: purple top accent and a
- * shimmer skeleton until the remote SVG loads, so the embed feels intentional.
+ * Hairline frame for a third-party Wakatime embed, with a shimmer skeleton
+ * until the remote SVG loads, so the embed feels intentional.
  */
 const EmbedCard = ({
 	title,
@@ -187,15 +183,15 @@ const EmbedCard = ({
 	const [loaded, setLoaded] = useState(false);
 
 	return (
-		<div className="relative rounded-xl overflow-hidden bg-gray-800/30 border border-gray-700/30 p-4">
-			<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] opacity-40" />
-			<h4 className="text-sm font-medium text-gray-400 mb-4">{title}</h4>
+		<div className="relative rounded-2xl overflow-hidden bg-surface-2 border border-line p-4 md:p-5">
+			<h3 className="mono-label mb-4">{title}</h3>
 			<a
 				href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackWakatimeClick(trackLocation)}
 				className={`block relative ${scrollX ? "overflow-x-auto" : ""}`}
+				{...(scrollX && { "data-lenis-prevent-horizontal": true })}
 			>
 				{!loaded && (
 					<div className="shimmer-loading absolute inset-0 rounded-lg" aria-hidden="true" />
@@ -230,7 +226,7 @@ const WakatimeStats = memo(() => {
 					opacity: 1,
 					y: 0,
 					duration: 0.6,
-					ease: "back.out(1.4)",
+					ease: EASE.out,
 					stagger: 0.08,
 				});
 			},
@@ -242,52 +238,52 @@ const WakatimeStats = memo(() => {
 	return (
 		<div
 			ref={containerRef}
-			className="w-full rounded-2xl p-6 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-xl hover:border-[#9146FF]/30 hover:shadow-[0_0_30px_-5px_rgba(145,70,255,0.15)] transition-all duration-[10ms]"
+			className="w-full rounded-[24px] p-6 md:p-8 bg-surface-1/70 border border-line shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] hover:border-line-strong transition-colors duration-[10ms]"
 		>
 			<a
 				href={`https://wakatime.com/@${WAKATIME_USERNAME}`}
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackWakatimeClick("header")}
-				className="flex items-center gap-2 mb-6 group"
+				className="flex items-center gap-3 mb-8 group"
 			>
-				<SiWakatime className="text-2xl text-gray-300 group-hover:text-white transition-colors" />
-				<span className="text-xl font-semibold text-gray-300 group-hover:text-white transition-colors">
+				<SiWakatime className="text-xl text-ink-2 group-hover:text-ink-1 transition-colors duration-[10ms]" />
+				<span className="text-lg font-normal tracking-[-0.01em] text-ink-1">
 					Wakatime Stats
 				</span>
-				<span className="text-gray-400 text-sm">@{WAKATIME_USERNAME}</span>
+				<span className="font-mono text-[11px] tracking-[0.08em] text-ink-3">@{WAKATIME_USERNAME}</span>
 			</a>
 
 			{/* Wakatime Coding Activity */}
 			<div className="space-y-6">
 				{/* Stats Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_coding_activity")} className={STAT_CARD_CLASSES} style={STAT_CARD_BG}>
-						<FaClock className="text-3xl text-blue-400" />
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-2xl border border-line bg-line">
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_coding_activity")} className={STAT_CARD_CLASSES}>
+						<FaClock className="text-xl text-accent-soft" />
 						<div>
-							<p className="text-sm text-gray-400">Coding Activity</p>
-							<p className="text-lg font-semibold text-white">Since Sep 2024</p>
+							<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">Coding Activity</p>
+							<p className="mt-1 text-lg font-normal text-ink-1">Since Sep 2024</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_tracking")} className={STAT_CARD_CLASSES} style={STAT_CARD_BG}>
-						<FaCode className="text-3xl text-green-400" />
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_tracking")} className={STAT_CARD_CLASSES}>
+						<FaCode className="text-xl text-accent-soft" />
 						<div>
-							<p className="text-sm text-gray-400">Tracking</p>
-							<p className="text-lg font-semibold text-white">All Projects</p>
+							<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">Tracking</p>
+							<p className="mt-1 text-lg font-normal text-ink-1">All Projects</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_daily_goal")} className={STAT_CARD_CLASSES} style={STAT_CARD_BG}>
-						<FaChartBar className="text-3xl text-purple-400" />
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_daily_goal")} className={STAT_CARD_CLASSES}>
+						<FaChartBar className="text-xl text-accent-soft" />
 						<div>
-							<p className="text-sm text-gray-400">Daily Goal</p>
-							<p className="text-lg font-semibold text-white">2+ Hours</p>
+							<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">Daily Goal</p>
+							<p className="mt-1 text-lg font-normal text-ink-1">2+ Hours</p>
 						</div>
 					</a>
-					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_editor")} className={STAT_CARD_CLASSES} style={STAT_CARD_BG}>
-						<FaLaptopCode className="text-3xl text-orange-400" />
+					<a href={`https://wakatime.com/@${WAKATIME_USERNAME}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWakatimeClick("stat_editor")} className={STAT_CARD_CLASSES}>
+						<FaLaptopCode className="text-xl text-accent-soft" />
 						<div>
-							<p className="text-sm text-gray-400">Main Editor</p>
-							<p className="text-lg font-semibold text-white">Cursor</p>
+							<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">Main Editor</p>
+							<p className="mt-1 text-lg font-normal text-ink-1">Cursor</p>
 						</div>
 					</a>
 				</div>

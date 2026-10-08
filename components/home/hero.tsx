@@ -1,17 +1,11 @@
-import { MENULINKS, SOCIAL_LINKS, TYPED_STRINGS } from "../../constants";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import { CALENDLY_URL, MENULINKS, RESUME_URL, SOCIAL_LABELS, SOCIAL_LINKS, TYPED_STRINGS } from "../../constants";
+import React, { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
-import Image from "next/image";
-import { gsap, Linear } from "gsap";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import Button, { ButtonTypes } from "../common/button";
-import HeroAurora from "./hero-aurora";
-import { isSmallScreen } from "pages";
+import { gsap } from "gsap";
+import { SiDiscord, SiGithub, SiLeetcode, SiLinkedin, SiSubstack, SiWakatime } from "react-icons/si";
 import { trackEvent, setTag, upgradeSession } from "../../utils/clarity";
-import { initMagneticHover } from "../../utils/motion";
-
-const HeroImage = dynamic(() => import("./hero-image"), { ssr: false });
+import { EASE, MQ, initMagneticHover, prefersReducedMotion } from "../../utils/motion";
+import { whenPageReady } from "../../utils/page-ready";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyC7Bd9cOnlhZFTrxMZVbVzaRa9opnSnc4k",
@@ -81,15 +75,24 @@ const countview = async (
 	}
 };
 
-const HERO_STYLES = {
-	SECTION:
-		"w-full flex md:items-center py-8 section-container min-h-[85vh] md:min-h-screen relative mb-6 md:mb-12",
-	CONTENT: "font-medium flex flex-col pt-20 sm:pt-24 md:pt-0 select-none relative z-10",
-	SOCIAL_LINK: "link hover:opacity-90 hover:scale-110 transition-all duration-[10ms] md:mr-4 mr-2",
-	BG_WRAPPER:
-		"absolute hero-bg right-0 md:bottom-0 bottom-8 -z-1 md:w-3/4 w-full scale-125 sm:scale-100 flex items-end",
-	TYPED_SPAN: "text-xl sm:text-2xl md:text-3xl seq",
+const SOCIAL_ICONS: Record<keyof typeof SOCIAL_LINKS, React.ComponentType<{ className?: string }>> = {
+	linkedin: SiLinkedin,
+	github: SiGithub,
+	substack: SiSubstack,
+	wakatime: SiWakatime,
+	leetcode: SiLeetcode,
+	discord: SiDiscord,
 };
+
+// Name split into words at render time (SSR-safe): each word racks into
+// focus on its own. Words are fully opaque from the first frame (lowered and
+// blurred in CSS) so the H1 paint counts as the LCP — never fade, mask or
+// clip it.
+const NAME = [
+	{ word: "Minh", tone: "" },
+	{ word: "(Mark)", tone: "t2" },
+	{ word: "Pham", tone: "" },
+];
 
 const HeroSection = React.memo(() => {
 	const [viewCount, setViewCount] = useState<number | null>(null);
@@ -125,127 +128,118 @@ const HeroSection = React.memo(() => {
 		};
 	}, []);
 
-	const typedSpanElement = useRef<HTMLSpanElement>(null);
-	const targetSection = useRef<HTMLDivElement>(null);
-	const auroraRef = useRef<HTMLDivElement>(null);
+	const sectionRef = useRef<HTMLElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
-	const bgWrapperRef = useRef<HTMLDivElement>(null);
+	const innerRef = useRef<HTMLDivElement>(null);
+	const typedRef = useRef<HTMLSpanElement>(null);
 	const resumeCtaRef = useRef<HTMLAnchorElement>(null);
 	const coffeeCtaRef = useRef<HTMLAnchorElement>(null);
-	// Parallax must wait until the reveal timeline finishes — otherwise
-	// `overwrite: true` on the mousemove tween kills the reveal mid-flight
-	// and bg/aurora stay stuck at opacity:0.
-	const revealDone = useRef(false);
 
-	// Mouse-reactive parallax for hero layers — rAF-throttled so we do at most
-	// one batch of GSAP updates per frame regardless of pointer rate.
+	// Entrance — plays when the page is on screen (intro opening, curtain
+	// lifting, or direct landing). Typed starts once the name has landed.
 	useEffect(() => {
-		if (isSmallScreen()) return;
-		const section = targetSection.current;
+		const section = sectionRef.current;
 		if (!section) return;
+		const words = section.querySelectorAll(".hero-word");
+		const seq = section.querySelectorAll(".hero-seq");
+		let typed: Typed | null = null;
+		let typeTimer: ReturnType<typeof setTimeout> | undefined;
 
-		let nx = 0;
-		let ny = 0;
-		let rafScheduled = false;
-
-		const tick = () => {
-			rafScheduled = false;
-			if (auroraRef.current) {
-				gsap.to(auroraRef.current, { x: nx * 20, y: ny * 20, duration: 1.2, ease: "power2.out", overwrite: true });
-			}
-			if (contentRef.current) {
-				gsap.to(contentRef.current, { x: nx * -4, y: ny * -4, duration: 1, ease: "power2.out", overwrite: true });
-			}
-			if (bgWrapperRef.current) {
-				gsap.to(bgWrapperRef.current, { x: nx * -8, y: ny * -6, duration: 1, ease: "power2.out", overwrite: true });
-			}
+		const startTyping = () => {
+			if (!typedRef.current) return;
+			typed = new Typed(typedRef.current, {
+				strings: TYPED_STRINGS,
+				typeSpeed: 50,
+				backSpeed: 50,
+				backDelay: 8000,
+				contentType: "html",
+				loop: true,
+			});
 		};
 
-		const handleMouseMove = (e: MouseEvent) => {
-			if (!revealDone.current) return;
-			const rect = section.getBoundingClientRect();
-			nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-			ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-			if (!rafScheduled) {
-				rafScheduled = true;
-				requestAnimationFrame(tick);
-			}
-		};
-
-		section.addEventListener("mousemove", handleMouseMove, { passive: true });
-		return () => section.removeEventListener("mousemove", handleMouseMove);
-	}, []);
-
-	const initTypeAnimation = (
-		typedSpanElement: React.RefObject<HTMLSpanElement | null>
-	): Typed => {
-		if (!typedSpanElement.current) return new Typed(document.createElement('span'), {
-			strings: TYPED_STRINGS,
-			typeSpeed: 50,
-			backSpeed: 50,
-			backDelay: 8000,
-			contentType: 'html',
-			loop: true,
-		});
-		return new Typed(typedSpanElement.current, {
-			strings: TYPED_STRINGS,
-			typeSpeed: 50,
-			backSpeed: 50,
-			backDelay: 8000,
-			contentType: 'html',
-			loop: true,
-		});
-	};
-
-	const initRevealAnimation = (
-		targetSection: React.RefObject<HTMLDivElement | null>
-	): GSAPTimeline => {
-		if (!targetSection.current) return gsap.timeline();
-		const revealTl = gsap.timeline({
-			defaults: { ease: "power2.out" },
-			onComplete: () => { revealDone.current = true; },
-		});
-
-		// 1. Aurora blooms from center (scale from 0.6 to 1)
-		if (auroraRef.current) {
-			revealTl.fromTo(
-				auroraRef.current,
-				{ scale: 0.6, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" },
-				0.2
-			);
+		if (prefersReducedMotion()) {
+			gsap.set(seq, { opacity: 1 });
+			// Static first line instead of a typing loop.
+			if (typedRef.current) typedRef.current.innerHTML = TYPED_STRINGS[0];
+			return;
 		}
 
-		// 2. Hero content sequences in with stagger
-		revealTl.from(
-			targetSection.current.querySelectorAll(".seq"),
-			{ opacity: 0, y: 30, duration: 0.6, stagger: 0.15 },
-			0.4
-		);
-
-		// 3. Background image slides in from right
-		if (bgWrapperRef.current) {
-			revealTl.fromTo(
-				bgWrapperRef.current,
-				{ opacity: 0, x: 60 },
-				{ opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
-				0.6
-			);
-		}
-
-		return revealTl;
-	};
-
-	useEffect(() => {
-		const typed = initTypeAnimation(typedSpanElement);
-		initRevealAnimation(targetSection);
+		let tl: gsap.core.Timeline | null = null;
+		const cancelReady = whenPageReady(() => {
+			const blur = window.matchMedia(MQ.desktop).matches;
+			tl = gsap
+				.timeline({ defaults: { ease: EASE.out } })
+				// Focus pull from the CSS first-frame state (lowered + blurred);
+				// the name stays fully opaque throughout, so it's the LCP paint.
+				.fromTo(
+					words,
+					{ yPercent: 30, ...(blur && { filter: "blur(14px)" }) },
+					{ yPercent: 0, ...(blur && { filter: "blur(0px)" }), duration: 1, stagger: 0.06 },
+					0.05
+				)
+				.fromTo(seq, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.05 }, 0.25);
+			typeTimer = setTimeout(startTyping, 600);
+		});
 
 		return () => {
-			if (typed) {
-				typed.destroy();
-			}
+			cancelReady();
+			tl?.kill();
+			if (typeTimer) clearTimeout(typeTimer);
+			typed?.destroy();
 		};
-	}, [typedSpanElement, targetSection]);
+	}, []);
+
+	// Scroll: the page slides up over the light, and the hero content drifts
+	// at a slower pace (depth) while fading out. No pin — the backdrop is
+	// fixed, so there's no stage to hold.
+	//
+	// Built on the first sign of scrolling, not at load, so nothing touches
+	// the H1's ancestors while LCP is still being measured (it stops at the
+	// first input anyway, and the drift only matters once you scroll).
+	useEffect(() => {
+		const section = sectionRef.current;
+		const content = contentRef.current;
+		if (!section || !content) return;
+		let mm: gsap.MatchMedia | null = null;
+		const intents = ["wheel", "touchstart", "keydown", "pointerdown", "scroll"] as const;
+
+		const build = () => {
+			intents.forEach((ev) => window.removeEventListener(ev, build));
+			if (mm) return;
+			mm = gsap.matchMedia();
+			mm.add(MQ.motion, () => {
+				gsap
+					.timeline({
+						scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: true },
+					})
+					.to(content, { yPercent: 30, ease: "none" }, 0)
+					.to(content, { opacity: 0, ease: "power1.in" }, 0);
+			});
+		};
+
+		if (window.scrollY > 0) build();
+		else intents.forEach((ev) => window.addEventListener(ev, build, { passive: true }));
+		return () => {
+			intents.forEach((ev) => window.removeEventListener(ev, build));
+			mm?.revert();
+		};
+	}, []);
+
+	// Pointer parallax on the content block (desktop pointers only).
+	useEffect(() => {
+		const section = sectionRef.current;
+		const inner = innerRef.current;
+		if (!section || !inner || prefersReducedMotion() || !window.matchMedia(MQ.fine).matches) return;
+		const xTo = gsap.quickTo(inner, "x", { duration: 1.2, ease: "power3" });
+		const yTo = gsap.quickTo(inner, "y", { duration: 1.2, ease: "power3" });
+		const onMove = (e: MouseEvent) => {
+			const rect = section.getBoundingClientRect();
+			xTo(((e.clientX - rect.left) / rect.width - 0.5) * -10);
+			yTo(((e.clientY - rect.top) / rect.height - 0.5) * -8);
+		};
+		section.addEventListener("mousemove", onMove, { passive: true });
+		return () => section.removeEventListener("mousemove", onMove);
+	}, []);
 
 	// Magnetic hover on the two CTAs (desktop pointers only, respects reduced motion)
 	useEffect(() => {
@@ -256,101 +250,100 @@ const HeroSection = React.memo(() => {
 		return () => cleanups.forEach((fn) => fn());
 	}, []);
 
-	const renderBackgroundImage = (): React.ReactNode => (
-		<div ref={bgWrapperRef} className={HERO_STYLES.BG_WRAPPER} style={{ maxHeight: "650px" }}>
-			<div
-				className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full animate-glow-pulse pointer-events-none"
-				style={{
-					background: "radial-gradient(circle, rgba(145, 70, 255, 0.15) 0%, transparent 70%)",
-					filter: "blur(60px)",
-				}}
-			/>
-			<HeroImage />
-		</div>
-	);
-
 	const renderSocialLinks = (): React.ReactNode =>
-		(Object.keys(SOCIAL_LINKS) as Array<keyof typeof SOCIAL_LINKS>).map((el) => (
-			<a
-				href={SOCIAL_LINKS[el]}
-				key={el}
-				className={HERO_STYLES.SOCIAL_LINK}
-				rel="noreferrer"
-				target="_blank"
-				onClick={() => { trackEvent("social_click"); setTag("social_platform", el); }}
-			>
-				<Image src={`/social/${el}.svg`} alt={el} width={48} height={48} priority />
-			</a>
-		));
-
-	const renderHeroContent = (): React.ReactNode => (
-		<div ref={contentRef} className={HERO_STYLES.CONTENT}>
-			<div className="md:mb-4 mb-2">
-				{viewCount !== null && (
-					<span className="inline-flex items-center gap-1.5 text-sm text-gray-400 seq mb-3">
-						<span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-						{viewCount.toLocaleString()} visitors
-					</span>
-				)}
-				<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-					<span className="bg-gradient-to-r from-[#9146FF] via-[#BF94FF] to-[#9146FF] bg-clip-text text-transparent">
-						Minh (Mark) Pham
-					</span>
-				</h1>
-			</div>
-			<p className="mb-4">
-				<span className={HERO_STYLES.TYPED_SPAN} ref={typedSpanElement}></span>
-			</p>
-			<div className="flex seq gap-4">
-				{renderSocialLinks()}
-			</div>
-			<div className="flex flex-wrap gap-4 seq mt-6">
+		(Object.keys(SOCIAL_LINKS) as Array<keyof typeof SOCIAL_LINKS>).map((el) => {
+			const Icon = SOCIAL_ICONS[el];
+			return (
 				<a
-					ref={resumeCtaRef}
-					href="/minh_pham_resume.pdf"
-					download
-					onClick={() => { trackEvent("resume_download"); upgradeSession("resume_download"); }}
-					className="inline-flex items-center gap-3 px-5 py-3 bg-[#9146FF] hover:bg-[#7B3FD9] text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-[#9146FF]/25 hover:-translate-y-0.5"
-				>
-					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-						<polyline points="7 10 12 15 17 10" />
-						<line x1="12" y1="15" x2="12" y2="3" />
-					</svg>
-					<span>Download Resume</span>
-				</a>
-				<a
-					ref={coffeeCtaRef}
-					href="https://calendly.com/minhbpham2003/30min"
-					target="_blank"
+					href={SOCIAL_LINKS[el]}
+					key={el}
+					aria-label={SOCIAL_LABELS[el]}
+					className="glass grid h-11 w-11 place-items-center rounded-full text-ink-2 transition-colors duration-[10ms] hover:border-white/[0.28] hover:text-ink-1"
 					rel="noreferrer"
-					onClick={() => { trackEvent("coffee_chat_click"); upgradeSession("coffee_chat_click"); }}
-					className="inline-flex items-center gap-3 px-5 py-3 bg-white hover:bg-gray-100 text-black text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-white/20 hover:-translate-y-0.5"
+					target="_blank"
+					onClick={() => { trackEvent("social_click"); setTag("social_platform", el); }}
 				>
-					<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-						<path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-						<path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-						<line x1="6" y1="2" x2="6" y2="4" />
-						<line x1="10" y1="2" x2="10" y2="4" />
-						<line x1="14" y1="2" x2="14" y2="4" />
-					</svg>
-					<span>Book a coffee chat</span>
+					<Icon className="h-[17px] w-[17px]" />
 				</a>
-			</div>
-		</div>
-	);
+			);
+		});
 
 	const { ref: heroSectionRef } = MENULINKS[0];
 
 	return (
-		<section
-			className={HERO_STYLES.SECTION}
-			id={heroSectionRef}
-			ref={targetSection}
-		>
-			<HeroAurora ref={auroraRef} />
-			{renderHeroContent()}
-			{renderBackgroundImage()}
+		<section ref={sectionRef} id={heroSectionRef} className="hero-screen relative w-full select-none">
+			<div ref={contentRef} className="relative z-10 flex h-full flex-col items-center justify-center px-5 text-center">
+				<div ref={innerRef} className="flex flex-col items-center">
+					{/* Fixed height: the H1 is vertically centred, so a late
+					    count must not push it around. */}
+					<div className="hero-seq mb-7 flex h-8 items-center">
+						{viewCount !== null && (
+							<span className="eyebrow">
+								<span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgb(52_211_153/0.8)]" />
+								{viewCount.toLocaleString()} visitors
+							</span>
+						)}
+					</div>
+
+					<h1 className="type-hero title-silver">
+						{NAME.map(({ word, tone }, i) => (
+							<React.Fragment key={word}>
+								<span className={`hero-word inline-block ${tone}`}>{word}</span>
+								{i < NAME.length - 1 && " "}
+							</React.Fragment>
+						))}
+					</h1>
+
+					<p className="hero-seq mt-6 min-h-[1.6em] text-lg font-light tracking-[-0.01em] text-ink-2 sm:text-xl md:text-2xl">
+						<span ref={typedRef} />
+					</p>
+
+					<div className="hero-seq mt-9 flex flex-wrap justify-center gap-2">{renderSocialLinks()}</div>
+
+					<div className="hero-seq mt-8 flex flex-wrap justify-center gap-3">
+						<a
+							ref={resumeCtaRef}
+							href={RESUME_URL}
+							download
+							onClick={() => { trackEvent("resume_download"); upgradeSession("resume_download"); }}
+							className="btn-pill btn-primary"
+						>
+							Download resume
+							<span className="btn-disc" aria-hidden="true">
+								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M12 4v12M6 11l6 6 6-6M5 20h14" />
+								</svg>
+							</span>
+						</a>
+						<a
+							ref={coffeeCtaRef}
+							href={CALENDLY_URL}
+							target="_blank"
+							rel="noreferrer"
+							onClick={() => { trackEvent("coffee_chat_click"); upgradeSession("coffee_chat_click"); }}
+							className="btn-pill btn-glass"
+						>
+							Book a coffee chat
+							<span className="btn-disc" aria-hidden="true">
+								<svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+									<path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+									<line x1="6" y1="2" x2="6" y2="4" />
+									<line x1="10" y1="2" x2="10" y2="4" />
+									<line x1="14" y1="2" x2="14" y2="4" />
+								</svg>
+							</span>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div className="hero-seq pointer-events-none absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3">
+				<span className="mono-label">Scroll</span>
+				<span className="scroll-cue block h-10 w-px overflow-hidden bg-white/10">
+					<span className="block h-full w-full bg-ink-1" />
+				</span>
+			</div>
 		</section>
 	);
 });

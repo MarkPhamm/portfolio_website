@@ -43,7 +43,7 @@ const buildLines = (file: ITestimonialFile, color: string): ILineModel[] => [
 	{
 		frontmatter: true,
 		segs: [
-			{ t: "author", cls: "text-[#BF94FF]" },
+			{ t: "author", cls: "text-violet-soft" },
 			{ t: ": ", cls: "text-gray-500" },
 			{ t: `"${file.displayName}"`, cls: "text-emerald-300" },
 		],
@@ -51,7 +51,7 @@ const buildLines = (file: ITestimonialFile, color: string): ILineModel[] => [
 	{
 		frontmatter: true,
 		segs: [
-			{ t: "role", cls: "text-[#BF94FF]" },
+			{ t: "role", cls: "text-violet-soft" },
 			{ t: ": ", cls: "text-gray-500" },
 			{ t: `"${file.role}"`, cls: "text-sky-300" },
 		],
@@ -59,7 +59,7 @@ const buildLines = (file: ITestimonialFile, color: string): ILineModel[] => [
 	{
 		frontmatter: true,
 		segs: [
-			{ t: "tags", cls: "text-[#BF94FF]" },
+			{ t: "tags", cls: "text-violet-soft" },
 			{ t: ": [", cls: "text-gray-500" },
 			{ t: file.tag, cls: "text-amber-300" },
 			{ t: ", ", cls: "text-gray-500" },
@@ -72,7 +72,7 @@ const buildLines = (file: ITestimonialFile, color: string): ILineModel[] => [
 	...file.quoteLines.map((line, i) => ({
 		highlight: i === 0,
 		segs: [
-			{ t: "> ", cls: "text-[#BF94FF]/70", noSelect: true },
+			{ t: "> ", cls: "text-violet-soft/70", noSelect: true },
 			{ t: line, cls: "text-gray-200" },
 		],
 	})),
@@ -101,7 +101,7 @@ const renderSegs = (segs: ISeg[], visible: number) => {
 
 const Caret = () => (
 	<span
-		className="ide-caret inline-block w-[8px] h-[15px] align-text-bottom bg-[#BF94FF] ml-px"
+		className="ide-caret inline-block w-[8px] h-[15px] align-text-bottom bg-violet-soft ml-px"
 		aria-hidden="true"
 	/>
 );
@@ -242,7 +242,7 @@ const Editor = ({ file }: { file: ITestimonialFile | null }) => {
 					alt={file.displayName}
 					width={112}
 					height={112}
-					className="w-16 h-16 md:w-28 md:h-28 rounded-full object-cover border-4 border-[#9146FF]/40 shadow-lg shadow-[#9146FF]/20"
+					className="w-16 h-16 md:w-28 md:h-28 rounded-full object-cover border border-white/10 shadow-[0_0_40px_-10px_rgb(var(--accent)/0.55)]"
 					loading="lazy"
 				/>
 			</div>
@@ -273,7 +273,7 @@ const Editor = ({ file }: { file: ITestimonialFile | null }) => {
 				{rendered.map(({ line, visible, hasCaret }, i) => (
 					<div
 						key={i}
-						className={`flex ${line.highlight ? "bg-[#9146FF]/10" : ""}`}
+						className={`flex ${line.highlight ? "bg-white/[0.03] shadow-[inset_2px_0_0_rgb(var(--violet-soft))]" : ""}`}
 					>
 						<span className="w-8 shrink-0 pr-3 text-right text-gray-600 select-none">
 							{i + 1}

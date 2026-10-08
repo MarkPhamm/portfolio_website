@@ -22,26 +22,29 @@ export default function NotFound() {
 				<Header />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 				<main className="section-container min-h-screen flex flex-col items-center justify-center text-center select-none py-24">
-					<h1 className="text-7xl md:text-9xl font-bold text-gradient w-fit mb-8">
+					<h1 className="type-hero title-silver w-fit mb-10">
 						404
 					</h1>
-					<div className="w-full max-w-xl rounded-xl border border-gray-700/60 bg-[#282a36] text-left font-mono text-sm md:text-base leading-relaxed px-5 py-4 md:px-7 md:py-5 mb-8 overflow-x-auto">
+					<div className="panel w-full max-w-xl text-left font-mono text-sm md:text-base leading-relaxed px-5 py-4 md:px-7 md:py-5 mb-8 overflow-x-auto">
 						<p>
-							<span className="text-[#BF94FF]">SELECT</span> *{" "}
-							<span className="text-[#BF94FF]">FROM</span> pages
+							<span className="text-violet-soft">SELECT</span> *{" "}
+							<span className="text-violet-soft">FROM</span> pages
 						</p>
 						<p>
-							<span className="text-[#BF94FF]">WHERE</span> path ={" "}
+							<span className="text-violet-soft">WHERE</span> path ={" "}
 							<span className="text-[#34D399]">&apos;{path}&apos;</span>;
 						</p>
-						<p className="text-gray-400">-- 0 rows returned (took 4.04 ms)</p>
+						<p className="text-ink-3">-- 0 rows returned (took 4.04 ms)</p>
 					</div>
-					<p className="text-gray-400 text-lg mb-8">
+					<p className="text-ink-2 text-lg mb-8">
 						Looks like this JOIN came back empty.
 					</p>
 					<Link href="/">
-						<a className="link inline-flex items-center gap-3 px-6 py-3 bg-[#9146FF] hover:bg-[#7B3FD9] text-white text-base font-medium rounded-full transition-all duration-[10ms] hover:shadow-lg hover:shadow-[#9146FF]/25 hover:-translate-y-0.5">
-							← Back to home
+						<a className="btn-pill btn-primary">
+							Back to home
+							<span className="btn-disc" aria-hidden="true">
+								←
+							</span>
 						</a>
 					</Link>
 				</main>
