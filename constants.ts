@@ -442,6 +442,17 @@ export const SOCIAL_LINKS = {
 	discord: "https://discord.com/users/756173543431209071",
 };
 
+export const SOCIAL_LABELS: Record<keyof typeof SOCIAL_LINKS, string> = {
+	linkedin: "LinkedIn",
+	github: "GitHub",
+	substack: "Substack",
+	wakatime: "WakaTime",
+	leetcode: "LeetCode",
+	discord: "Discord",
+};
+
+export const CALENDLY_URL = "https://calendly.com/minhbpham2003/30min";
+
 export interface IProject {
 	name: string;
 	category: string;
