@@ -6,13 +6,14 @@ import { isSmallScreen } from "pages";
 import { NO_MOTION_PREFERENCE_QUERY } from "../../utils/motion";
 import { getTechUrl } from "../../constants";
 import PipelineToggle, { PipelineVariant } from "./pipeline-toggle";
+import SectionHeader from "../common/section-header";
 import { trackEvent } from "../../utils/clarity";
 
 if (typeof window !== "undefined") {
 	gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 }
 
-const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+const MONO_FONT = '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 const LABEL_HIDDEN_MOBILE = "pl-label hidden md:block";
 
 // Wraps a piece of the (otherwise pointer-events-none) diagram in an SVG anchor
@@ -83,7 +84,7 @@ const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilt
 				width={w}
 				height={h}
 				rx={10}
-				fill="rgba(17, 24, 39, 0.65)"
+				fill="rgba(12, 11, 16, 0.82)"
 				stroke={stroke}
 				strokeOpacity={0.55}
 				strokeWidth={1.5}
@@ -102,7 +103,7 @@ const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilt
 				x={textX}
 				y={sub ? y + h / 2 - 3 : y + h / 2 + 4.5}
 				textAnchor="middle"
-				fill="#D1D5DB"
+				fill="#DAD8E0"
 				fontSize={14}
 				fontFamily={MONO_FONT}
 				className={LABEL_HIDDEN_MOBILE}
@@ -114,7 +115,7 @@ const Node = ({ x, y, w, h, label, sub, name, stroke = "#9146FF", icon, iconFilt
 					x={textX}
 					y={y + h / 2 + 15}
 					textAnchor="middle"
-					fill="#6B7280"
+					fill="#807E8A"
 					fontSize={11}
 					fontFamily={MONO_FONT}
 					className={LABEL_HIDDEN_MOBILE}
@@ -132,7 +133,7 @@ const ColumnHeading = ({ x, label }: { x: number; label: string }) => (
 		x={x}
 		y={56}
 		textAnchor="middle"
-		fill="#6B7280"
+		fill="#807E8A"
 		fontSize={12}
 		letterSpacing={2.5}
 		fontFamily={MONO_FONT}
@@ -680,7 +681,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						x={470}
 						y={112}
 						textAnchor="middle"
-						fill="#6B7280"
+						fill="#807E8A"
 						fontSize={11}
 						fontStyle="italic"
 						fontFamily={MONO_FONT}
@@ -692,7 +693,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						x={585}
 						y={622}
 						textAnchor="middle"
-						fill="#6B7280"
+						fill="#807E8A"
 						fontSize={11}
 						fontStyle="italic"
 						fontFamily={MONO_FONT}
@@ -716,12 +717,12 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 					<TechLink tech="Hightouch">
 						<g className="pl-node" data-name="rev-ht">
 							<rect x={567} y={-101} width={276} height={78} rx={15} fill="none" stroke="#BF94FF" strokeOpacity={0.12} strokeWidth={1.5} />
-							<rect x={570} y={-98} width={270} height={72} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#BF94FF" strokeOpacity={0.55} strokeWidth={1.5} />
+							<rect x={570} y={-98} width={270} height={72} rx={12} fill="rgba(12, 11, 16, 0.82)" stroke="#BF94FF" strokeOpacity={0.55} strokeWidth={1.5} />
 							<image href="/pipeline/hightouch.png" x={590} y={-78} width={32} height={32} clipPath="url(#pl-ht-clip)" />
-							<text x={729} y={-68} textAnchor="middle" fill="#D1D5DB" fontSize={16} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={729} y={-68} textAnchor="middle" fill="#DAD8E0" fontSize={16} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								Hightouch
 							</text>
-							<text x={729} y={-48} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={729} y={-48} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								reverse ETL · sync audiences
 							</text>
 						</g>
@@ -748,30 +749,30 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						    1055 + half the icon+gap width; icon x from label length). */}
 						<TechLink tech="AWS Redshift">
 							<image href="/skills/1st/AWS%20Redshift.svg" x={1007} y={232} width={20} height={20} />
-							<text x={1069} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={248} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								Redshift
 							</text>
-							<text x={1055} y={266} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={266} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								raw schemas + curated marts
 							</text>
 						</TechLink>
 						<line x1={972} y1={292} x2={1138} y2={292} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
 						<TechLink tech="dbt">
 							<image href="/skills/1st/dbt.svg" x={999} y={312} width={20} height={20} />
-							<text x={1069} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={328} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								dbt models
 							</text>
-							<text x={1055} y={346} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={346} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								stg → int → marts
 							</text>
 						</TechLink>
 						<line x1={972} y1={372} x2={1138} y2={372} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
 						<TechLink tech="Github">
 							<image href="/skills/1st/Github.svg" x={1003} y={392} width={20} height={20} />
-							<text x={1069} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={408} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								dbt CI/CD
 							</text>
-							<text x={1055} y={426} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={426} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								PR checks · deploy
 							</text>
 						</TechLink>
@@ -791,7 +792,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						</text>
 					</TechLink>
 
-					<text x={720} y={768} textAnchor="middle" fill="#4B5563" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<text x={720} y={768} textAnchor="middle" fill="#5C5A66" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						solid = primary flow · dashed = direct paths · dotted = reverse ETL
 					</text>
 
@@ -807,7 +808,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						x={710}
 						y={165}
 						textAnchor="middle"
-						fill="#6B7280"
+						fill="#807E8A"
 						fontSize={11}
 						fontStyle="italic"
 						fontFamily={MONO_FONT}
@@ -831,15 +832,15 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 					<TechLink tech="Fivetran">
 						<g className="pl-node" data-name="fivetran">
 							<rect x={292} y={227} width={186} height={226} rx={15} fill="none" stroke="#3B82F6" strokeOpacity={0.1} strokeWidth={1.5} />
-							<rect x={295} y={230} width={180} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#3B82F6" strokeOpacity={0.45} strokeWidth={1.5} />
+							<rect x={295} y={230} width={180} height={220} rx={12} fill="rgba(12, 11, 16, 0.82)" stroke="#3B82F6" strokeOpacity={0.45} strokeWidth={1.5} />
 							<image href="/skills/1st/Fivetran.svg" x={361} y={268} width={48} height={48} />
 							<text x={385} y={348} textAnchor="middle" fill="#60A5FA" fontSize={19} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								Fivetran
 							</text>
-							<text x={385} y={380} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={385} y={380} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								managed connectors
 							</text>
-							<text x={385} y={400} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={385} y={400} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								ELT · CDC
 							</text>
 						</g>
@@ -850,15 +851,15 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 					<TechLink tech="Snowflake">
 						<g className="pl-node" data-name="il-copy">
 							<rect x={732} y={227} width={156} height={226} rx={15} fill="none" stroke="#29B5E8" strokeOpacity={0.1} strokeWidth={1.5} />
-							<rect x={735} y={230} width={150} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#29B5E8" strokeOpacity={0.45} strokeWidth={1.5} />
+							<rect x={735} y={230} width={150} height={220} rx={12} fill="rgba(12, 11, 16, 0.82)" stroke="#29B5E8" strokeOpacity={0.45} strokeWidth={1.5} />
 							<image href="/skills/1st/Snowflake.svg" x={786} y={268} width={48} height={48} />
 							<text x={810} y={348} textAnchor="middle" fill="#29B5E8" fontSize={17} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								COPY INTO
 							</text>
-							<text x={810} y={380} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={810} y={380} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								S3 → Snowflake
 							</text>
-							<text x={810} y={400} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={810} y={400} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								external stages
 							</text>
 						</g>
@@ -872,30 +873,30 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						<line x1={972} y1={212} x2={1138} y2={212} stroke="#9146FF" strokeOpacity={0.3} strokeWidth={1} />
 						<TechLink tech="Snowflake">
 							<image href="/skills/1st/Snowflake.svg" x={1003} y={232} width={20} height={20} />
-							<text x={1069} y={248} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={248} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								Snowflake
 							</text>
-							<text x={1055} y={266} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={266} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								raw · analytics schemas
 							</text>
 						</TechLink>
 						<line x1={972} y1={292} x2={1138} y2={292} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
 						<TechLink tech="dbt">
 							<image href="/skills/1st/dbt.svg" x={999} y={312} width={20} height={20} />
-							<text x={1069} y={328} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={328} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								dbt models
 							</text>
-							<text x={1055} y={346} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={346} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								stg → int → marts
 							</text>
 						</TechLink>
 						<line x1={972} y1={372} x2={1138} y2={372} stroke="#9146FF" strokeOpacity={0.18} strokeWidth={1} strokeDasharray="3 5" />
 						<TechLink tech="Github">
 							<image href="/skills/1st/Github.svg" x={1003} y={392} width={20} height={20} />
-							<text x={1069} y={408} textAnchor="middle" fill="#D1D5DB" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1069} y={408} textAnchor="middle" fill="#DAD8E0" fontSize={14} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								dbt CI/CD
 							</text>
-							<text x={1055} y={426} textAnchor="middle" fill="#6B7280" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={1055} y={426} textAnchor="middle" fill="#807E8A" fontSize={11.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								PR checks · deploy
 							</text>
 						</TechLink>
@@ -914,7 +915,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 						</text>
 					</TechLink>
 
-					<text x={720} y={768} textAnchor="middle" fill="#4B5563" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<text x={720} y={768} textAnchor="middle" fill="#5C5A66" fontSize={11} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						solid = primary flow · dashed = direct paths
 					</text>
 
@@ -928,15 +929,15 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 					<TechLink tech="S3">
 						<g className="pl-node" data-name="s3">
 							<rect x={532} y={227} width={146} height={226} rx={15} fill="none" stroke="#34D399" strokeOpacity={0.1} strokeWidth={1.5} />
-							<rect x={535} y={230} width={140} height={220} rx={12} fill="rgba(17, 24, 39, 0.65)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
+							<rect x={535} y={230} width={140} height={220} rx={12} fill="rgba(12, 11, 16, 0.82)" stroke="#34D399" strokeOpacity={0.45} strokeWidth={1.5} />
 							<image href="/skills/1st/S3.webp" x={581} y={255} width={48} height={48} />
 							<text x={605} y={335} textAnchor="middle" fill="#34D399" fontSize={24} fontWeight="bold" fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								S3
 							</text>
-							<text x={605} y={368} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={605} y={368} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								raw archive
 							</text>
-							<text x={605} y={388} textAnchor="middle" fill="#6B7280" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+							<text x={605} y={388} textAnchor="middle" fill="#807E8A" fontSize={12} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 								daily partitions
 							</text>
 						</g>
@@ -955,7 +956,7 @@ const PipelineDag = ({ variant, onAutoMorph, onReady, onMorphingChange }: DagPro
 					<TechLink tech="Apache Airflow">
 						<image href="/projects/tech/Apache%20Airflow.svg" x={678} y={643} width={28} height={28} />
 					</TechLink>
-					<text x={775} y={724} textAnchor="middle" fill="#6B7280" fontSize={12.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
+					<text x={775} y={724} textAnchor="middle" fill="#807E8A" fontSize={12.5} fontFamily={MONO_FONT} className={LABEL_HIDDEN_MOBILE}>
 						schedules ingestion · dbt runs · data-quality checks · CI/CD
 					</text>
 				</g>
@@ -984,19 +985,24 @@ const PipelineSection = () => {
 	}, []);
 
 	return (
-		<section
-			id="pipeline"
-			className="w-full relative select-none section-container py-8 md:py-12 flex flex-col items-center"
-		>
-			<p className="section-title-sm text-center mb-4 md:mb-5">How my data flows</p>
-			<PipelineToggle variant={variant} disabled={!ready || morphing} onChange={handleChange} />
-			<div className="w-full max-w-7xl mx-auto">
-				<PipelineDag
-					variant={variant}
-					onAutoMorph={handleAutoMorph}
-					onReady={() => setReady(true)}
-					onMorphingChange={setMorphing}
+		<section id="pipeline" className="relative z-10 w-full select-none">
+			<div className="section-container relative flex flex-col items-center pb-24 pt-20 md:pb-32 md:pt-28">
+				<SectionHeader
+					index="01"
+					eyebrow="Pipeline"
+					title="How my data flows"
+					align="center"
+					className="mb-10 md:mb-12"
 				/>
+				<PipelineToggle variant={variant} disabled={!ready || morphing} onChange={handleChange} />
+				<div className="mx-auto w-full max-w-7xl">
+					<PipelineDag
+						variant={variant}
+						onAutoMorph={handleAutoMorph}
+						onReady={() => setReady(true)}
+						onMorphingChange={setMorphing}
+					/>
+				</div>
 			</div>
 		</section>
 	);

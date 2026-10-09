@@ -36,7 +36,7 @@ const Explorer = ({
 					onClick={() => onOpen(file)}
 					className={`ide-tree-row w-full text-left ${indent} pr-4 py-1 flex items-center gap-1.5 whitespace-nowrap border-l-2 transition-colors duration-[10ms] ${
 						isActive
-							? "bg-gray-800/70 text-white border-[#9146FF]"
+							? "bg-white/[0.06] text-ink-1 border-violet-soft"
 							: "border-transparent hover:text-white hover:bg-gray-800/40"
 					}`}
 				>

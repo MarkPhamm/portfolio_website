@@ -4,7 +4,7 @@ import CountUp from "react-countup";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { trackEvent } from "../../utils/clarity";
-import { prefersReducedMotion } from "../../utils/motion";
+import { EASE, prefersReducedMotion } from "../../utils/motion";
 
 interface GitHubUser {
 	public_repos: number;
@@ -63,13 +63,15 @@ const LANGUAGE_COLORS: Record<string, string> = {
 const GITHUB_USERNAME = "MarkPhamm";
 
 const PANEL_CLASSES =
-	"w-full rounded-2xl p-6 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-xl hover:border-[#9146FF]/30 hover:shadow-[0_0_30px_-5px_rgba(145,70,255,0.15)] transition-all duration-[10ms]";
+	"w-full rounded-[24px] p-6 md:p-8 bg-surface-1/70 border border-line shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] hover:border-line-strong transition-colors duration-[10ms]";
 
 const GitHubStats = memo(() => {
 	const [stats, setStats] = useState<GitHubStatsData | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [inView, setInView] = useState(false);
+	// Reduced motion: numbers land on their final value, no count-up.
+	const [instant, setInstant] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const fetchGitHubStats = useCallback(async () => {
@@ -139,6 +141,7 @@ const GitHubStats = memo(() => {
 		if (loading || !stats || !containerRef.current) return;
 
 		if (prefersReducedMotion()) {
+			setInstant(true);
 			setInView(true);
 			return;
 		}
@@ -161,23 +164,23 @@ const GitHubStats = memo(() => {
 					opacity: 1,
 					y: 0,
 					duration: 0.6,
-					ease: "back.out(1.4)",
-					stagger: 0.08,
+					ease: EASE.out,
+					stagger: 0.05,
 				});
 				gsap.to(rows, {
 					opacity: 1,
 					x: 0,
 					duration: 0.5,
-					ease: "power2.out",
-					stagger: 0.08,
-					delay: 0.2,
+					ease: EASE.out,
+					stagger: 0.05,
+					delay: 0.1,
 				});
 				gsap.from(bars, {
 					width: 0,
-					duration: 0.9,
-					ease: "power3.out",
-					stagger: 0.1,
-					delay: 0.3,
+					duration: 0.8,
+					ease: EASE.out,
+					stagger: 0.06,
+					delay: 0.15,
 				});
 			},
 		});
@@ -191,33 +194,35 @@ const GitHubStats = memo(() => {
 			target="_blank"
 			rel="noopener noreferrer"
 			onClick={() => trackEvent("github_stats_click", { location: `stat_card_${label.toLowerCase().replace(/\s+/g, "_")}` })}
-			className="gh-stat-card flex flex-col items-center justify-center p-4 rounded-xl hover:scale-105 transition-all duration-[10ms] cursor-pointer"
-			style={{
-				background: 'linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9))',
-				border: '1px solid rgba(145, 70, 255, 0.15)',
-			}}
+			className="gh-stat-card flex flex-col items-start justify-between gap-8 bg-surface-1 p-5 md:p-6 cursor-pointer transition-colors duration-[10ms] hover:bg-surface-2"
 		>
-			<div className="text-2xl mb-2 text-[#9146FF]">{icon}</div>
-			<div className="text-2xl font-bold text-white">
-				{inView ? <CountUp end={value} duration={2} separator="," /> : <span>0</span>}
+			<div className="text-sm text-ink-3">{icon}</div>
+			<div>
+				<div className="text-4xl md:text-5xl font-light tracking-[-0.03em] text-ink-1 tabular-nums">
+					{inView ? (
+						instant ? value.toLocaleString() : <CountUp end={value} duration={2} separator="," />
+					) : (
+						<span>0</span>
+					)}
+				</div>
+				<div className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">{label}</div>
 			</div>
-			<div className="text-sm text-gray-300">{label}</div>
 		</a>
 	);
 
 	if (loading) {
 		return (
 			<div className={`${PANEL_CLASSES} animate-pulse`}>
-				<div className="flex items-center gap-2 mb-4">
-					<div className="w-6 h-6 bg-gray-800 rounded"></div>
-					<div className="h-6 w-32 bg-gray-800 rounded"></div>
+				<div className="flex items-center gap-2 mb-6">
+					<div className="w-6 h-6 bg-white/[0.05] rounded"></div>
+					<div className="h-6 w-32 bg-white/[0.05] rounded"></div>
 				</div>
 				<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
 					{[...Array(4)].map((_, i) => (
-						<div key={i} className="h-24 bg-gray-800 rounded-lg"></div>
+						<div key={i} className="h-32 bg-white/[0.04] rounded-xl"></div>
 					))}
 				</div>
-				<div className="h-32 bg-gray-800 rounded-lg"></div>
+				<div className="h-32 bg-white/[0.04] rounded-xl"></div>
 			</div>
 		);
 	}
@@ -225,7 +230,7 @@ const GitHubStats = memo(() => {
 	if (error || !stats) {
 		return (
 			<div className={`${PANEL_CLASSES} text-center`}>
-				<p className="text-gray-400">{error || "Unable to load GitHub stats"}</p>
+				<p className="text-ink-3">{error || "Unable to load GitHub stats"}</p>
 			</div>
 		);
 	}
@@ -237,17 +242,17 @@ const GitHubStats = memo(() => {
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackEvent("github_stats_click", { location: "header" })}
-				className="flex items-center gap-2 mb-6 group"
+				className="flex items-center gap-3 mb-8 group"
 			>
-				<FaGithub className="text-2xl text-gray-300 group-hover:text-white transition-colors" />
-				<span className="text-xl font-semibold text-gray-300 group-hover:text-white transition-colors">
+				<FaGithub className="text-xl text-ink-2 group-hover:text-ink-1 transition-colors duration-[10ms]" />
+				<span className="text-lg font-normal tracking-[-0.01em] text-ink-1">
 					GitHub Stats
 				</span>
-				<span className="text-gray-400 text-sm">@{GITHUB_USERNAME}</span>
+				<span className="font-mono text-[11px] tracking-[0.08em] text-ink-3">@{GITHUB_USERNAME}</span>
 			</a>
 
 			{/* Stats Grid */}
-			<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-px overflow-hidden rounded-2xl border border-line bg-line mb-10">
 				<StatCard icon={<FaBook />} label="Repositories" value={stats.repos} />
 				<StatCard icon={<FaStar />} label="Total Stars" value={stats.stars} />
 				<StatCard icon={<FaUsers />} label="Followers" value={stats.followers} />
@@ -260,23 +265,23 @@ const GitHubStats = memo(() => {
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackEvent("github_stats_click", { location: "languages" })}
-				className="block mt-4"
+				className="block"
 			>
-				<h4 className="text-sm font-medium text-gray-400 mb-3">Most Used Languages</h4>
-				<div className="space-y-3">
+				<h3 className="mono-label mb-5">Most used languages</h3>
+				<div className="space-y-4">
 					{stats.languages.map((lang) => (
 						<div key={lang.name} className="gh-lang-row group">
 							<div className="flex justify-between items-center mb-1">
 								<div className="flex items-center gap-2">
 									<span
-										className="w-3 h-3 rounded-full"
+										className="w-2 h-2 rounded-full"
 										style={{ backgroundColor: lang.color }}
 									></span>
-									<span className="text-sm text-gray-300">{lang.name}</span>
+									<span className="text-sm text-ink-2">{lang.name}</span>
 								</div>
-								<span className="text-sm text-gray-400">{lang.percentage}%</span>
+								<span className="font-mono text-[11px] text-ink-3">{lang.percentage}%</span>
 							</div>
-							<div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+							<div className="w-full bg-white/[0.08] rounded-full h-[2px] overflow-hidden">
 								<div
 									className="gh-lang-bar h-full rounded-full"
 									style={{
@@ -296,9 +301,10 @@ const GitHubStats = memo(() => {
 				target="_blank"
 				rel="noopener noreferrer"
 				onClick={() => trackEvent("github_stats_click", { location: "contributions" })}
-				className="block mt-6 pt-6 border-t border-gray-800"
+				className="block mt-10 pt-8 border-t border-line"
 			>
-				<h4 className="text-sm font-medium text-gray-400 mb-4">Contribution Activity</h4>
+				<h3 className="mono-label mb-5">Contribution activity</h3>
+				<div className="rounded-2xl border border-line bg-surface-2 p-4 md:p-5">
 				<img
 					src={`https://ghchart.rshah.org/9146FF/${GITHUB_USERNAME}`}
 					alt="GitHub Contribution Calendar"
@@ -306,6 +312,7 @@ const GitHubStats = memo(() => {
 					style={{ filter: 'invert(1) hue-rotate(180deg)', opacity: 0.85 }}
 					loading="lazy"
 				/>
+				</div>
 			</a>
 		</div>
 	);

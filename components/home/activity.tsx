@@ -1,41 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import GitHubStats from "./github-stats";
 import WakatimeStats from "./wakatime-stats";
-import { initHeadingWipe } from "../../utils/motion";
+import SectionHeader from "../common/section-header";
 
-const ActivitySection = () => {
-	const sectionRef = useRef<HTMLElement>(null);
+const ActivitySection = () => (
+	<section
+		className="w-full relative select-none section-container py-24 md:py-36 flex flex-col"
+		id="activity"
+	>
+		<SectionHeader
+			index="07"
+			eyebrow="My Activity"
+			title="My Activity"
+			inlineTagline="coding stats & contributions"
+			className="relative mb-12 md:mb-16"
+		/>
 
-	useEffect(() => {
-		const wipe = initHeadingWipe(sectionRef.current);
-		return () => wipe?.kill();
-	}, []);
-
-	return (
-		<section
-			ref={sectionRef}
-			className="w-full relative select-none section-container py-8 md:py-12 flex flex-col"
-			id="activity"
-		>
-			{/* Ambient glow tying the section back to the hero/pipeline treatment */}
-			<div
-				aria-hidden="true"
-				className="absolute -top-24 right-0 w-[26rem] h-[26rem] rounded-full bg-[#9146FF]/10 blur-3xl aurora-blob aurora-drift-2 pointer-events-none"
-			/>
-
-			<div className="flex flex-col mb-10 relative">
-				<h2 className="section-heading seq">My Activity</h2>
-				<h3 className="text-2xl md:max-w-2xl w-full seq mt-2">
-					Coding stats & contributions
-				</h3>
-			</div>
-
-			<div className="flex flex-col gap-8 relative">
-				<GitHubStats />
-				<WakatimeStats />
-			</div>
-		</section>
-	);
-};
+		<div className="flex flex-col gap-8 relative">
+			<GitHubStats />
+			<WakatimeStats />
+		</div>
+	</section>
+);
 
 export default ActivitySection;

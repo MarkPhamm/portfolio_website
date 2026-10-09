@@ -8,15 +8,16 @@ import Layout from "@/components/common/layout";
 import Header from "@/components/common/header";
 import ProgressIndicator from "@/components/common/progress-indicator";
 import HeroSection from "@/components/home/hero";
-import QuoteSection2 from "@/components/home/quote2";
-import SkillsSection from "@/components/home/skills";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
-import WaveDivider from "@/components/common/wave-divider";
+import Intro from "@/components/home/intro";
+import SilkBackdrop from "@/components/home/silk-backdrop";
 
 // Below-the-fold sections — SSR for SEO, but the client JS chunks load lazily so
 // they don't compete with hero hydration on the main thread.
 const PipelineSection = dynamic(() => import("@/components/home/pipeline"));
+const QuoteSection2 = dynamic(() => import("@/components/home/quote2"));
+const SkillsSection = dynamic(() => import("@/components/home/skills"));
 const SqlTerminalSection = dynamic(() => import("@/components/home/sql-terminal"));
 const CommentSection = dynamic(() => import("@/components/home/ide-testimonials"));
 const ArticlesPreview = dynamic(() => import("@/components/home/articles-preview"));
@@ -87,32 +88,25 @@ export default function Home() {
 		};
 	}, [debouncedDimensionCalculator]);
 
-	const renderBackdrop = (): React.ReactNode => (
-		<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
-	);
-
 	return (
 		<>
 			<Layout>
+				<Intro />
+				{/* The hero's light field, fixed behind every section. */}
+				<SilkBackdrop />
 				<Header />
 				<ProgressIndicator />
-				<main className="flex-col flex">
-					{renderBackdrop()}
+				<main className="relative z-[1] flex flex-col">
 					<HeroSection />
 					<PipelineSection />
 					<QuoteSection2 />
 					<SqlTerminalSection />
-					<WaveDivider />
 					<CommentSection />
 					<SkillsSection isDesktop={isDesktop} />
 					<ArticlesPreview />
-					<WaveDivider flip />
 					<ProjectsSection isDesktop={isDesktop} />
-					<WaveDivider />
 					<ActivitySection />
-					<WaveDivider flip />
 					<TimelineSection isDesktop={isDesktop} />
-					<WaveDivider />
 					<CertificateSection isDesktop={isDesktop} />
 					<CollaborationSection />
 					<Footer />

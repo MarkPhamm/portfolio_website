@@ -1,5 +1,10 @@
 const colors = require("tailwindcss/colors");
 
+// Design tokens live as RGB triplets on :root (styles/globals.scss) so the
+// accent can be re-pointed per page (.theme-orange) and `/opacity` modifiers
+// still work. Hex mirrors for SVG/WebGL consumers are in utils/tokens.ts.
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 module.exports = {
 	content: [
 		"./pages/**/*.{js,ts,jsx,tsx}",
@@ -22,7 +27,21 @@ module.exports = {
 
 			black: colors.black,
 			white: colors.white,
-			gray: colors.gray,
+			// Obsidian ramp: 900 is the page canvas (it was the page bg before
+			// too), so every existing card/page relationship carries over.
+			gray: {
+				50: "#f5f4f7",
+				100: "#ebeaef",
+				200: "#dad8e0",
+				300: "#c4c2cc",
+				400: "#a3a1ad",
+				500: "#807e8a",
+				600: "#5c5a66",
+				700: "#2c2b33",
+				800: "#1b1a21",
+				900: "#060507",
+				950: "#030304",
+			},
 			red: colors.red,
 			yellow: colors.amber,
 			green: colors.emerald,
@@ -30,6 +49,24 @@ module.exports = {
 			indigo: colors.indigo,
 			purple: colors.violet,
 			pink: colors.pink,
+			// Referenced by the IDE / read badges since v3.10.1 but never compiled.
+			emerald: colors.emerald,
+			sky: colors.sky,
+			amber: colors.amber,
+			orange: colors.orange,
+
+			canvas: token("canvas"),
+			"surface-1": token("surface-1"),
+			"surface-2": token("surface-2"),
+			"surface-3": token("surface-3"),
+			"ink-1": token("ink-1"),
+			"ink-2": token("ink-2"),
+			"ink-3": token("ink-3"),
+			"ink-4": token("ink-4"),
+			violet: { DEFAULT: token("violet"), soft: token("violet-soft") },
+			accent: { DEFAULT: token("accent"), soft: token("accent-soft") },
+			line: "rgb(255 255 255 / 0.08)",
+			"line-strong": "rgb(255 255 255 / 0.16)",
 		},
 		spacing: {
 			px: "1px",
@@ -145,7 +182,7 @@ module.exports = {
 		},
 		borderColor: (theme) => ({
 			...theme("colors"),
-			DEFAULT: theme("colors.gray.200", "currentColor"),
+			DEFAULT: theme("colors.line", "currentColor"),
 		}),
 		borderOpacity: (theme) => theme("opacity"),
 		borderRadius: {
@@ -250,7 +287,8 @@ module.exports = {
 		},
 		fontFamily: {
 			sans: [
-				"Google Sans",
+				"Geist",
+				'"Geist Fallback"',
 				"ui-sans-serif",
 				"system-ui",
 				"-apple-system",
@@ -275,6 +313,7 @@ module.exports = {
 				"serif",
 			],
 			mono: [
+				'"Geist Mono"',
 				"ui-monospace",
 				"SFMono-Regular",
 				"Menlo",
@@ -833,6 +872,14 @@ module.exports = {
 			30: "30",
 			40: "40",
 			50: "50",
+			// Overlay ladder: header 50 · menu 60 · modal 100 · curtain 200 ·
+			// intro 300 · grain 350 · cursor label 400
+			60: "60",
+			100: "100",
+			200: "200",
+			300: "300",
+			350: "350",
+			400: "400",
 			"-1": "-1",
 		},
 		willChange: {

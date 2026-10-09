@@ -99,82 +99,13 @@ export const TECH_LINKS: Record<string, string> = {
 export const getTechUrl = (name: string): string | undefined =>
 	TECH_LINKS[name.trim().toLowerCase()];
 
-export const NAVBARITEMS = [
-	{
-		name: "Home",
-		ref: "home",
-	},
-	{
-		name: "Query Me",
-		ref: "sql",
-	},
-	{
-		name: "Testimonials",
-		ref: "comments",
-	},
-	{
-		name: "Skillset",
-		ref: "skills",
-	},
-	{
-		name: "Articles",
-		ref: "articles",
-	},
-	{
-		name: "Projects",
-		ref: "works",
-	},
-	{
-		name: "My Activity",
-		ref: "activity",
-	},
-	{
-		name: "Experience",
-		ref: "timeline",
-	},
-	{
-		name: "Passion",
-		ref: "/aboutme/passion",
-	},
-	{
-		name: "Start-up",
-		ref: "/aboutme/startup",
-	},
-	{
-		name: "Reads",
-		ref: "/aboutme/reads",
-	},
-];
+// Raster logos live as .webp in /projects/tech; everything else is .svg.
+const WEBP_TECH_ICONS = ["S3", "EC2", "Lambda", "MWAA", "Terraform", "Dagster", "Flink", "Apache Iceberg", "MinIO", "Spark", "Trino", "ClickHouse", "FastAPI", "VPC"];
 
-// NOTE: home sections read their DOM ids from this array BY INDEX
-// (hero=0, skills=1, projects=3, timeline=4) — append new entries at the
-// END, never insert in the middle, or every section id shifts.
-export const MENULINKS = [
-	{
-		name: "Home",
-		ref: "home",
-	},
-	{
-		name: "Skillset",
-		ref: "skills",
-	},
-	{
-		name: "Articles",
-		ref: "articles",
-	},
-	{
-		name: "Projects",
-		ref: "works",
-	},
-	{
-		name: "Experience",
-		ref: "timeline",
-	},
-	{
-		name: "Query Me",
-		ref: "sql",
-	},
-];
+export const getTechIconSrc = (name: string): string =>
+	`/projects/tech/${name}.${WEBP_TECH_ICONS.includes(name) ? "webp" : "svg"}`;
+
+export { NAVBARITEMS, MENULINKS } from "./nav";
 
 export const COMMENTS = [
 	{
@@ -441,6 +372,19 @@ export const SOCIAL_LINKS = {
 	leetcode: "https://leetcode.com/u/markphammm/",
 	discord: "https://discord.com/users/756173543431209071",
 };
+
+// Display names for SOCIAL_LINKS keys (text links in the menu and footer).
+export const SOCIAL_LABELS: Record<keyof typeof SOCIAL_LINKS, string> = {
+	linkedin: "LinkedIn",
+	github: "GitHub",
+	substack: "Substack",
+	wakatime: "WakaTime",
+	leetcode: "LeetCode",
+	discord: "Discord",
+};
+
+export const CALENDLY_URL = "https://calendly.com/minhbpham2003/30min";
+export const RESUME_URL = "/minh_pham_resume.pdf";
 
 export interface IProject {
 	name: string;

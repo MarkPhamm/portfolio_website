@@ -1,5 +1,4 @@
 import { METADATA } from "../../constants";
-import Head from "next/head";
 import React, { useEffect, useCallback, useRef } from "react";
 
 import { gsap } from "gsap";
@@ -12,6 +11,7 @@ import CollaborationSection from "@/components/home/collaboration";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
 import StartupComponent from "./startup/StartupComponent";
+import usePageAccent from "../../utils/use-page-accent";
 
 const DEBOUNCE_TIME = 100;
 
@@ -46,14 +46,11 @@ export default function Home() {
 		<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 	);
 
+	// Orange accent for the shell (menu, curtain, cursor label, scrollbar).
+	usePageAccent("242 125 13", "255 154 60");
+
 	return (
 		<div className="theme-orange">
-			<Head>
-				<style>{`
-					::-webkit-scrollbar-thumb { background: #f27d0d !important; }
-					::-webkit-scrollbar-thumb:hover { background: #ff9a3c !important; }
-				`}</style>
-			</Head>
 			<Layout title={`Start-up — ${METADATA.shortName}`} path="/aboutme/startup">
 				<Header />
 				<ProgressIndicator />

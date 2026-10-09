@@ -1,30 +1,44 @@
-import Script from "next/script";
+import { useEffect, useState } from "react";
+import { scrollToTarget } from "../../utils/scroll";
 
+/**
+ * "Go to top" — a glass disc that appears once the hero is behind you.
+ * (The file name is historical; pages import it as <Scripts />.)
+ */
 const Scripts: React.FC = () => {
-	const handleJumpToFirst = () => {
-		window.scrollTo(0, 0);
-	};
+	const [shown, setShown] = useState(false);
+
+	useEffect(() => {
+		let raf = 0;
+		const update = () => {
+			raf = 0;
+			setShown(window.scrollY > window.innerHeight * 0.9);
+		};
+		const schedule = () => {
+			if (!raf) raf = requestAnimationFrame(update);
+		};
+		update();
+		window.addEventListener("scroll", schedule, { passive: true });
+		return () => {
+			window.removeEventListener("scroll", schedule);
+			if (raf) cancelAnimationFrame(raf);
+		};
+	}, []);
 
 	return (
-		<div className="fixed right-5 bottom-5 flex items-center space-x-4">
-			<button
-				onClick={handleJumpToFirst}
-				className="flex items-center flex-col border-l-indigo-50 rounded-3xl"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="32"
-					height="32"
-					fill="currentColor"
-					className="bi bi-chevron-double-up"
-					viewBox="0 0 16 16"
-				>
-					<path d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708l6-6z" />
-					<path d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
-				</svg>
-				Go to top
-			</button>
-		</div>
+		<button
+			type="button"
+			aria-label="Go to top"
+			onClick={() => scrollToTarget(0)}
+			tabIndex={shown ? 0 : -1}
+			className={`glass fixed bottom-5 right-5 z-40 grid h-12 w-12 place-items-center rounded-full text-ink-1 transition-opacity duration-[10ms] hover:border-white/[0.28] ${
+				shown ? "opacity-100" : "pointer-events-none opacity-0"
+			}`}
+		>
+			<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+				<path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+			</svg>
+		</button>
 	);
 };
 

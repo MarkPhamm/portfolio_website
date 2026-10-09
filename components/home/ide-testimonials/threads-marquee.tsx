@@ -9,6 +9,8 @@ import { FILE_BY_AUTHOR, ITestimonialFile } from "./files";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const EDGE_MASK = "linear-gradient(to right, transparent, #000 3rem, #000 calc(100% - 3rem), transparent)";
+
 // The "common threads" strip that lived above the old carousel — kept running
 // above the IDE window. Clicking a theme now opens that reviewer's file in the
 // editor; repeat clicks cycle through the theme's reviewers.
@@ -160,8 +162,8 @@ const ThreadsMarquee = ({
 				tabIndex={isClone ? -1 : 0}
 				className={`theme-card flex-shrink-0 w-64 text-left p-4 rounded-2xl border backdrop-blur-sm transition-all duration-[10ms] ${
 					mentionedByCurrent
-						? "bg-gray-800/80 border-[#9146FF]/60 shadow-lg shadow-[#9146FF]/10"
-						: "bg-gray-800/50 border-gray-700/50 hover:border-[#9146FF]/40 hover:bg-gray-800/70"
+						? "bg-white/[0.05] border-violet/50 shadow-[0_0_30px_-12px_rgb(var(--accent)/0.6)]"
+						: "bg-white/[0.02] border-line hover:border-line-strong hover:bg-white/[0.04]"
 				}`}
 			>
 				<span className="block text-sm font-semibold text-white">
@@ -183,7 +185,7 @@ const ThreadsMarquee = ({
 								width={28}
 								height={28}
 								className={`w-7 h-7 rounded-full object-cover border-2 ${
-									isCurrent ? "border-[#9146FF]" : "border-gray-900"
+									isCurrent ? "border-violet-soft" : "border-canvas"
 								}`}
 								loading="lazy"
 							/>
@@ -201,7 +203,11 @@ const ThreadsMarquee = ({
 			</p>
 			<div
 				className="theme-marquee-wrap relative overflow-hidden"
+				data-lenis-prevent-horizontal
 				ref={wrapRef}
+				// Edges fade out with a mask (not a canvas-coloured overlay), so the
+				// page's light shows through them.
+				style={{ WebkitMaskImage: EDGE_MASK, maskImage: EDGE_MASK }}
 				onClickCapture={(e) => {
 					// A drag ends with a click on whatever card is under the
 					// pointer — swallow it so dragging never opens a file
@@ -220,15 +226,6 @@ const ThreadsMarquee = ({
 						{TESTIMONIAL_THEMES.map((theme) => renderThemeCard(theme, true))}
 					</div>
 				</div>
-				{/* Edge fades into the page background */}
-				<div
-					className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-gray-900 to-transparent"
-					aria-hidden="true"
-				></div>
-				<div
-					className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-gray-900 to-transparent"
-					aria-hidden="true"
-				></div>
 			</div>
 		</div>
 	);

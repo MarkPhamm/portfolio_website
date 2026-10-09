@@ -7,13 +7,22 @@ import { useEffect } from "react";
 import { IconContext } from "react-icons";
 import { useRouter } from "next/router";
 import { initClarity, trackPageView } from "../utils/clarity";
-import PageTransition from "../components/common/page-transition";
+import { markPageReady } from "../utils/page-ready";
+import TransitionController from "../components/common/transition-controller";
+import SmoothScroll from "../components/common/smooth-scroll";
+import FilmFx from "../components/common/film-fx";
+import CursorLabel from "../components/common/cursor-label";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 
 	useEffect(() => {
 		initClarity();
+		// Direct landing: unless the first-visit intro is about to play (it
+		// signals readiness itself), the page is on screen now.
+		if (document.documentElement.getAttribute("data-intro") !== "play") {
+			markPageReady("direct");
+		}
 	}, []);
 
 	useEffect(() => {
@@ -36,7 +45,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 			    svg-img-alt a11y audit without per-icon props. */}
 			<IconContext.Provider value={{ attr: { "aria-hidden": "true", focusable: "false" } }}>
 				<Component {...pageProps} />
-				<PageTransition />
+				<TransitionController />
+				<SmoothScroll />
+				<FilmFx />
+				<CursorLabel />
 			</IconContext.Provider>
 
 			{/* Stub lives in _document so page_view can queue (utm_* still on
