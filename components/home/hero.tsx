@@ -158,7 +158,7 @@ const HeroSection = React.memo(() => {
 		};
 
 		if (prefersReducedMotion()) {
-			gsap.set(seq, { opacity: 1 });
+			section.classList.add("hero-landed");
 			// Static first line instead of a typing loop.
 			if (typedRef.current) typedRef.current.innerHTML = TYPED_STRINGS[0];
 			return;
@@ -168,13 +168,25 @@ const HeroSection = React.memo(() => {
 		const cancelReady = whenPageReady(() => {
 			const blur = window.matchMedia(MQ.desktop).matches;
 			tl = gsap
-				.timeline({ defaults: { ease: EASE.out } })
+				.timeline({
+					defaults: { ease: EASE.out },
+					// Hand the settled state back to CSS (.hero-landed), which
+					// also cancels the failsafes.
+					onComplete: () => {
+						section.classList.add("hero-landed");
+						gsap.set(words, { clearProps: "transform,filter" });
+						gsap.set(seq, { clearProps: "transform,opacity" });
+					},
+				})
 				// Focus pull from the CSS first-frame state (lowered + blurred);
 				// the name stays fully opaque throughout, so it's the LCP paint.
+				// `y: 0` is load-bearing: GSAP reads the CSS translateY(30%) as
+				// pixels of `y`, which would otherwise survive the tween and
+				// leave the name low and clipped by the silver mask.
 				.fromTo(
 					words,
-					{ yPercent: 30, ...(blur && { filter: "blur(14px)" }) },
-					{ yPercent: 0, ...(blur && { filter: "blur(0px)" }), duration: 1, stagger: 0.06 },
+					{ y: 0, yPercent: 30, ...(blur && { filter: "blur(14px)" }) },
+					{ y: 0, yPercent: 0, ...(blur && { filter: "blur(0px)" }), duration: 1, stagger: 0.06 },
 					0.05
 				)
 				.fromTo(seq, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.05 }, 0.25);

@@ -24,7 +24,20 @@ const SilkBackdrop = () => {
 		if (!el || prefersReducedMotion()) return;
 		let tween: gsap.core.Tween | null = null;
 		const cancelReady = whenPageReady(() => {
-			tween = gsap.fromTo(el, { scale: 1.06 }, { scale: 1, duration: 1.1, ease: "power3.out" });
+			tween = gsap.fromTo(
+				el,
+				{ scale: 1.06 },
+				{
+					scale: 1,
+					duration: 1.1,
+					ease: "power3.out",
+					// Settled: CSS drops the starting scale and its failsafe.
+					onComplete: () => {
+						el.classList.add("is-settled");
+						gsap.set(el, { clearProps: "transform" });
+					},
+				}
+			);
 		});
 		return () => {
 			cancelReady();

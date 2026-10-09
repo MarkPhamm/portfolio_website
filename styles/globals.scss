@@ -442,9 +442,10 @@ select:focus-visible {
 
 /* The homepage light field (fixed behind every section) starts slightly
    scaled so its first paint matches where GSAP settles it from at page ready;
+   `.is-settled` (added when that tween ends) drops the starting state, and
    the failsafe settles it if JS never runs. */
 @media (prefers-reduced-motion: no-preference) {
-	.silk-backdrop {
+	.silk-backdrop:not(.is-settled) {
 		transform: scale(1.06);
 		animation: silk-failsafe 0.6s ease 5s forwards;
 	}
@@ -458,7 +459,7 @@ select:focus-visible {
 
 .hero-word {
 	transform: translateY(30%);
-	animation: hero-failsafe 0.6s ease 5s forwards;
+	animation: hero-word-failsafe 0.6s ease 5s forwards;
 
 	@media (min-width: 768px) {
 		filter: blur(14px);
@@ -467,14 +468,37 @@ select:focus-visible {
 
 .hero-seq {
 	opacity: 0;
-	animation: hero-failsafe 0.6s ease 5s forwards;
+	animation: hero-seq-failsafe 0.6s ease 5s forwards;
 }
 
-@keyframes hero-failsafe {
+/* hero.tsx adds .hero-landed when the entrance ends: the settled state goes
+   back to CSS (GSAP's inline styles are cleared) and the failsafes are
+   cancelled, so they can't replay over a name that has already landed. The
+   .hero-seq rules leave `transform` alone — the scroll cue is centred with a
+   Tailwind translate. */
+.hero-landed {
+	.hero-word {
+		transform: none;
+		filter: none;
+		animation: none;
+	}
+
+	.hero-seq {
+		opacity: 1;
+		animation: none;
+	}
+}
+
+@keyframes hero-word-failsafe {
+	to {
+		filter: none;
+		transform: none;
+	}
+}
+
+@keyframes hero-seq-failsafe {
 	to {
 		opacity: 1;
-		filter: blur(0);
-		transform: none;
 	}
 }
 
@@ -489,11 +513,13 @@ select:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.hero-word,
-	.hero-seq {
-		opacity: 1;
+	.hero-word {
 		filter: none;
 		transform: none;
+		animation: none;
+	}
+	.hero-seq {
+		opacity: 1;
 		animation: none;
 	}
 	.scroll-cue > span {
