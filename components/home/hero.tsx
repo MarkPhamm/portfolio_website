@@ -37,12 +37,6 @@ const setCachedViewCount = (count: number): void => {
 	setItem(VIEW_COUNT_CACHE_KEY, count.toString());
 };
 
-interface IpInfo {
-	ip: string;
-	country: string;
-	city: string;
-}
-
 const countview = async (
 	setViewCount: React.Dispatch<React.SetStateAction<number | null>>
 ): Promise<void> => {
@@ -51,32 +45,21 @@ const countview = async (
 			import("firebase/app"),
 			import("firebase/firestore/lite"),
 		]);
-		const { getFirestore, doc, getDoc, setDoc, collection, getDocs } = firestore;
+		const { getFirestore, doc, getDoc, setDoc, increment } = firestore;
 		const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 		const db = getFirestore(app);
+		const counterRef = doc(db, "stats", "views");
 
-		const ipinfo: IpInfo = await fetch("https://api.ipify.org?format=json", {
-			method: "GET",
-		}).then((response) => {
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			return response.json();
-		});
-		const { ip: userIp } = ipinfo;
-		const userIpString = userIp.replace(/\./g, "x");
-
-		const viewsDocRef = doc(db, "views", userIpString);
-		const docSnap = await getDoc(viewsDocRef);
-
-		if (!docSnap.exists()) {
-			await setDoc(viewsDocRef, { ip: userIp });
+		// A browser holding a cached count was already counted
+		if (getCachedViewCount() === null) {
+			await setDoc(counterRef, { count: increment(1) }, { merge: true });
 		}
 
-		const viewsCollectionRef = collection(db, "views");
-		const viewsSnapshot = await getDocs(viewsCollectionRef);
-		setViewCount(viewsSnapshot.size);
-		setCachedViewCount(viewsSnapshot.size);
+		const count = (await getDoc(counterRef)).data()?.count;
+		if (typeof count === "number") {
+			setViewCount(count);
+			setCachedViewCount(count);
+		}
 	} catch {
 		// Silently fail — cached count is shown as fallback
 	}
@@ -101,7 +84,7 @@ const HeroSection = React.memo(() => {
 		if (cached !== null) {
 			setViewCount(cached);
 		}
-		// Defer the network refresh (ipify -> Firestore) until after first interactive
+		// Defer the network refresh (Firestore) until after first interactive
 		// so it doesn't compete with hydration / hero LCP.
 		const ric = (window as Window & {
 			requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
