@@ -171,7 +171,7 @@ const Footer = () => {
 			<span>
 				Built with Next.js, Tailwind &amp; GSAP —{" "}
 				<a
-					href="https://github.com/HoanqDucAnh/portfolio"
+					href="https://github.com/MarkPhamm/portfolio_website"
 					target="_blank"
 					rel="noreferrer"
 					className="link underline hover:text-white"
@@ -199,7 +199,7 @@ const Footer = () => {
 				width={1440}
 			/>
 			<div className="h-full w-full">
-				<div className="section-container flex-col flex h-full justify-end z-10 py-10 md:py-14">
+				<div className="section-container flex-col flex h-full justify-end z-10 pt-10 md:pt-14 pb-24">
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 w-full">
 						{renderIdentity()}
 						{renderExplore()}
