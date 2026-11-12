@@ -3,9 +3,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 module.exports = withBundleAnalyzer({
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     loader: 'akamai',
     path: '/',

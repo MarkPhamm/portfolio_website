@@ -91,6 +91,9 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 			window.removeEventListener("keydown", handleKeyDown);
 			opener?.focus({ preventScroll: true });
 		};
+		// Mount-only: measure the zoom from originRect and bind keys once; handleClose
+		// reads refs, and every onClose the tile passes does the same setState.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleClose = () => {

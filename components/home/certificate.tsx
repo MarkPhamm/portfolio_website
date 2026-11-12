@@ -65,6 +65,7 @@ const CertificateSection = ({ isDesktop }: IDesktop) => {
 				{/* Uniform white "stage" so badges/certificates of any shape read consistently */}
 				<div className="p-4">
 					<div className="h-52 md:h-56 w-full rounded-xl bg-white flex items-center justify-center p-5 overflow-hidden">
+						{/* eslint-disable-next-line @next/next/no-img-element */}
 						<img
 							src={`/skills/3rd/${cert.image}.webp`}
 							alt={cert.name}

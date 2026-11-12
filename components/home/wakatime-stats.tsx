@@ -200,6 +200,7 @@ const EmbedCard = ({
 				{!loaded && (
 					<div className="shimmer-loading absolute inset-0 rounded-lg" aria-hidden="true" />
 				)}
+				{/* eslint-disable-next-line @next/next/no-img-element */}
 				<img
 					src={src}
 					alt={alt}

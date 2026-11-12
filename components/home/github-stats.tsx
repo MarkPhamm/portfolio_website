@@ -299,6 +299,7 @@ const GitHubStats = memo(() => {
 				className="block mt-6 pt-6 border-t border-gray-800"
 			>
 				<h4 className="text-sm font-medium text-gray-400 mb-4">Contribution Activity</h4>
+				{/* eslint-disable-next-line @next/next/no-img-element */}
 				<img
 					src={`https://ghchart.rshah.org/9146FF/${GITHUB_USERNAME}`}
 					alt="GitHub Contribution Calendar"
