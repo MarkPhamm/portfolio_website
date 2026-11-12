@@ -16,7 +16,7 @@ import ProgressIndicator from "@/components/common/progress-indicator";
 import CollaborationSection from "@/components/home/collaboration";
 import Footer from "@/components/common/footer";
 import Scripts from "@/components/common/scripts";
-import PassionComponent from "./passion/PassionComponent";
+import PassionComponent from "@/components/aboutme/PassionComponent";
 
 const DEBOUNCE_TIME = 100;
 

@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { prefersReducedMotion } from "../../../utils/motion";
+import { prefersReducedMotion } from "../../utils/motion";
 import RecipePanel, {
 	RecipeStoreProvider,
 	RecipeToggle,
 } from "@/components/aboutme/recipe-panel";
-import { RECIPES } from "../../../utils/recipes";
+import { RECIPES } from "../../utils/recipes";
 
 const ScrollReveal = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => {
 	const ref = useRef<HTMLDivElement>(null);
