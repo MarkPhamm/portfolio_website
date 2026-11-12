@@ -14,7 +14,6 @@ import { setTag, trackEvent, upgradeSession } from "../../utils/clarity";
 import {
 	PRESET_QUERIES,
 	SCHEMA,
-	registerTables,
 } from "../../utils/sql-tables";
 
 type RunSource = "preset" | "custom";
@@ -26,6 +25,21 @@ interface IStatus {
 }
 
 const MAX_RENDERED_ROWS = 50;
+// A 4-table cross join is ~800k rows; past this the worker is killed
+const QUERY_TIMEOUT_MS = 3000;
+// User SQL that could write tables, run JS (``…``) or fetch files/URLs
+const UNSAFE_SQL =
+	/\binto\b|``|\b(csv|tsv|tab|txt|json|jsonl|ndjson|xlsx|xls|ods|xml|html|file|gexf|meteor|tabletop)\s*\(/i;
+
+const spawnWorker = () =>
+	new Worker(new URL("../../utils/sql.worker.ts", import.meta.url));
+
+// Visitors type anything (emails, names): send Clarity a fingerprint, not the text
+const fingerprint = (s: string) =>
+	s
+		.split("")
+		.reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)
+		.toString(36);
 
 const SqlTerminalSection = () => {
 	const sectionRef = useRef<HTMLElement>(null);
@@ -33,7 +47,9 @@ const SqlTerminalSection = () => {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const preRef = useRef<HTMLPreElement>(null);
 	const resultsRef = useRef<HTMLDivElement>(null);
-	const engineRef = useRef<any>(null);
+	const workerRef = useRef<Worker | null>(null);
+	const runIdRef = useRef(0);
+	const timeoutRef = useRef<number>();
 	const pendingRef = useRef<{ sql: string; source: RunSource } | null>(null);
 	const customRunsRef = useRef(0);
 
@@ -47,7 +63,11 @@ const SqlTerminalSection = () => {
 	const [schemaOpen, setSchemaOpen] = useState(false);
 
 	const execute = useCallback((rawSql: string, source: RunSource) => {
-		const sql = rawSql.trim().replace(/;+\s*$/, "");
+		// Leading comments would dodge the statement-type check below
+		const sql = rawSql
+			.trim()
+			.replace(/;+\s*$/, "")
+			.replace(/^(\s*(--[^\n]*|\/\*[\s\S]*?\*\/))+\s*/, "");
 		if (!sql) return;
 
 		const fail = (text: string, detail?: string) => {
@@ -69,6 +89,12 @@ const SqlTerminalSection = () => {
 				"My career is append-only — no destructive DML allowed. Try a SELECT."
 			);
 		}
+		if (UNSAFE_SQL.test(sql)) {
+			return fail(
+				"ERROR: read-only warehouse",
+				"My tables don't leave the building — no INTO, no files, no URLs. Try a plain SELECT."
+			);
+		}
 		if (sql.indexOf(";") !== -1) {
 			return fail(
 				"ERROR: one statement at a time",
@@ -82,21 +108,49 @@ const SqlTerminalSection = () => {
 			);
 		}
 
-		if (!engineRef.current) {
+		if (!workerRef.current) {
 			pendingRef.current = { sql, source };
 			setIsNear(true);
 			setStatus({ kind: "loading", text: "warming up the warehouse…" });
 			return;
 		}
 
-		try {
-			const t0 = performance.now();
-			const result = engineRef.current(sql);
+		// A newer run supersedes an in-flight one; the worker answers in order
+		const id = ++runIdRef.current;
+		const worker = workerRef.current;
+		const t0 = performance.now();
+		window.clearTimeout(timeoutRef.current);
+		setStatus({ kind: "loading", text: "running…" });
+		timeoutRef.current = window.setTimeout(() => {
+			worker.terminate();
+			workerRef.current = spawnWorker();
+			fail(
+				`ERROR: query cancelled after ${QUERY_TIMEOUT_MS / 1000} s`,
+				"That's a cross join of my whole career. Add a JOIN … ON or a WHERE."
+			);
+		}, QUERY_TIMEOUT_MS);
+
+		worker.onmessage = (
+			e: MessageEvent<{ id: number; rows?: unknown; error?: string }>
+		) => {
+			if (e.data.id !== id) return;
+			window.clearTimeout(timeoutRef.current);
+			if (e.data.error !== undefined) {
+				const raw = e.data.error;
+				const friendly = /not (found|exist)/i.test(raw)
+					? "ERROR: relation not found"
+					: "ERROR: query failed to compile";
+				fail(
+					friendly,
+					`${raw} — SHOW TABLES lists everything queryable (I document my schemas; see testimonials).`
+				);
+				return;
+			}
 			const elapsed = Math.round(
 				performance.now() - t0 + 18 + Math.random() * 60
 			);
-			const data: Record<string, unknown>[] = Array.isArray(result)
-				? result
+			const data: Record<string, unknown>[] = Array.isArray(e.data.rows)
+				? e.data.rows
 				: [];
 			setRows(data);
 			setStatus({
@@ -108,41 +162,32 @@ const SqlTerminalSection = () => {
 			});
 			trackEvent("sql_query_run", { source, success: true });
 			if (source === "custom") {
-				setTag("sql_query", sql.slice(0, 120));
+				setTag("sql_query", fingerprint(sql));
 				customRunsRef.current += 1;
 				if (customRunsRef.current === 1) upgradeSession("sql_terminal_use");
 			}
-		} catch (e) {
-			const raw = e instanceof Error ? e.message : String(e);
-			const friendly = /not (found|exist)/i.test(raw)
-				? "ERROR: relation not found"
-				: "ERROR: query failed to compile";
-			fail(
-				friendly,
-				`${raw} — SHOW TABLES lists everything queryable (I document my schemas; see testimonials).`
-			);
-		}
+		};
+		worker.postMessage({ id, sql });
 	}, []);
 
-	// Lazily pull AlaSQL only once the section nears the viewport (quote2/typed.js pattern)
+	// Spawn the AlaSQL worker only once the section nears the viewport (quote2/typed.js pattern)
 	useEffect(() => {
-		if (!isNear || engineRef.current) return;
-		let cancelled = false;
-		import("alasql").then((mod) => {
-			if (cancelled) return;
-			const alasql = (mod as any).default || mod;
-			registerTables(alasql);
-			engineRef.current = alasql;
-			if (pendingRef.current) {
-				const pending = pendingRef.current;
-				pendingRef.current = null;
-				execute(pending.sql, pending.source);
-			}
-		});
-		return () => {
-			cancelled = true;
-		};
+		if (!isNear || workerRef.current) return;
+		workerRef.current = spawnWorker();
+		if (pendingRef.current) {
+			const pending = pendingRef.current;
+			pendingRef.current = null;
+			execute(pending.sql, pending.source);
+		}
 	}, [isNear, execute]);
+
+	useEffect(
+		() => () => {
+			window.clearTimeout(timeoutRef.current);
+			workerRef.current?.terminate();
+		},
+		[]
+	);
 
 	// Entrance choreography + near-viewport engine preload trigger
 	useEffect(() => {
