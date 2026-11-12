@@ -10,6 +10,7 @@ import HeroAurora from "./hero-aurora";
 import { isSmallScreen } from "pages";
 import { trackEvent, setTag, upgradeSession } from "../../utils/clarity";
 import { initMagneticHover } from "../../utils/motion";
+import { getItem, setItem } from "../../utils/safe-storage";
 
 const HeroImage = dynamic(() => import("./hero-image"), { ssr: false });
 
@@ -27,13 +28,13 @@ const VIEW_COUNT_CACHE_KEY = "portfolio_view_count";
 
 const getCachedViewCount = (): number | null => {
 	if (typeof window === "undefined") return null;
-	const cached = localStorage.getItem(VIEW_COUNT_CACHE_KEY);
+	const cached = getItem(VIEW_COUNT_CACHE_KEY);
 	return cached ? parseInt(cached, 10) : null;
 };
 
 const setCachedViewCount = (count: number): void => {
 	if (typeof window === "undefined") return;
-	localStorage.setItem(VIEW_COUNT_CACHE_KEY, count.toString());
+	setItem(VIEW_COUNT_CACHE_KEY, count.toString());
 };
 
 interface IpInfo {

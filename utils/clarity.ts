@@ -1,5 +1,6 @@
 import Clarity from "@microsoft/clarity";
 import * as gtag from "./gtag";
+import { getItem, setItem } from "./safe-storage";
 
 const CLARITY_PROJECT_ID = "w99ronz0em";
 const VISITOR_ID_KEY = "clarity_visitor_id";
@@ -30,10 +31,10 @@ function generateVisitorId(): string {
 
 function getVisitorId(): string {
   if (typeof window === "undefined") return "";
-  let id = localStorage.getItem(VISITOR_ID_KEY);
+  let id = getItem(VISITOR_ID_KEY);
   if (!id) {
     id = generateVisitorId();
-    localStorage.setItem(VISITOR_ID_KEY, id);
+    setItem(VISITOR_ID_KEY, id);
   }
   return id;
 }
