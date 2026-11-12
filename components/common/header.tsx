@@ -6,6 +6,7 @@ import { NAVBARITEMS } from "../../constants";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { trackEvent } from "../../utils/clarity";
+import { prefersReducedMotion } from "../../utils/motion";
 
 const Header = () => {
 	const [menuVisible, setmenuVisible] = useState(false);
@@ -16,7 +17,9 @@ const Header = () => {
 	useHideOnScroll(headerRef, menuVisible);
 
 	useEffect(() => {
-		if (headerRef.current) {
+		if (headerRef.current && prefersReducedMotion()) {
+			gsap.set(headerRef.current, { opacity: 1 });
+		} else if (headerRef.current) {
 			gsap.fromTo(
 				headerRef.current,
 				{ y: -80, opacity: 0 },

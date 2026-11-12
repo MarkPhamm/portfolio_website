@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { prefersReducedMotion } from "../../utils/motion";
 import { ARTICLES, IArticle, SOCIAL_LINKS } from "../../constants";
 import { trackEvent, setTag } from "../../utils/clarity";
 
@@ -63,7 +64,7 @@ const ArticlesPreview = () => {
 	const cardsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
 	useEffect(() => {
-		if (!sectionRef.current) return;
+		if (!sectionRef.current || prefersReducedMotion()) return;
 
 		const triggers: ScrollTrigger[] = [];
 

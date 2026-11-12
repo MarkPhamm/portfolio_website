@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useCallback, memo } from "react";
 import ReactDOM from "react-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { prefersReducedMotion } from "../../utils/motion";
 import { IDesktop } from "pages";
 import {
 	TbChartBar,
@@ -100,7 +101,7 @@ const SkillsSection = ({ isDesktop }: IDesktop) => {
 	const cardsRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!cardsRef.current) return;
+		if (!cardsRef.current || prefersReducedMotion()) return;
 
 		const cards = cardsRef.current.querySelectorAll(".skill-card");
 		const triggers: ScrollTrigger[] = [];

@@ -21,7 +21,7 @@ export const initHeadingWipe = (
 ): ScrollTrigger | null => {
 	if (!container) return null;
 	const heading = container.querySelector<HTMLElement>(".section-heading");
-	if (!heading) return null;
+	if (!heading || prefersReducedMotion()) return null;
 
 	gsap.set(heading, { clipPath: "inset(0 100% 0 0)" });
 	return ScrollTrigger.create({

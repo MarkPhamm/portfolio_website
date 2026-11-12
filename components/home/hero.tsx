@@ -9,7 +9,7 @@ import Button, { ButtonTypes } from "../common/button";
 import HeroAurora from "./hero-aurora";
 import { isSmallScreen } from "pages";
 import { trackEvent, setTag, upgradeSession } from "../../utils/clarity";
-import { initMagneticHover } from "../../utils/motion";
+import { initMagneticHover, prefersReducedMotion } from "../../utils/motion";
 import { getItem, setItem } from "../../utils/safe-storage";
 
 const HeroImage = dynamic(() => import("./hero-image"), { ssr: false });
@@ -141,7 +141,7 @@ const HeroSection = React.memo(() => {
 	// Mouse-reactive parallax for hero layers — rAF-throttled so we do at most
 	// one batch of GSAP updates per frame regardless of pointer rate.
 	useEffect(() => {
-		if (isSmallScreen()) return;
+		if (isSmallScreen() || prefersReducedMotion()) return;
 		const section = targetSection.current;
 		if (!section) return;
 
@@ -238,6 +238,11 @@ const HeroSection = React.memo(() => {
 	};
 
 	useEffect(() => {
+		// Reduced motion: no reveal, and the first headline stays put instead of looping
+		if (prefersReducedMotion()) {
+			if (typedSpanElement.current) typedSpanElement.current.innerHTML = TYPED_STRINGS[0];
+			return;
+		}
 		const typed = initTypeAnimation(typedSpanElement);
 		initRevealAnimation(targetSection);
 
@@ -300,7 +305,11 @@ const HeroSection = React.memo(() => {
 				</h1>
 			</div>
 			<p className="mb-4">
-				<span className={HERO_STYLES.TYPED_SPAN} ref={typedSpanElement}></span>
+				{/* Screen readers get the full list once, not half-typed fragments */}
+				<span className="sr-only">
+					{TYPED_STRINGS.map((s) => s.replace(/<[^>]+>/g, "")).join(". ")}
+				</span>
+				<span className={HERO_STYLES.TYPED_SPAN} ref={typedSpanElement} aria-hidden="true"></span>
 			</p>
 			<div className="flex seq gap-4">
 				{renderSocialLinks()}

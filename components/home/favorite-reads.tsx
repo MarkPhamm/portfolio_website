@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { prefersReducedMotion } from "../../utils/motion";
 import { FAVORITE_READS, IFavoriteRead } from "../../constants";
 import { trackEvent, setTag } from "../../utils/clarity";
 import { StatusBadge, TakeLine, CategoryPill, SectionCount } from "./read-badges";
@@ -113,7 +114,7 @@ const FavoriteReads = ({
 		// After the user touches the filter, cards re-render mid-scroll and a
 		// `once` ScrollTrigger below the fold would leave them stuck invisible —
 		// so we strip inline styles and skip the entrance entirely.
-		if (!animate) {
+		if (!animate || prefersReducedMotion()) {
 			cardsRef.current.forEach((el) => el && gsap.set(el, { clearProps: "all" }));
 			const heading = sectionRef.current.querySelector(".section-heading");
 			if (heading) gsap.set(heading, { clearProps: "all" });

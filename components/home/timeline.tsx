@@ -75,7 +75,7 @@ const TimelineSection = (_props: IDesktop) => {
 		const reduceMotion = prefersReducedMotion();
 
 		experiencesRef.current.forEach((el, idx) => {
-			if (!el) return;
+			if (!el || reduceMotion) return;
 
 			const isEven = idx % 2 === 0;
 			// Set initial state: slide from left for even, right for odd
@@ -96,8 +96,6 @@ const TimelineSection = (_props: IDesktop) => {
 				once: true,
 			});
 			triggers.push(trigger);
-
-			if (reduceMotion) return;
 
 			// Rail segment draws itself as the entry scrolls through the viewport;
 			// chained per entry it reads as one continuous line.
@@ -139,7 +137,7 @@ const TimelineSection = (_props: IDesktop) => {
 
 		// ClipPath wipe on section heading
 		const heading = sectionRef.current.querySelector(".section-heading");
-		if (heading) {
+		if (heading && !reduceMotion) {
 			gsap.set(heading, { clipPath: "inset(0 100% 0 0)" });
 			const headingTrigger = ScrollTrigger.create({
 				trigger: heading,
