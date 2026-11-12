@@ -32,6 +32,9 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 
 	useEffect(() => {
 		document.body.style.overflow = "hidden";
+		// Focus goes back to the tile that opened the modal on close
+		const opener = document.activeElement as HTMLElement | null;
+		cardRef.current?.querySelector<HTMLElement>("button")?.focus();
 
 		if (overlayRef.current && cardRef.current) {
 			gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25 });
@@ -66,14 +69,27 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 			}
 		}
 
-		const handleEscape = (e: KeyboardEvent) => {
+		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === "Escape") handleClose();
+			if (e.key !== "Tab" || !cardRef.current) return;
+			// Trap Tab inside the card
+			const focusables = cardRef.current.querySelectorAll<HTMLElement>(
+				'a[href], button, [tabindex]:not([tabindex="-1"])'
+			);
+			const first = focusables[0];
+			const last = focusables[focusables.length - 1];
+			const active = document.activeElement;
+			if (!cardRef.current.contains(active) || (e.shiftKey ? active === first : active === last)) {
+				e.preventDefault();
+				(e.shiftKey ? last : first).focus();
+			}
 		};
-		window.addEventListener("keydown", handleEscape);
+		window.addEventListener("keydown", handleKeyDown);
 
 		return () => {
 			document.body.style.overflow = "";
-			window.removeEventListener("keydown", handleEscape);
+			window.removeEventListener("keydown", handleKeyDown);
+			opener?.focus({ preventScroll: true });
 		};
 	}, []);
 
@@ -116,6 +132,9 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 
 			<div
 				ref={cardRef}
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="project-modal-title"
 				className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-none rounded-2xl bg-gray-900 border border-gray-700/50 shadow-2xl"
 			>
 				{/* Close button */}
@@ -153,7 +172,7 @@ const ProjectModal = ({ project, onClose, originRect }: ProjectModalProps) => {
 						{getCategoryLabel(project.category)}
 					</span>
 
-					<h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+					<h2 id="project-modal-title" className="text-2xl md:text-3xl font-bold text-white mb-4">
 						{project.name}
 					</h2>
 
