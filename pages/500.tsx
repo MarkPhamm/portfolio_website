@@ -9,7 +9,7 @@ import Scripts from "@/components/common/scripts";
 export default function ServerError() {
 	return (
 		<>
-			<Layout title="500 — Something broke | Mark Pham">
+			<Layout title="500 — Something broke | Mark Pham" noindex>
 				<Header />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 				<main className="section-container min-h-screen flex flex-col items-center justify-center text-center select-none py-24">

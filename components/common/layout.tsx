@@ -26,9 +26,11 @@ interface LayoutProps {
   description?: string;
   /** Route path ("/aboutme/reads") for canonical + og:url; defaults to home. */
   path?: string;
+  /** Error pages: robots noindex and no canonical, so they aren't read as duplicates of home. */
+  noindex?: boolean;
 }
 
-const Layout = ({ children, title, description, path }: LayoutProps) => {
+const Layout = ({ children, title, description, path, noindex }: LayoutProps) => {
   const pageTitle = title || METADATA.title;
   const pageDescription = description || METADATA.description;
   const pageUrl = `${METADATA.siteUrl}${path || ""}`;
@@ -44,7 +46,11 @@ const Layout = ({ children, title, description, path }: LayoutProps) => {
         />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={pageUrl} />
+        {noindex ? (
+          <meta name="robots" content="noindex" />
+        ) : (
+          <link rel="canonical" href={pageUrl} />
+        )}
         <meta property="og:locale" content="en_US" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />

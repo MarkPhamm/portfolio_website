@@ -18,7 +18,7 @@ export default function NotFound() {
 
 	return (
 		<>
-			<Layout title="404 — Page not found | Mark Pham">
+			<Layout title="404 — Page not found | Mark Pham" noindex>
 				<Header />
 				<div className="fixed top-0 left-0 h-screen w-screen bg-gray-900 -z-1"></div>
 				<main className="section-container min-h-screen flex flex-col items-center justify-center text-center select-none py-24">
